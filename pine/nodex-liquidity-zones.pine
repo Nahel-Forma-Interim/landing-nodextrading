@@ -1,0 +1,106 @@
+//@version=6
+// ═══════════════════════════════════════════════════════════════════
+// NODEX LIQUIDITY ZONES · V1 (Pine v6)
+// ═══════════════════════════════════════════════════════════════════
+//
+// À QUOI ÇA SERT :
+// Affiche les GROSSES ZONES DE LIQUIDITÉ que le marché risque d'aller
+// chercher. Ce sont les niveaux clés où sont placés les stop loss
+// des autres traders → le marché va naturellement les balayer.
+//
+// ZONES TRACÉES (5 lignes) :
+//   - PDH = Previous Day High (haut de la veille)        ← bleu
+//   - PDL = Previous Day Low  (bas de la veille)         ← bleu
+//   - PWH = Previous Week High (haut de la semaine)      ← violet
+//   - PWL = Previous Week Low  (bas de la semaine)       ← violet
+//   - EQ  = Équilibre du jour précédent (50% de la veille) ← gris
+//
+// LECTURE :
+//   - Si le prix monte vers PDH → cible Sweep haussier
+//   - Si le prix descend vers PDL → cible Sweep baissier
+//   - Quand une zone est touchée, elle devient pointillée
+//
+// © 2026 Nodex Trading · V5.2 · Licence personnelle
+// ═══════════════════════════════════════════════════════════════════
+
+indicator("Nodex Liquidity Zones", shorttitle="NDX-LIQ", overlay=true, max_lines_count=50, max_labels_count=50)
+
+// ─── INPUTS ────────────────────────────────────────────────────────
+showPDH      = input.bool(true,  "Previous Day High (PDH)",   group="Zones quotidiennes")
+showPDL      = input.bool(true,  "Previous Day Low (PDL)",    group="Zones quotidiennes")
+showEQ       = input.bool(true,  "Équilibre jour précédent",  group="Zones quotidiennes")
+showPWH      = input.bool(true,  "Previous Week High (PWH)",  group="Zones hebdomadaires")
+showPWL      = input.bool(true,  "Previous Week Low (PWL)",   group="Zones hebdomadaires")
+
+dailyColor   = input.color(color.new(#6fa8ff, 0),  "Couleur quotidien", group="Couleurs")
+weeklyColor  = input.color(color.new(#c084fc, 0),  "Couleur hebdo",     group="Couleurs")
+eqColor      = input.color(color.new(#888888, 30), "Couleur équilibre", group="Couleurs")
+
+showLabels   = input.bool(true, "Afficher les labels (PDH, PDL, etc.)", group="Affichage")
+labelOffset  = input.int(5, "Décalage label (bougies à droite)", minval=1, maxval=50, group="Affichage")
+
+// ─── RÉCUPÈRE LES NIVEAUX ──────────────────────────────────────────
+pdh = request.security(syminfo.tickerid, "D", high[1], lookahead=barmerge.lookahead_off)
+pdl = request.security(syminfo.tickerid, "D", low[1],  lookahead=barmerge.lookahead_off)
+pwh = request.security(syminfo.tickerid, "W", high[1], lookahead=barmerge.lookahead_off)
+pwl = request.security(syminfo.tickerid, "W", low[1],  lookahead=barmerge.lookahead_off)
+eq  = (pdh + pdl) / 2
+
+// ─── DÉTECTION SI TOUCHÉ (devient pointillé) ───────────────────────
+pdhTouched = high >= pdh
+pdlTouched = low  <= pdl
+pwhTouched = high >= pwh
+pwlTouched = low  <= pwl
+
+// ─── HELPER : tracer une ligne + label ─────────────────────────────
+drawZone(price, col, txt, touched, show) =>
+    if show and not na(price)
+        styleLine = touched ? line.style_dotted : line.style_solid
+        line.new(bar_index - 30, price, bar_index + labelOffset, price,
+             color=col, width=1, style=styleLine)
+        if showLabels
+            label.new(bar_index + labelOffset, price, txt + " " + str.tostring(price, format.mintick),
+                 style=label.style_none, textcolor=col, size=size.tiny)
+
+// ─── DESSIN À CHAQUE BARRE (efface l'ancien d'abord) ───────────────
+var line lPDH = na, var line lPDL = na, var line lEQ = na
+var line lPWH = na, var line lPWL = na
+var label lblPDH = na, var label lblPDL = na, var label lblEQ = na
+var label lblPWH = na, var label lblPWL = na
+
+if barstate.islast
+    // Nettoyage des anciens
+    line.delete(lPDH), line.delete(lPDL), line.delete(lEQ), line.delete(lPWH), line.delete(lPWL)
+    label.delete(lblPDH), label.delete(lblPDL), label.delete(lblEQ), label.delete(lblPWH), label.delete(lblPWL)
+
+    // PDH
+    if showPDH
+        lPDH := line.new(bar_index - 30, pdh, bar_index + labelOffset, pdh, color=dailyColor, width=1, style=pdhTouched ? line.style_dotted : line.style_solid)
+        if showLabels
+            lblPDH := label.new(bar_index + labelOffset, pdh, "PDH", style=label.style_none, textcolor=dailyColor, size=size.tiny)
+    // PDL
+    if showPDL
+        lPDL := line.new(bar_index - 30, pdl, bar_index + labelOffset, pdl, color=dailyColor, width=1, style=pdlTouched ? line.style_dotted : line.style_solid)
+        if showLabels
+            lblPDL := label.new(bar_index + labelOffset, pdl, "PDL", style=label.style_none, textcolor=dailyColor, size=size.tiny)
+    // EQ
+    if showEQ
+        lEQ := line.new(bar_index - 30, eq, bar_index + labelOffset, eq, color=eqColor, width=1, style=line.style_dashed)
+        if showLabels
+            lblEQ := label.new(bar_index + labelOffset, eq, "EQ", style=label.style_none, textcolor=eqColor, size=size.tiny)
+    // PWH
+    if showPWH
+        lPWH := line.new(bar_index - 30, pwh, bar_index + labelOffset, pwh, color=weeklyColor, width=2, style=pwhTouched ? line.style_dotted : line.style_solid)
+        if showLabels
+            lblPWH := label.new(bar_index + labelOffset, pwh, "PWH", style=label.style_none, textcolor=weeklyColor, size=size.tiny)
+    // PWL
+    if showPWL
+        lPWL := line.new(bar_index - 30, pwl, bar_index + labelOffset, pwl, color=weeklyColor, width=2, style=pwlTouched ? line.style_dotted : line.style_solid)
+        if showLabels
+            lblPWL := label.new(bar_index + labelOffset, pwl, "PWL", style=label.style_none, textcolor=weeklyColor, size=size.tiny)
+
+// ─── ALERTES ───────────────────────────────────────────────────────
+alertcondition(high >= pdh and high[1] < pdh, title="Nodex zone PDH atteinte", message="Prix touche PDH sur {{ticker}}.")
+alertcondition(low  <= pdl and low[1]  > pdl, title="Nodex zone PDL atteinte", message="Prix touche PDL sur {{ticker}}.")
+alertcondition(high >= pwh and high[1] < pwh, title="Nodex zone PWH atteinte", message="Prix touche PWH (zone forte) sur {{ticker}}.")
+alertcondition(low  <= pwl and low[1]  > pwl, title="Nodex zone PWL atteinte", message="Prix touche PWL (zone forte) sur {{ticker}}.")

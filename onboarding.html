@@ -202,14 +202,16 @@ Nodex, tu es là ?
   {
     id: 'tradingview',
     title: 'Configure TradingView (4 indicateurs)',
-    meta: '8 minutes',
-    desc: 'Dans le pack Pine, tu as 4 fichiers .pine. Pour chacun : ouvre TradingView, clique sur Pine Editor en bas, copie-colle le contenu, "Add to chart". Répète 4 fois.',
+    meta: '10 minutes',
+    desc: 'Dans le pack Pine, tu as 6 fichiers .pine en version 6. Pour chacun : ouvre TradingView, clique sur Pine Editor en bas, copie-colle le contenu, "Add to chart". Répète 6 fois.',
     body: `
       <ul style="color: var(--muted); padding-left: 20px; line-height: 1.9; font-size: 14px;">
-        <li><strong>nodex-sweep-detector.pine</strong> — Détection automatique des Sweeps PDH/PWH</li>
-        <li><strong>nodex-fvg-auto.pine</strong> — Trace tous les FVG vierges</li>
-        <li><strong>nodex-volume-filter.pine</strong> — Tableau qualité du setup</li>
-        <li><strong>nodex-htf-bias.pine</strong> — Verdict LONG OK / SHORT OK / NO TRADE</li>
+        <li><strong>nodex-sweep-detector.pine</strong> — Ligne PDH + label "SWEEP" quand détecté</li>
+        <li><strong>nodex-fvg-auto.pine</strong> — Rectangle vert "FVG" sur chaque Fair Value Gap</li>
+        <li><strong>nodex-htf-bias.pine</strong> — Panneau "HTF: HAUSSIER" ou "BAISSIER"</li>
+        <li><strong>nodex-volume-spike.pine</strong> — Petit point orange si volume anormal</li>
+        <li><strong>nodex-liquidity-zones.pine</strong> — 5 lignes (PDH, PDL, PWH, PWL, EQ)</li>
+        <li><strong>nodex-confirmation.pine</strong> — Petit point vert quand sweep + bougie 2 OK</li>
       </ul>
       <div class="step-desc" style="margin-top: 16px;">Une fois ajoutés, sauvegarde ton layout dans TradingView : "Layout > Save as > Nodex V5.2". Tu y reviendras à chaque session.</div>
     `

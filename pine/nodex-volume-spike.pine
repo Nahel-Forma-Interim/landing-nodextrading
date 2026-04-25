@@ -1,0 +1,49 @@
+//@version=6
+// ═══════════════════════════════════════════════════════════════════
+// NODEX VOLUME SPIKE · V2 (Pine v6) — ex Volume Filter
+// ═══════════════════════════════════════════════════════════════════
+//
+// À QUOI ÇA SERT :
+// Détecte les bougies avec un VOLUME ANORMAL (= beaucoup plus que
+// d'habitude). C'est souvent le signe qu'un acteur institutionnel
+// vient d'agir. Combiné à un Sweep, ça augmente la probabilité que
+// le setup soit valide.
+//
+// COMMENT ÇA MARCHE (logique simple) :
+//   - Compare le volume de chaque bougie à la moyenne des 20 dernières
+//   - Si volume > 2x moyenne → marqueur orange discret sous la bougie
+//   - C'est tout. Rien d'autre.
+//
+// CE QUE TU VOIS :
+//   - Un petit point orange sous les bougies à volume anormal
+//   - Aucun panneau, aucun tableau, aucun bruit visuel
+//
+// © 2026 Nodex Trading · V5.2 · Licence personnelle
+// ═══════════════════════════════════════════════════════════════════
+
+indicator("Nodex Volume Spike", shorttitle="NDX-VOL", overlay=true)
+
+// ─── INPUTS ────────────────────────────────────────────────────────
+spikeMult   = input.float(2.0, "Seuil spike (x moyenne)",  minval=1.2, maxval=10.0, step=0.1, group="Sensibilité",
+     tooltip="Combien de fois la moyenne 20 bougies pour déclencher. 2.0 = équilibré.")
+avgLength   = input.int(20,   "Période moyenne",           minval=5, maxval=200, group="Sensibilité")
+markerColor = input.color(color.new(#f59e0b, 0), "Couleur marqueur", group="Affichage")
+showLabel   = input.bool(false, "Afficher 'VOL' (sinon juste un point)", group="Affichage")
+
+// ─── CALCUL ────────────────────────────────────────────────────────
+volAvg   = ta.sma(volume, avgLength)
+volRatio = volAvg > 0 ? volume / volAvg : 0.0
+isSpike  = volRatio >= spikeMult
+
+// ─── AFFICHAGE DISCRET ─────────────────────────────────────────────
+plotshape(isSpike, title="Volume Spike", style=shape.circle, location=location.belowbar,
+     color=markerColor, size=size.tiny)
+
+// Label optionnel "VOL Xx" si activé
+if isSpike and showLabel
+    label.new(bar_index, low, "VOL " + str.tostring(volRatio, "#.#") + "x",
+         style=label.style_none, textcolor=markerColor, size=size.tiny)
+
+// ─── ALERTE ────────────────────────────────────────────────────────
+alertcondition(isSpike, title="Nodex Volume Spike",
+     message="Volume anormal sur {{ticker}} {{interval}} — possible mouvement institutionnel.")

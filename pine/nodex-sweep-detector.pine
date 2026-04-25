@@ -1,83 +1,60 @@
-//@version=5
+//@version=6
 // ═══════════════════════════════════════════════════════════════════
-// NODEX SWEEP DETECTOR — V1.0
+// NODEX SWEEP DETECTOR · V2 (Pine v6)
 // ═══════════════════════════════════════════════════════════════════
-// Détecte automatiquement les Sweeps de liquidité au-dessus du PDH
-// (Previous Day High) ou PWH (Previous Week High) sur n'importe
-// quel timeframe. Affiche un label "SWEEP" + ligne sur la mèche.
 //
-// Conditions de détection :
-//   - High de la bougie > PDH (ou PWH selon réglage)
-//   - Close de la bougie < PDH (la liquidité est prise puis rejetée)
-//   - Wick supérieur représente au moins X% du range total
-//   - Volume de la bougie > moyenne (filtre de bruit)
+// À QUOI ÇA SERT :
+// Trace une LIGNE BLEUE au niveau du PDH (Previous Day High = plus
+// haut de la veille). Quand la mèche d'une bougie passe AU-DESSUS
+// puis que la bougie CLÔTURE EN-DESSOUS, c'est un SWEEP : le marché
+// est venu prendre la liquidité des shorts puis a rejeté. C'est ton
+// signal d'entrée Nodex.
 //
-// © 2026 Nodex Trading — Strategy V5.2 — Licence personnelle
+// CE QUE TU VOIS :
+//   - Une ligne bleue horizontale = PDH du jour
+//   - Un label "SWEEP" rouge au-dessus de la mèche quand détecté
+//   - Une alerte sonore TradingView possible
+//
+// PARAMÈTRES SIMPLES (pas besoin de toucher) :
+//   - Mèche minimum : 40% du range de la bougie (filtre les faux)
+//
+// © 2026 Nodex Trading · V5.2 · Licence personnelle
 // ═══════════════════════════════════════════════════════════════════
 
-indicator("Nodex Sweep Detector", shorttitle="NDX-SWEEP", overlay=true, max_labels_count=500, max_lines_count=500)
+indicator("Nodex Sweep Detector", shorttitle="NDX-SWEEP", overlay=true, max_labels_count=200, max_lines_count=50)
 
 // ─── INPUTS ────────────────────────────────────────────────────────
-grpRef = "Référence liquidité"
-liqRef = input.string("PDH (Daily)", "Niveau cible", options=["PDH (Daily)", "PWH (Weekly)", "Both"], group=grpRef)
+showLine    = input.bool(true,  "Afficher la ligne PDH",       group="Affichage")
+showLabel   = input.bool(true,  "Afficher le label SWEEP",     group="Affichage")
+lineColor   = input.color(color.new(#6fa8ff, 0), "Couleur PDH", group="Affichage")
+sweepColor  = input.color(color.new(#ef4444, 0), "Couleur SWEEP", group="Affichage")
+minWickPct  = input.float(40.0, "Mèche minimum (% du range)",  minval=10, maxval=90, step=5, group="Sensibilité",
+     tooltip="Plus le % est haut, plus le sweep doit être agressif. 40% = équilibré.")
 
-grpFilter = "Filtres qualité"
-minWickPct = input.float(50.0, "Mèche min. (% du range)", minval=10, maxval=95, step=5, group=grpFilter,
-     tooltip="Pourcentage minimum de la mèche supérieure par rapport au range total de la bougie. Plus élevé = sweeps plus propres.")
-volMultiplier = input.float(1.2, "Volume min. (x moyenne 20)", minval=0.5, maxval=5.0, step=0.1, group=grpFilter)
-useVolumeFilter = input.bool(true, "Filtrer par volume", group=grpFilter)
-
-grpVisu = "Affichage"
-showPdhLine = input.bool(true, "Tracer ligne PDH/PWH", group=grpVisu)
-showSweepLabel = input.bool(true, "Label SWEEP", group=grpVisu)
-showWickHighlight = input.bool(true, "Surligner la mèche", group=grpVisu)
-sweepColor = input.color(color.new(#ef4444, 0), "Couleur Sweep", group=grpVisu)
-pdhColor = input.color(color.new(#6fa8ff, 50), "Couleur PDH/PWH", group=grpVisu)
-
-// ─── CALCULS RÉFÉRENCES ────────────────────────────────────────────
+// ─── RÉCUPÈRE LE PDH (Previous Day High) ───────────────────────────
 pdh = request.security(syminfo.tickerid, "D", high[1], lookahead=barmerge.lookahead_off)
-pwh = request.security(syminfo.tickerid, "W", high[1], lookahead=barmerge.lookahead_off)
 
-usePDH = liqRef == "PDH (Daily)" or liqRef == "Both"
-usePWH = liqRef == "PWH (Weekly)" or liqRef == "Both"
+// ─── DÉTECTION DU SWEEP ────────────────────────────────────────────
+// Sweep = la bougie a dépassé le PDH avec sa mèche, puis est revenue clôturer dessous
+wickAbove   = high - math.max(open, close)         // taille mèche supérieure
+barRange    = high - low
+wickRatio   = barRange > 0 ? (wickAbove / barRange) * 100 : 0.0
+wickIsBig   = wickRatio >= minWickPct
 
-// ─── DÉTECTION SWEEP ───────────────────────────────────────────────
-volAvg = ta.sma(volume, 20)
-volOK = useVolumeFilter ? volume > volAvg * volMultiplier : true
+isSweep = high > pdh and close < pdh and wickIsBig
 
-barRange = high - low
-upperWick = high - math.max(open, close)
-wickPct = barRange > 0 ? (upperWick / barRange) * 100 : 0
-wickOK = wickPct >= minWickPct
-
-sweepPDH = usePDH and high > pdh and close < pdh and wickOK and volOK
-sweepPWH = usePWH and high > pwh and close < pwh and wickOK and volOK
-
-// ─── RENDU ─────────────────────────────────────────────────────────
-// Lignes PDH / PWH (mises à jour à chaque bougie)
+// ─── AFFICHAGE LIGNE PDH (mise à jour à chaque bougie) ─────────────
 var line pdhLine = na
-var line pwhLine = na
-if showPdhLine and usePDH
+if showLine
     line.delete(pdhLine)
-    pdhLine := line.new(bar_index - 30, pdh, bar_index, pdh, color=pdhColor, width=1, style=line.style_dashed)
-if showPdhLine and usePWH
-    line.delete(pwhLine)
-    pwhLine := line.new(bar_index - 30, pwh, bar_index, pwh, color=pdhColor, width=2, style=line.style_dotted)
+    pdhLine := line.new(bar_index - 50, pdh, bar_index + 5, pdh, color=lineColor, width=1, style=line.style_solid)
 
-// Labels Sweep
-if sweepPDH and showSweepLabel
-    label.new(bar_index, high, "SWEEP\nPDH", style=label.style_label_down, color=sweepColor, textcolor=color.white, size=size.small)
-if sweepPWH and showSweepLabel
-    label.new(bar_index, high, "SWEEP\nPWH", style=label.style_label_down, color=color.new(#ef4444, 30), textcolor=color.white, size=size.normal)
+// ─── AFFICHAGE LABEL SWEEP ─────────────────────────────────────────
+if isSweep and showLabel
+    label.new(bar_index, high, "SWEEP", style=label.style_label_down, color=sweepColor, textcolor=color.white, size=size.small)
 
-// Highlight mèche
-if (sweepPDH or sweepPWH) and showWickHighlight
-    line.new(bar_index, high, bar_index, math.max(open, close), color=sweepColor, width=3)
+// ─── ALERTE ────────────────────────────────────────────────────────
+alertcondition(isSweep, title="Nodex Sweep PDH", message="SWEEP détecté sur {{ticker}} {{interval}} — vérifie le FVG après.")
 
-// ─── ALERTES ───────────────────────────────────────────────────────
-alertcondition(sweepPDH, title="Nodex Sweep PDH", message="Sweep PDH détecté sur {{ticker}} en {{interval}} — Vérifie le FVG après sweep.")
-alertcondition(sweepPWH, title="Nodex Sweep PWH", message="Sweep PWH détecté sur {{ticker}} en {{interval}} — Setup HTF, attention au contexte.")
-
-// ─── PLOTSHAPE pour debug rapide ────────────────────────────────────
-plotshape(sweepPDH, title="Sweep PDH", style=shape.triangledown, location=location.abovebar, color=sweepColor, size=size.tiny)
-plotshape(sweepPWH, title="Sweep PWH", style=shape.triangledown, location=location.abovebar, color=color.new(#ef4444, 30), size=size.small)
+// ─── TRIANGLE DISCRET POUR DEBUG ───────────────────────────────────
+plotshape(isSweep, title="Sweep marker", style=shape.triangledown, location=location.abovebar, color=sweepColor, size=size.tiny)

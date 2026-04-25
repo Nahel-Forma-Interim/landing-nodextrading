@@ -1,0 +1,61 @@
+//@version=6
+// ═══════════════════════════════════════════════════════════════════
+// NODEX CONFIRMATION · V1 (Pine v6)
+// ═══════════════════════════════════════════════════════════════════
+//
+// À QUOI ÇA SERT :
+// Détecte le SIGNAL D'ENTRÉE complet Nodex V5.2 :
+//   1. Une bougie SWEEP (mèche au-dessus du PDH, clôture en-dessous)
+//   2. Suivie d'une BOUGIE 2 de confirmation (clôture haussière)
+//
+// Quand les 2 conditions sont réunies, un PETIT POINT VERT discret
+// apparaît sous la bougie 2. C'est ton signal d'entrée.
+//
+// CE QUE TU VOIS :
+//   - Un petit point vert sous la bougie 2 (rien de plus)
+//   - Aucun "BUY" en gros, aucun bruit visuel
+//
+// COMMENT L'UTILISER :
+//   - Quand tu vois le point vert, vérifie ta checklist 18 points
+//   - Vérifie l'HTF Bias (doit être HAUSSIER)
+//   - Vérifie qu'il y a un FVG actif où entrer
+//   - Si tout est ok → entrée, SL sous la mèche du sweep
+//
+// © 2026 Nodex Trading · V5.2 · Licence personnelle
+// ═══════════════════════════════════════════════════════════════════
+
+indicator("Nodex Confirmation", shorttitle="NDX-CONF", overlay=true, max_labels_count=200)
+
+// ─── INPUTS ────────────────────────────────────────────────────────
+minWickPct  = input.float(40.0, "Mèche min sweep (% range)", minval=10, maxval=90, step=5, group="Détection",
+     tooltip="Doit correspondre au paramètre du Sweep Detector.")
+markerColor = input.color(color.new(#4ade80, 0), "Couleur signal", group="Affichage")
+showSmallTxt = input.bool(false, "Mini texte 'OK' sous le point", group="Affichage")
+
+// ─── RÉCUPÈRE LE PDH ───────────────────────────────────────────────
+pdh = request.security(syminfo.tickerid, "D", high[1], lookahead=barmerge.lookahead_off)
+
+// ─── DÉTECTION SWEEP SUR LA BOUGIE PRÉCÉDENTE ──────────────────────
+wickAbovePrev = high[1] - math.max(open[1], close[1])
+rangePrev     = high[1] - low[1]
+wickRatioPrev = rangePrev > 0 ? (wickAbovePrev / rangePrev) * 100 : 0.0
+isSweepPrev   = high[1] > pdh and close[1] < pdh and wickRatioPrev >= minWickPct
+
+// ─── DÉTECTION BOUGIE 2 DE CONFIRMATION ────────────────────────────
+// La bougie courante doit clôturer HAUSSIÈRE (close > open)
+// et NE PAS faire de plus bas que la mèche du sweep
+isConfirmCandle = close > open and low >= low[1] - (rangePrev * 0.3)
+
+// ─── SIGNAL COMPLET ────────────────────────────────────────────────
+signal = isSweepPrev and isConfirmCandle
+
+// ─── AFFICHAGE TRÈS DISCRET ────────────────────────────────────────
+plotshape(signal, title="Signal entrée Nodex", style=shape.circle, location=location.belowbar,
+     color=markerColor, size=size.tiny)
+
+if signal and showSmallTxt
+    label.new(bar_index, low, "OK", style=label.style_none, textcolor=markerColor, size=size.tiny, yloc=yloc.belowbar)
+
+// ─── ALERTE ────────────────────────────────────────────────────────
+alertcondition(signal, title="Nodex Signal Entrée",
+     message="Signal d'entrée Nodex V5.2 sur {{ticker}} {{interval}} — vérifie HTF + FVG + checklist.")
