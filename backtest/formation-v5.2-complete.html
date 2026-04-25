@@ -3,367 +3,340 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#030818">
-<title>Nodex V5.2 — Formation Intégrale · Backtest 30 jours</title>
+<meta name="theme-color" content="#000000">
+<title>Nodex V5.2 — Formation Intégrale</title>
+<link rel="icon" href="../logo-nodex.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700;800;900&family=Geist+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root {
-  --background: #031021;
-  --background-darker: #020a15;
-  --foreground: #ffffff;
-  --primary: #ffffff;
-  --surface: rgba(10, 24, 48, 0.7);
-  --surface-solid: #0a1a33;
-  --surface-light: rgba(14, 28, 58, 0.6);
-  --surface-lighter: rgba(22, 40, 78, 0.5);
-  --border: rgba(255, 255, 255, 0.1);
-  --border-strong: rgba(255, 255, 255, 0.25);
-  --accent-green: #4ade80;
-  --accent-red: #f87171;
-  --accent-yellow: #fbbf24;
-  --accent-blue: #2962ff;
-  --text-muted: rgba(255, 255, 255, 0.55);
-  --text-subtle: rgba(255, 255, 255, 0.35);
-  --glass-bg: rgba(3, 16, 33, 0.75);
-  --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
-  --neon-white: 0 0 14px rgba(255, 255, 255, 0.3);
-  --neon-green: 0 0 10px rgba(74, 222, 128, 0.35);
-  --neon-red: 0 0 10px rgba(248, 113, 113, 0.35);
-  --font-sans: 'Geist', -apple-system, BlinkMacSystemFont, 'SF Pro Display', Arial, sans-serif;
-  --font-mono: 'Geist Mono', 'SF Mono', Monaco, 'Cascadia Code', monospace;
+  --bg: #000000;
+  --bg-2: #030308;
+  --bg-3: #060612;
+  --fg: #ffffff;
+  --muted: rgba(255,255,255,0.55);
+  --subtle: rgba(255,255,255,0.3);
+  --line: rgba(255,255,255,0.08);
+  --line-strong: rgba(255,255,255,0.2);
+  --accent: #6fa8ff;
+  --green: #4ade80;
+  --red: #f87171;
+  --yellow: #fbbf24;
+  --font-sans: 'Geist', -apple-system, BlinkMacSystemFont, Arial, sans-serif;
+  --font-mono: 'Geist Mono', monospace;
 }
-* { box-sizing: border-box; margin: 0; padding: 0; scroll-behavior: smooth; }
-html { font-size: 16px; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
 body {
   font-family: var(--font-sans);
-  background: var(--background);
-  color: var(--foreground);
+  background: var(--bg);
+  color: var(--fg);
   min-height: 100vh;
+  overflow-x: hidden;
   line-height: 1.65;
-  background-image:
-    radial-gradient(at 15% 10%, rgba(22, 40, 78, 0.6) 0px, transparent 55%),
-    radial-gradient(at 85% 85%, rgba(14, 28, 58, 0.5) 0px, transparent 55%);
-  background-attachment: fixed;
-  padding-bottom: 100px;
+  padding-bottom: 80px;
 }
 
-/* NAVIGATION STICKY */
-nav.topnav {
+/* ══════ BG LAYERS ══════ */
+.bg-layer { position: fixed; top:0; left:0; right:0; bottom:0; pointer-events:none; z-index:0; }
+.stars {
+  background-image:
+    radial-gradient(1px 1px at 20% 30%, white, transparent),
+    radial-gradient(1px 1px at 60% 70%, rgba(255,255,255,0.8), transparent),
+    radial-gradient(1px 1px at 50% 50%, rgba(255,255,255,0.6), transparent),
+    radial-gradient(1px 1px at 80% 10%, white, transparent),
+    radial-gradient(1px 1px at 90% 40%, rgba(255,255,255,0.5), transparent),
+    radial-gradient(1px 1px at 33% 65%, rgba(255,255,255,0.7), transparent),
+    radial-gradient(1px 1px at 15% 80%, white, transparent),
+    radial-gradient(1px 1px at 70% 85%, rgba(255,255,255,0.4), transparent),
+    radial-gradient(1px 1px at 40% 20%, rgba(255,255,255,0.6), transparent),
+    radial-gradient(1px 1px at 5% 50%, rgba(255,255,255,0.7), transparent);
+  background-size: 250% 250%;
+  animation: starfall 80s linear infinite;
+  opacity: 0.4;
+}
+@keyframes starfall { 0% { background-position: 0% 0%; } 100% { background-position: 100% 100%; } }
+.glows {
+  background:
+    radial-gradient(ellipse 600px 400px at 15% 85%, rgba(111,168,255,0.10) 0%, transparent 60%),
+    radial-gradient(ellipse 700px 500px at 85% 15%, rgba(180,200,255,0.07) 0%, transparent 60%);
+}
+.beams { overflow: hidden; }
+.beam {
+  position: absolute; top: -20%; width: 1px; height: 140%;
+  background: linear-gradient(180deg, transparent, rgba(255,255,255,0.4) 30%, rgba(255,255,255,0.9) 50%, rgba(255,255,255,0.4) 70%, transparent);
+  filter: blur(0.5px);
+  animation: beamMove 12s ease-in-out infinite;
+  opacity: 0.2;
+}
+.beam:nth-child(1) { left: 20%; }
+.beam:nth-child(2) { left: 45%; animation-delay: -4s; animation-duration: 18s; }
+.beam:nth-child(3) { left: 72%; animation-delay: -8s; animation-duration: 15s; }
+.beam:nth-child(4) { left: 10%; animation-delay: -2s; animation-duration: 20s; }
+.beam:nth-child(5) { left: 88%; animation-delay: -6s; animation-duration: 14s; }
+@keyframes beamMove {
+  0%, 100% { opacity: 0.05; transform: translateY(0) scaleY(1); }
+  50% { opacity: 0.35; transform: translateY(-20px) scaleY(1.1); }
+}
+.flare { position: absolute; border-radius: 50%; filter: blur(60px); opacity: 0.35; animation: flareFloat 22s ease-in-out infinite; }
+.flare-1 { top: -150px; right: -150px; width: 500px; height: 500px; background: radial-gradient(circle, rgba(111,168,255,0.4), transparent 70%); }
+.flare-2 { bottom: -200px; left: -200px; width: 600px; height: 600px; background: radial-gradient(circle, rgba(180,200,255,0.3), transparent 70%); animation-delay: -10s; }
+.flare-3 { top: 40%; left: 40%; width: 300px; height: 300px; background: radial-gradient(circle, rgba(74,222,128,0.15), transparent 70%); animation-delay: -5s; }
+@keyframes flareFloat {
+  0%, 100% { transform: translate(0,0) scale(1); }
+  33% { transform: translate(40px, -30px) scale(1.1); }
+  66% { transform: translate(-30px, 40px) scale(0.95); }
+}
+.grid-overlay {
+  background-image:
+    linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px);
+  background-size: 60px 60px;
+  opacity: 0.4;
+}
+
+/* ══════ NAV ══════ */
+nav.top {
   position: sticky;
   top: 0;
   z-index: 100;
-  background: rgba(3, 8, 21, 0.85);
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
-  border-bottom: 1px solid var(--border);
-  padding: 14px 0;
-}
-.nav-inner {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 24px;
+  padding: 16px 32px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 16px;
-  flex-wrap: wrap;
+  background: linear-gradient(180deg, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.3) 100%);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border-bottom: 1px solid var(--line);
 }
-.nav-logo {
-  font-size: 17px;
-  font-weight: 800;
-  letter-spacing: -0.5px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
+.logo-wrap { display: flex; align-items: center; gap: 12px; text-decoration: none; color: inherit; }
+.logo-icon {
+  position: relative;
+  width: 40px; height: 40px;
+  border-radius: 22.5%;
+  background: linear-gradient(135deg, rgba(111,168,255,0.22), rgba(180,200,255,0.05));
+  border: 1px solid rgba(255,255,255,0.12);
+  backdrop-filter: blur(14px);
+  display: flex; align-items: center; justify-content: center;
+  overflow: hidden;
+  box-shadow: 0 2px 12px rgba(111,168,255,0.15), inset 0 1px 0 rgba(255,255,255,0.15);
+  transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
 }
-.nav-logo .pill {
-  font-family: var(--font-mono);
-  font-size: 11px;
-  padding: 3px 8px;
-  background: rgba(74, 222, 128, 0.12);
-  color: var(--accent-green);
-  border-radius: 999px;
-  border: 1px solid rgba(74, 222, 128, 0.3);
-  font-weight: 600;
-  letter-spacing: 0.5px;
+.logo-icon::before {
+  content: ''; position: absolute; top:0; left:0; right:0; height: 50%;
+  background: linear-gradient(180deg, rgba(255,255,255,0.12), transparent);
+}
+.logo-wrap:hover .logo-icon { transform: translateY(-1px) scale(1.03); box-shadow: 0 6px 24px rgba(111,168,255,0.3); }
+.logo-img { width: 24px; height: 24px; filter: brightness(0) invert(1); z-index:1; }
+.logo-text {
+  font-size: 16px; font-weight: 800; letter-spacing: 0.5px;
+  background: linear-gradient(135deg, #ffffff, #c8d8ff);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
 }
 .nav-links {
   display: flex;
-  gap: 18px;
+  gap: 24px;
   font-size: 13px;
-  flex-wrap: wrap;
+  overflow-x: auto;
+  max-width: 60vw;
 }
+.nav-links::-webkit-scrollbar { display: none; }
 .nav-links a {
-  color: var(--text-muted);
+  color: var(--muted);
   text-decoration: none;
-  transition: color 0.2s;
   font-weight: 500;
+  white-space: nowrap;
+  transition: color 0.2s;
 }
-.nav-links a:hover { color: var(--foreground); }
+.nav-links a:hover { color: white; }
 
-/* CONTAINER */
+/* ══════ CONTAINER ══════ */
 .container {
+  position: relative;
+  z-index: 10;
   max-width: 1100px;
   margin: 0 auto;
   padding: 40px 24px;
 }
 
-/* HERO */
-.hero {
-  text-align: center;
-  padding: 70px 0 50px;
-}
-.hero-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 6px 14px;
-  background: rgba(74, 222, 128, 0.1);
-  border: 1px solid rgba(74, 222, 128, 0.3);
-  color: var(--accent-green);
+/* ══════ HERO ══════ */
+.hero { text-align: center; padding: 70px 0 40px; }
+.hero-kicker {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 6px 16px;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid var(--line);
   border-radius: 999px;
-  font-size: 12px;
-  font-weight: 600;
-  letter-spacing: 1.2px;
+  font-size: 11px;
   font-family: var(--font-mono);
-  margin-bottom: 24px;
+  color: var(--muted);
+  letter-spacing: 1.5px;
   text-transform: uppercase;
+  margin-bottom: 26px;
 }
-.hero-badge::before {
-  content: '●';
-  font-size: 10px;
-  animation: pulse 2s ease-in-out infinite;
-}
-@keyframes pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.4; }
-}
+.hero-kicker::before { content: '●'; color: var(--green); animation: pulse 2s infinite; }
+@keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:0.3;} }
 .hero h1 {
-  font-size: clamp(48px, 7vw, 84px);
-  font-weight: 900;
-  letter-spacing: -3px;
-  line-height: 1;
-  margin-bottom: 20px;
+  font-size: clamp(40px, 6vw, 78px);
+  font-weight: 400;
+  letter-spacing: -2.5px;
+  line-height: 1.05;
+  margin-bottom: 22px;
 }
-.hero h1 .gradient {
-  background: linear-gradient(135deg, #ffffff 0%, #4ade80 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+.hero h1 em {
+  font-style: normal;
+  background: linear-gradient(135deg, #ffffff 0%, #6fa8ff 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
 }
-.hero-sub {
-  font-size: 20px;
-  color: var(--text-muted);
-  max-width: 720px;
-  margin: 0 auto 36px;
-  line-height: 1.5;
+.hero p {
+  font-size: 18px; color: var(--muted);
+  max-width: 680px; margin: 0 auto 36px;
 }
 .hero-stats {
-  display: flex;
-  justify-content: center;
-  gap: 14px;
-  flex-wrap: wrap;
-  margin-top: 40px;
+  display: flex; justify-content: center;
+  gap: 14px; flex-wrap: wrap;
 }
 .hero-stat {
-  padding: 14px 22px;
-  background: var(--glass-bg);
-  backdrop-filter: blur(20px);
-  border: 1px solid var(--border);
-  border-radius: 14px;
-  text-align: left;
-  min-width: 160px;
+  padding: 12px 18px;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  min-width: 140px;
+  display: flex; flex-direction: column; gap: 4px;
 }
-.hero-stat .k {
-  font-family: var(--font-mono);
-  font-size: 11px;
-  color: var(--text-muted);
-  text-transform: uppercase;
-  letter-spacing: 1.2px;
-  margin-bottom: 4px;
-}
-.hero-stat .v {
-  font-size: 22px;
-  font-weight: 700;
-  color: var(--foreground);
-  font-family: var(--font-mono);
-  letter-spacing: -0.5px;
-}
+.hero-stat .v { font-size: 18px; font-weight: 800; font-family: var(--font-mono); letter-spacing: -0.5px; }
+.hero-stat .k { font-size: 10px; color: var(--muted); text-transform: uppercase; font-family: var(--font-mono); letter-spacing: 1.2px; }
 
-/* SECTIONS */
+/* ══════ SECTIONS ══════ */
 section {
   padding: 70px 0;
   scroll-margin-top: 80px;
 }
-.section-label {
+.section-kicker {
   font-family: var(--font-mono);
   font-size: 12px;
-  color: var(--accent-green);
+  color: var(--accent);
   letter-spacing: 2.5px;
   text-transform: uppercase;
   margin-bottom: 14px;
   font-weight: 600;
 }
 .section-title {
-  font-size: clamp(32px, 5vw, 48px);
-  font-weight: 800;
-  letter-spacing: -1.5px;
-  line-height: 1.15;
+  font-size: clamp(28px, 5vw, 52px);
+  font-weight: 400;
+  letter-spacing: -1.8px;
+  line-height: 1.1;
   margin-bottom: 18px;
 }
+.section-title em {
+  font-style: normal;
+  background: linear-gradient(135deg, #ffffff 0%, #6fa8ff 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
 .section-desc {
-  font-size: 18px;
-  color: var(--text-muted);
-  max-width: 780px;
-  margin-bottom: 40px;
-  line-height: 1.55;
+  font-size: 17px; color: var(--muted);
+  max-width: 760px; margin-bottom: 40px;
+  line-height: 1.6;
 }
 
-/* GLASS COMPONENTS */
-.glass {
-  background: var(--glass-bg);
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
-  border: 1px solid var(--border);
+/* ══════ CARDS / GRID ══════ */
+.card {
+  background: linear-gradient(180deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.01) 100%);
+  border: 1px solid var(--line);
   border-radius: 20px;
-  box-shadow: 0 4px 24px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.05);
-  transition: all 0.3s ease;
-}
-.glass:hover {
-  border-color: var(--border-strong);
-  box-shadow: 0 4px 32px rgba(255,255,255,0.08), inset 0 1px 0 rgba(255,255,255,0.1);
-}
-.glass-card {
-  padding: 28px;
-}
-
-/* 4 BRIQUES */
-.briques-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: 18px;
-  margin-top: 32px;
-}
-.brique {
-  padding: 28px 24px;
+  padding: 30px;
   position: relative;
+  overflow: hidden;
+  transition: all 0.4s ease;
 }
-.brique-num {
-  display: inline-block;
-  font-family: var(--font-mono);
-  font-size: 56px;
-  font-weight: 800;
-  color: rgba(255,255,255,0.08);
-  line-height: 1;
-  margin-bottom: 10px;
+.card::before {
+  content: ''; position: absolute; top:0; left:0; right:0; height:1px;
+  background: linear-gradient(90deg, transparent, rgba(111,168,255,0.4), transparent);
+  opacity: 0; transition: opacity 0.4s;
 }
-.brique-title {
-  font-size: 22px;
-  font-weight: 700;
-  margin-bottom: 10px;
-  letter-spacing: -0.5px;
-}
-.brique-desc {
-  font-size: 14px;
-  color: var(--text-muted);
-  line-height: 1.5;
-}
+.card:hover::before { opacity: 1; }
+.card:hover { transform: translateY(-4px); border-color: var(--line-strong); }
 
-/* WHY IT WORKS */
-.why-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 20px;
-  margin-top: 32px;
-}
+.grid-4 { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 18px; }
+.grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
+.grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 20px; }
+
+/* WHY CARDS */
 .why-card {
   padding: 28px;
-  border-left: 4px solid var(--accent-green);
+  border-left: 3px solid var(--green);
   border-radius: 0 16px 16px 0;
-  background: rgba(74, 222, 128, 0.03);
+  background: rgba(74,222,128,0.04);
 }
-.why-card.red {
-  border-left-color: var(--accent-red);
-  background: rgba(248, 113, 113, 0.03);
+.why-card.red { border-left-color: var(--red); background: rgba(248,113,113,0.04); }
+.why-card.yellow { border-left-color: var(--yellow); background: rgba(251,191,36,0.04); }
+.why-card.blue { border-left-color: var(--accent); background: rgba(111,168,255,0.04); }
+.why-card h3 { font-size: 19px; font-weight: 600; margin-bottom: 10px; }
+.why-card p { font-size: 14px; color: var(--muted); line-height: 1.6; }
+.why-card strong { color: white; }
+
+/* BRIQUES */
+.brique-num {
+  font-family: var(--font-mono);
+  font-size: 52px; font-weight: 800;
+  color: rgba(255,255,255,0.08);
+  line-height: 1; margin-bottom: 10px;
 }
-.why-card.yellow {
-  border-left-color: var(--accent-yellow);
-  background: rgba(251, 191, 36, 0.03);
+.brique h3 {
+  font-size: 22px; font-weight: 600;
+  letter-spacing: -0.3px; margin-bottom: 10px;
 }
-.why-card.blue {
-  border-left-color: var(--accent-blue);
-  background: rgba(41, 98, 255, 0.03);
-}
-.why-card h3 {
-  font-size: 19px;
-  margin-bottom: 10px;
-  font-weight: 700;
-}
-.why-card p {
-  font-size: 14px;
-  color: var(--text-muted);
-  line-height: 1.55;
-}
+.brique p { font-size: 14px; color: var(--muted); line-height: 1.6; }
 
 /* STEPS */
-.steps-list {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  margin-top: 32px;
-}
 .step {
   padding: 30px;
   display: grid;
-  grid-template-columns: 80px 1fr;
+  grid-template-columns: 64px 1fr;
   gap: 22px;
   align-items: start;
+  margin-bottom: 14px;
 }
 .step-num {
   font-family: var(--font-mono);
-  font-size: 52px;
-  font-weight: 800;
+  font-size: 48px; font-weight: 800;
   color: rgba(255,255,255,0.1);
-  line-height: 0.9;
-  letter-spacing: -2px;
+  line-height: 0.9; letter-spacing: -2px;
 }
-.step-body h3 {
-  font-size: 24px;
-  font-weight: 700;
-  margin-bottom: 10px;
-  letter-spacing: -0.5px;
-}
-.step-body p {
-  font-size: 15px;
-  color: var(--text-muted);
-  line-height: 1.6;
-  margin-bottom: 14px;
-}
+.step-body h3 { font-size: 22px; font-weight: 600; margin-bottom: 10px; letter-spacing: -0.3px; }
+.step-body p { font-size: 14px; color: var(--muted); line-height: 1.6; margin-bottom: 12px; }
+.step-body p:last-child { margin-bottom: 0; }
+.step-body strong { color: white; }
 .step-check {
-  background: rgba(74,222,128,0.05);
-  border-left: 3px solid var(--accent-green);
+  background: rgba(74,222,128,0.06);
+  border-left: 3px solid var(--green);
   padding: 12px 16px;
   border-radius: 0 8px 8px 0;
-  font-size: 14px;
-  color: var(--foreground);
+  font-size: 13px;
   margin-top: 12px;
 }
-.step-check strong { color: var(--accent-green); }
+.step-check strong { color: var(--green); }
 
-/* CHART CONTAINER */
-.chart-panel {
-  padding: 22px;
-  margin-top: 30px;
+/* TRAILING */
+.trailing-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin-top: 24px;
 }
-.chart-svg {
-  width: 100%;
-  height: 400px;
-  background: #131722;
-  border-radius: 10px;
-  border: 1px solid rgba(255,255,255,0.05);
+.trailing-card {
+  padding: 22px 18px;
+  text-align: center;
+  border-radius: 16px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.01) 100%);
+  border: 1px solid var(--line);
 }
+.trailing-card.last { background: rgba(74,222,128,0.1); border-color: var(--green); box-shadow: 0 0 20px rgba(74,222,128,0.15); }
+.trailing-step { font-family: var(--font-mono); font-size: 10px; color: var(--muted); letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 8px; }
+.trailing-price { font-size: 24px; font-weight: 800; font-family: var(--font-mono); letter-spacing: -1px; margin-bottom: 8px; }
+.trailing-action { font-size: 12px; color: var(--muted); line-height: 1.4; }
+.trailing-action strong { color: white; }
 
 /* TABLE */
 .data-table {
@@ -372,89 +345,62 @@ section {
   border-spacing: 0;
   margin-top: 18px;
   font-size: 14px;
+  background: rgba(255,255,255,0.02);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  overflow: hidden;
 }
 .data-table th, .data-table td {
-  padding: 14px 16px;
+  padding: 14px 18px;
   text-align: left;
-  border-bottom: 1px solid rgba(255,255,255,0.06);
+  border-bottom: 1px solid var(--line);
 }
 .data-table th {
-  background: rgba(255,255,255,0.04);
-  color: var(--text-muted);
+  background: rgba(111,168,255,0.04);
+  color: var(--muted);
   font-weight: 500;
   font-size: 11px;
   text-transform: uppercase;
   letter-spacing: 1.2px;
   font-family: var(--font-mono);
 }
+.data-table tr:last-child td { border-bottom: none; }
 .data-table tr:hover td { background: rgba(255,255,255,0.02); }
-.val-green { color: var(--accent-green); font-weight: 600; }
-.val-red { color: var(--accent-red); font-weight: 600; }
-.val-yellow { color: var(--accent-yellow); font-weight: 600; }
+.val-green { color: var(--green); font-weight: 600; }
+.val-red { color: var(--red); font-weight: 600; }
+.val-yellow { color: var(--yellow); font-weight: 600; }
 .val-mono { font-family: var(--font-mono); }
 
-/* CHECKLIST */
-.checklist {
-  padding: 28px;
-  margin-top: 26px;
-}
-.checklist-item {
-  display: flex;
-  align-items: flex-start;
-  gap: 12px;
-  padding: 12px 0;
-  border-bottom: 1px solid rgba(255,255,255,0.04);
-  cursor: pointer;
-  transition: all 0.2s;
-}
-.checklist-item:last-child { border-bottom: none; }
-.checklist-item:hover { background: rgba(255,255,255,0.02); padding-left: 8px; border-radius: 6px; }
-.checklist-item input[type=checkbox] {
-  appearance: none;
-  width: 20px;
-  height: 20px;
-  border: 2px solid rgba(255,255,255,0.3);
-  border-radius: 6px;
-  background: transparent;
-  cursor: pointer;
-  flex-shrink: 0;
-  margin-top: 2px;
-  position: relative;
-  transition: all 0.2s;
-}
-.checklist-item input[type=checkbox]:checked {
-  background: var(--accent-green);
-  border-color: var(--accent-green);
-  box-shadow: var(--neon-green);
-}
-.checklist-item input[type=checkbox]:checked::after {
-  content: '✓';
-  position: absolute;
-  left: 4px;
-  top: -2px;
-  color: var(--background);
-  font-size: 14px;
-  font-weight: 900;
-}
-.checklist-item input[type=checkbox]:checked + .check-label .main {
-  text-decoration: line-through;
-  color: var(--text-muted);
-}
-.check-label .main {
+/* CALLOUTS */
+.callout {
+  padding: 20px 24px;
+  border-radius: 14px;
+  margin: 22px 0;
   font-size: 15px;
-  font-weight: 500;
-  line-height: 1.4;
-  color: var(--foreground);
+  line-height: 1.6;
+  border: 1px solid;
 }
-.check-label .sub {
-  display: block;
-  font-size: 12px;
-  color: var(--text-muted);
-  margin-top: 2px;
-  line-height: 1.4;
+.callout.warning { background: rgba(251,191,36,0.06); border-color: rgba(251,191,36,0.3); }
+.callout.success { background: rgba(74,222,128,0.06); border-color: rgba(74,222,128,0.3); }
+.callout.danger { background: rgba(248,113,113,0.06); border-color: rgba(248,113,113,0.3); }
+.callout.info { background: rgba(111,168,255,0.06); border-color: rgba(111,168,255,0.3); }
+.callout-title {
+  font-weight: 700; font-size: 12px;
+  letter-spacing: 1.2px; text-transform: uppercase;
+  margin-bottom: 8px;
+  font-family: var(--font-mono);
 }
-.progress-container {
-  padding: 22px;
+.callout.warning .callout-title { color: var(--yellow); }
+.callout.success .callout-title { color: var(--green); }
+.callout.danger .callout-title { color: var(--red); }
+.callout.info .callout-title { color: var(--accent); }
+.callout strong { color: white; }
+.callout em { color: white; font-style: italic; }
+.callout code { background: rgba(111,168,255,0.1); color: var(--accent); padding: 2px 6px; border-radius: 4px; font-family: var(--font-mono); font-size: 12px; }
+
+/* CHECKLIST */
+.checklist-progress {
+  padding: 28px;
   text-align: center;
   margin-bottom: 20px;
 }
@@ -468,1154 +414,696 @@ section {
 }
 .progress-fill {
   height: 100%;
-  background: linear-gradient(90deg, var(--accent-green), white);
+  background: linear-gradient(90deg, var(--green), var(--accent));
   border-radius: 999px;
   transition: width 0.5s ease;
-  box-shadow: var(--neon-green);
+  box-shadow: 0 0 14px rgba(74,222,128,0.4);
 }
-.progress-label { font-family: var(--font-mono); font-size: 14px; color: var(--text-muted); }
-.progress-percent { font-size: 42px; font-weight: 900; margin: 8px 0; letter-spacing: -1px; }
+.progress-percent { font-size: 42px; font-weight: 800; letter-spacing: -1px; margin: 10px 0; }
+.progress-label { font-family: var(--font-mono); font-size: 13px; color: var(--muted); letter-spacing: 1px; }
 
-/* CALLOUT */
-.callout {
-  padding: 20px 24px;
-  border-radius: 14px;
-  margin: 24px 0;
-  font-size: 15px;
-  line-height: 1.6;
-  border: 1px solid;
-}
-.callout strong { font-weight: 700; }
-.callout.warning {
-  background: rgba(251, 191, 36, 0.08);
-  border-color: rgba(251, 191, 36, 0.3);
-}
-.callout.success {
-  background: rgba(74, 222, 128, 0.08);
-  border-color: rgba(74, 222, 128, 0.3);
-}
-.callout.danger {
-  background: rgba(248, 113, 113, 0.08);
-  border-color: rgba(248, 113, 113, 0.3);
-}
-.callout.info {
-  background: rgba(41, 98, 255, 0.08);
-  border-color: rgba(41, 98, 255, 0.3);
-}
-.callout-title {
-  font-weight: 700;
-  font-size: 13px;
-  letter-spacing: 1.2px;
-  text-transform: uppercase;
-  margin-bottom: 8px;
+.checklist-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 18px; }
+.checklist-section h3 {
   font-family: var(--font-mono);
-}
-.callout.warning .callout-title { color: var(--accent-yellow); }
-.callout.success .callout-title { color: var(--accent-green); }
-.callout.danger .callout-title { color: var(--accent-red); }
-.callout.info .callout-title { color: var(--accent-blue); }
-
-/* TRAILING GRID (VISUALISATION) */
-.trailing-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 12px;
-  margin-top: 24px;
-}
-.trailing-card {
-  padding: 20px 16px;
-  text-align: center;
-  border-radius: 14px;
-}
-.trailing-card.t1 { background: rgba(74, 222, 128, 0.06); border: 1px solid rgba(74, 222, 128, 0.25); }
-.trailing-card.t2 { background: rgba(251, 191, 36, 0.06); border: 1px solid rgba(251, 191, 36, 0.25); }
-.trailing-card.t3 { background: rgba(41, 98, 255, 0.06); border: 1px solid rgba(41, 98, 255, 0.25); }
-.trailing-card.t4 { background: rgba(74, 222, 128, 0.15); border: 1px solid var(--accent-green); box-shadow: var(--neon-green); }
-.trailing-step {
-  font-family: var(--font-mono);
-  font-size: 10px;
-  letter-spacing: 1.5px;
-  text-transform: uppercase;
-  color: var(--text-muted);
-  margin-bottom: 8px;
-}
-.trailing-price {
-  font-size: 24px;
-  font-weight: 800;
-  font-family: var(--font-mono);
-  letter-spacing: -1px;
-  margin-bottom: 8px;
-}
-.trailing-action {
   font-size: 12px;
-  color: var(--foreground);
-  line-height: 1.3;
+  color: var(--accent);
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  margin-bottom: 14px;
+  font-weight: 600;
 }
+.checklist-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--line);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.checklist-item:last-child { border-bottom: none; }
+.checklist-item:hover { background: rgba(255,255,255,0.02); padding-left: 6px; border-radius: 6px; }
+.checklist-item input[type=checkbox] {
+  appearance: none;
+  width: 20px; height: 20px;
+  border: 1.5px solid rgba(255,255,255,0.25);
+  border-radius: 5px;
+  background: transparent;
+  cursor: pointer;
+  flex-shrink: 0; margin-top: 2px;
+  position: relative;
+  transition: all 0.2s;
+}
+.checklist-item input[type=checkbox]:checked {
+  background: var(--green);
+  border-color: var(--green);
+  box-shadow: 0 0 12px rgba(74,222,128,0.5);
+}
+.checklist-item input[type=checkbox]:checked::after {
+  content: '✓'; position: absolute; left: 4px; top: -2px;
+  color: var(--bg); font-size: 14px; font-weight: 900;
+}
+.checklist-item input[type=checkbox]:checked + .check-label .main {
+  text-decoration: line-through;
+  color: var(--muted);
+}
+.check-label .main { font-size: 14px; font-weight: 500; }
+.check-label .sub { display: block; font-size: 12px; color: var(--muted); margin-top: 2px; }
+
+.btn-reset {
+  padding: 10px 22px;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: var(--fg);
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+  font-family: var(--font-sans);
+  transition: all 0.2s;
+}
+.btn-reset:hover { background: rgba(255,255,255,0.1); border-color: var(--line-strong); }
 
 /* JOURNAL LAYERS */
-.journal-layers {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
-  gap: 16px;
-  margin-top: 30px;
-}
 .journal-layer {
-  padding: 22px;
+  padding: 24px;
   border-radius: 16px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.01) 100%);
+  border: 1px solid var(--line);
 }
+.journal-layer.demon { border-color: rgba(248,113,113,0.3); }
 .journal-num {
   font-family: var(--font-mono);
   font-size: 11px;
-  letter-spacing: 1.5px;
-  color: var(--accent-green);
+  color: var(--accent);
   text-transform: uppercase;
-  font-weight: 600;
+  letter-spacing: 1.5px;
   margin-bottom: 10px;
+  font-weight: 600;
 }
-.journal-title {
-  font-size: 18px;
-  font-weight: 700;
-  margin-bottom: 8px;
+.journal-layer.demon .journal-num { color: var(--red); }
+.journal-layer h3 { font-size: 18px; font-weight: 600; margin-bottom: 8px; }
+.journal-layer p { font-size: 13px; color: var(--muted); line-height: 1.55; }
+.journal-layer strong { color: white; }
+
+/* TLDR BLOCK */
+.tldr {
+  padding: 32px;
+  border-radius: 20px;
+  background: linear-gradient(180deg, rgba(111,168,255,0.04) 0%, rgba(111,168,255,0.01) 100%);
+  border: 1px solid rgba(111,168,255,0.2);
 }
-.journal-desc {
+.tldr pre {
+  font-family: var(--font-mono);
   font-size: 13px;
-  color: var(--text-muted);
-  line-height: 1.5;
+  color: white;
+  line-height: 2;
+  white-space: pre-wrap;
 }
+.tldr strong { color: var(--green); }
+
+/* FINAL */
+.final-cta {
+  text-align: center;
+  padding: 50px 32px;
+  border-radius: 20px;
+  background: linear-gradient(180deg, rgba(74,222,128,0.06) 0%, rgba(111,168,255,0.03) 100%);
+  border: 1px solid rgba(74,222,128,0.3);
+}
+.final-cta h3 {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--green);
+  margin-bottom: 14px;
+  letter-spacing: -0.5px;
+}
+.final-cta p { font-size: 16px; line-height: 1.6; }
+.final-cta p strong { color: white; }
 
 /* FOOTER */
 footer {
-  margin-top: 80px;
-  padding: 40px 0;
+  position: relative;
+  z-index: 10;
+  padding: 60px 24px 30px;
   text-align: center;
-  color: var(--text-muted);
-  font-size: 13px;
-  border-top: 1px solid var(--border);
+  color: var(--subtle);
+  font-size: 12px;
+  font-family: var(--font-mono);
+  letter-spacing: 1px;
+  border-top: 1px solid var(--line);
+  margin-top: 60px;
 }
-footer .logo-text { color: var(--foreground); font-weight: 800; letter-spacing: -0.5px; }
 footer p { margin-bottom: 6px; }
+footer strong { color: white; font-family: var(--font-sans); font-weight: 800; letter-spacing: 0.5px; }
 
-/* UTILITIES */
-.text-center { text-align: center; }
-.mt-small { margin-top: 16px; }
-.mt-medium { margin-top: 28px; }
-.mt-large { margin-top: 40px; }
+/* SCROLL REVEAL */
+.reveal { opacity: 0; transform: translateY(30px); transition: opacity 0.9s ease, transform 0.9s ease; }
+.reveal.visible { opacity: 1; transform: translateY(0); }
 
 /* RESPONSIVE */
 @media (max-width: 1024px) {
   .container { padding: 30px 20px; }
-  .nav-inner { padding: 0 20px; }
-  .briques-grid { grid-template-columns: repeat(2, 1fr); }
-  .why-grid { grid-template-columns: repeat(2, 1fr); }
-  .journal-layers { grid-template-columns: repeat(2, 1fr); }
+  .grid-4, .grid-3 { grid-template-columns: repeat(2, 1fr); }
+  .trailing-grid { grid-template-columns: 1fr 1fr; }
 }
-
 @media (max-width: 768px) {
-  html { font-size: 15px; }
-  .hero { padding: 30px 0 20px; }
-  .hero h1 { font-size: 38px; letter-spacing: -1.5px; }
-  .hero-sub { font-size: 16px; margin-bottom: 24px; }
-  .hero-stats { gap: 8px; flex-direction: column; align-items: stretch; }
-  .hero-stat { min-width: auto; padding: 12px 18px; display: flex; justify-content: space-between; align-items: center; }
+  nav.top { padding: 14px 20px; }
+  .nav-links { gap: 14px; font-size: 11px; }
+  .hero { padding: 40px 0 20px; }
+  .hero h1 { font-size: 36px; letter-spacing: -1.5px; }
+  .hero p { font-size: 15px; }
+  .hero-stats { flex-direction: column; gap: 8px; }
+  .hero-stat { min-width: auto; flex-direction: row; justify-content: space-between; align-items: center; }
   .hero-stat .k { margin-bottom: 0; }
-  .hero-badge { font-size: 10px; padding: 5px 11px; letter-spacing: 1px; }
-  .section-title { font-size: 26px; letter-spacing: -0.8px; }
-  .section-desc { font-size: 15px; margin-bottom: 26px; }
+  .section-title { font-size: 28px; letter-spacing: -1px; }
+  .grid-4, .grid-3, .grid-2 { grid-template-columns: 1fr; }
   .step { grid-template-columns: 1fr; gap: 8px; padding: 22px; }
   .step-num { font-size: 36px; }
-  .step-body h3 { font-size: 20px; }
-  .trailing-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
-  .trailing-card { padding: 16px 12px; }
-  .trailing-price { font-size: 20px; }
-  .container { padding: 20px 16px; }
-  section { padding: 40px 0; scroll-margin-top: 70px; }
-  .nav-inner { flex-direction: column; align-items: flex-start; gap: 10px; }
-  .nav-links { font-size: 11px; gap: 10px; width: 100%; overflow-x: auto; padding-bottom: 6px; white-space: nowrap; }
-  .nav-links::-webkit-scrollbar { height: 2px; }
-  .nav-links::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); }
-  .data-table { font-size: 12px; display: block; overflow-x: auto; white-space: nowrap; }
-  .data-table th, .data-table td { padding: 10px 12px; }
-  .briques-grid { grid-template-columns: 1fr; }
-  .why-grid { grid-template-columns: 1fr; }
-  .journal-layers { grid-template-columns: 1fr; }
-  .glass-card, .chart-panel, .checklist, .progress-container { padding: 20px; }
-  .brique { padding: 22px 18px; }
-  .brique-num { font-size: 44px; }
-  .brique-title { font-size: 19px; }
-  .callout { padding: 16px 18px; font-size: 14px; }
-  .chart-svg { height: 280px; }
-  .hero-stat .v { font-size: 16px; }
-  .hero-stat .k { font-size: 10px; }
-}
-
-@media (max-width: 480px) {
-  .hero h1 { font-size: 32px; }
-  .section-title { font-size: 22px; }
   .trailing-grid { grid-template-columns: 1fr; }
-  .step-body h3 { font-size: 18px; }
-  .step-body p { font-size: 13px; }
-  .chart-svg { height: 220px; }
-  .nav-logo { font-size: 15px; }
-  .nav-logo .pill { font-size: 10px; padding: 2px 6px; }
+  section { padding: 40px 0; }
+  .data-table { font-size: 12px; display: block; overflow-x: auto; }
+  .data-table th, .data-table td { padding: 10px 14px; }
 }
 </style>
 </head>
 <body>
 
-<!-- NAV STICKY -->
-<nav class="topnav">
-  <div class="nav-inner">
-    <div class="nav-logo">
-      Nodex <span class="pill">V5.2</span>
+<!-- BG -->
+<div class="bg-layer stars"></div>
+<div class="bg-layer glows"></div>
+<div class="bg-layer beams">
+  <div class="beam"></div><div class="beam"></div><div class="beam"></div><div class="beam"></div><div class="beam"></div>
+</div>
+<div class="bg-layer grid-overlay"></div>
+<div class="bg-layer">
+  <div class="flare flare-1"></div><div class="flare flare-2"></div><div class="flare flare-3"></div>
+</div>
+
+<!-- NAV -->
+<nav class="top">
+  <a href="#" class="logo-wrap">
+    <div class="logo-icon">
+      <img src="../logo-nodex.png" alt="Nodex" class="logo-img" onerror="this.style.display='none'">
     </div>
-    <div class="nav-links">
-      <a href="#why">Pourquoi ça marche</a>
-      <a href="#briques">4 briques</a>
-      <a href="#setup">Setup 6 étapes</a>
-      <a href="#tp">Gestion TP</a>
-      <a href="#risk">Risk</a>
-      <a href="#checklist">Checklist</a>
-      <a href="#journal">Journal</a>
-      <a href="#plan">Plan 30j</a>
-      <a href="#erreurs">Erreurs</a>
-    </div>
+    <div class="logo-text">NODEX</div>
+  </a>
+  <div class="nav-links">
+    <a href="#why">Pourquoi</a>
+    <a href="#briques">4 briques</a>
+    <a href="#setup">Setup</a>
+    <a href="#tp">Gestion TP</a>
+    <a href="#risk">Risk</a>
+    <a href="#checklist">Checklist</a>
+    <a href="#journal">Journal</a>
+    <a href="#plan">Plan 30j</a>
+    <a href="#erreurs">Erreurs</a>
   </div>
 </nav>
 
 <div class="container">
 
-  <!-- ═══════════════════════════════════════════════════════
-       HERO
-  ═══════════════════════════════════════════════════════ -->
+  <!-- HERO -->
   <section class="hero">
-    <span class="hero-badge">V5.2 Formation Intégrale · Backtest 30 jours</span>
-    <h1>La stratégie <span class="gradient">Nodex V5.2</span><br>expliquée intégralement</h1>
-    <p class="hero-sub">
-      Tout ce que tu dois savoir pour exécuter la stratégie pendant 30 jours en paper trading, comprendre <strong style="color:white;">pourquoi</strong> elle marche, et devenir rentable sur le long terme.
-    </p>
+    <span class="hero-kicker">V5.2 · Formation Intégrale · Backtest 30 jours</span>
+    <h1>La stratégie <em>Nodex V5.2</em><br>expliquée intégralement.</h1>
+    <p>Tout ce qu'il faut savoir pour exécuter la méthode pendant 30 jours, comprendre <strong style="color:white;">pourquoi</strong> elle marche, et devenir rentable sur le long terme.</p>
     <div class="hero-stats">
-      <div class="hero-stat"><div class="k">Timeframe</div><div class="v">M15 NYAM</div></div>
-      <div class="hero-stat"><div class="k">Setup</div><div class="v">Sweep + FVG</div></div>
-      <div class="hero-stat"><div class="k">Risk max</div><div class="v">1,2 % / trade</div></div>
-      <div class="hero-stat"><div class="k">TP plafond</div><div class="v">+3 % / trade</div></div>
-      <div class="hero-stat"><div class="k">Objectif</div><div class="v">30 trades en 30j</div></div>
+      <div class="hero-stat"><span class="k">Timeframe</span><span class="v">M15 NYAM</span></div>
+      <div class="hero-stat"><span class="k">Setup</span><span class="v">Sweep + FVG</span></div>
+      <div class="hero-stat"><span class="k">Risk max</span><span class="v">1,2 %</span></div>
+      <div class="hero-stat"><span class="k">TP plafond</span><span class="v">+3 %</span></div>
+      <div class="hero-stat"><span class="k">Objectif</span><span class="v">30 trades / 30j</span></div>
     </div>
   </section>
 
-  <!-- ═══════════════════════════════════════════════════════
-       SECTION 1 — POURQUOI ÇA MARCHE
-  ═══════════════════════════════════════════════════════ -->
+  <!-- POURQUOI -->
   <section id="why">
-    <div class="section-label">01 · Fondamentaux</div>
-    <h2 class="section-title">Pourquoi la V5.2 marche ?</h2>
-    <p class="section-desc">
-      Avant de savoir <em>comment</em>, il faut comprendre <em>pourquoi</em>. La V5.2 n'est pas un truc magique : c'est l'exploitation d'un comportement <strong style="color:white;">systématique</strong> des grosses institutions sur les marchés crypto.
-    </p>
+    <div class="section-kicker reveal">01 · Fondamentaux</div>
+    <h2 class="section-title reveal">Pourquoi la V5.2 <em>marche.</em></h2>
+    <p class="section-desc reveal">Avant de savoir <em>comment</em>, comprends <em>pourquoi</em>. Ce n'est pas magique — c'est l'exploitation d'un comportement <strong style="color:white;">systématique</strong> des grosses institutions sur les marchés crypto.</p>
 
-    <div class="why-grid">
-      <div class="why-card">
-        <h3>🦈 Les grosses institutions doivent CHASSER la liquidité</h3>
-        <p>Une baleine (Goldman, Binance, hedge fund crypto) qui veut acheter 10M$ d'ARB <strong>ne peut pas cliquer "acheter"</strong>. Elle ferait exploser le prix. Elle a besoin de <strong style="color:white;">beaucoup de vendeurs d'un coup</strong>.</p>
+    <div class="grid-2">
+      <div class="why-card reveal">
+        <h3>🦈 Les institutions CHASSENT la liquidité</h3>
+        <p>Une baleine qui veut acheter 10M$ d'ARB <strong>ne peut pas cliquer "acheter"</strong>. Elle a besoin de <strong>beaucoup de vendeurs d'un coup</strong>.</p>
       </div>
-      <div class="why-card red">
+      <div class="why-card red reveal">
         <h3>💀 Les stops retail sont des proies parfaites</h3>
-        <p>Les petits traders placent tous leur SL aux mêmes endroits évidents : <strong>sous les lows récents</strong>. C'est là que se trouve la <strong style="color:white;">liquidité</strong> dont les baleines ont besoin.</p>
+        <p>Les petits traders placent tous leur SL <strong>sous les lows récents</strong>. C'est là que se trouve la <strong>liquidité</strong> dont les baleines ont besoin.</p>
       </div>
-      <div class="why-card yellow">
+      <div class="why-card yellow reveal">
         <h3>🎯 Le sweep = le piège qui claque</h3>
-        <p>Les institutions poussent le prix <strong>juste sous les lows</strong>, déclenchent tous les stops → récupèrent la vente massive à prix cassé. Puis <strong style="color:white;">elles repartent à la hausse</strong> avec leur stock.</p>
+        <p>Les institutions poussent le prix <strong>juste sous les lows</strong>, déclenchent tous les stops → récupèrent la vente massive. Puis <strong>elles repartent à la hausse</strong>.</p>
       </div>
-      <div class="why-card blue">
+      <div class="why-card blue reveal">
         <h3>🕳️ La FVG = le vide à combler</h3>
-        <p>Après le sweep, les institutions poussent si vite qu'il y a un <strong>vide</strong> dans le chart (FVG). Le marché va <strong style="color:white;">OBLIGATOIREMENT revenir</strong> combler ce vide avant de repartir.</p>
+        <p>Après le sweep, le prix va si vite qu'il laisse un <strong>vide</strong> (FVG). Le marché va <strong>OBLIGATOIREMENT revenir</strong> combler ce vide avant de repartir.</p>
       </div>
     </div>
 
-    <div class="callout info mt-large">
+    <div class="callout info reveal" style="margin-top:30px;">
       <div class="callout-title">💡 La grande vérité</div>
-      Tu ne prédis pas le marché. Tu <strong>reconnais un schéma qui se répète</strong> parce que les institutions sont forcées de le faire pour placer leurs gros ordres. C'est mécanique, pas magique.
+      Tu ne prédis pas le marché. Tu <strong>reconnais un schéma qui se répète</strong> parce que les institutions sont forcées de le faire. C'est mécanique, pas magique.
     </div>
   </section>
 
-  <!-- ═══════════════════════════════════════════════════════
-       SECTION 2 — LES 4 BRIQUES
-  ═══════════════════════════════════════════════════════ -->
+  <!-- BRIQUES -->
   <section id="briques">
-    <div class="section-label">02 · Vocabulaire</div>
-    <h2 class="section-title">Les 4 briques à maîtriser</h2>
-    <p class="section-desc">
-      Le vocabulaire de la V5.2. Maîtrise ces 4 concepts, tu maîtrises 95 % de la stratégie.
-    </p>
+    <div class="section-kicker reveal">02 · Vocabulaire</div>
+    <h2 class="section-title reveal">Les 4 briques <em>à maîtriser.</em></h2>
+    <p class="section-desc reveal">Maîtrise ces 4 concepts, tu maîtrises 95 % de la stratégie.</p>
 
-    <div class="briques-grid">
-      <div class="brique glass">
+    <div class="grid-4">
+      <div class="card brique reveal">
         <div class="brique-num">01</div>
-        <h3 class="brique-title">Tendance / Range</h3>
-        <p class="brique-desc">Le marché est <strong style="color:white;">toujours</strong> dans un des 2 états : tendance (directionnel avec HH+HL) ou range (allers-retours entre 2 bornes). On trade UNIQUEMENT en tendance haussière ou au bas d'un range.</p>
+        <h3>Tendance / Range</h3>
+        <p>Le marché est <strong style="color:white;">toujours</strong> dans un des 2 états. On trade UNIQUEMENT en tendance haussière ou au bas d'un range.</p>
       </div>
-      <div class="brique glass">
+      <div class="card brique reveal">
         <div class="brique-num">02</div>
-        <h3 class="brique-title">Liquidité</h3>
-        <p class="brique-desc">Les <strong style="color:white;">zones où les stops retail sont accumulés</strong>. Sous les lows = SSL. Au-dessus des highs = BSL. Le marché va TOUJOURS chercher ces zones avant un vrai mouvement.</p>
+        <h3>Liquidité</h3>
+        <p>Les <strong style="color:white;">zones où les stops retail sont accumulés</strong>. Sous les lows = SSL. Au-dessus des highs = BSL.</p>
       </div>
-      <div class="brique glass">
+      <div class="card brique reveal">
         <div class="brique-num">03</div>
-        <h3 class="brique-title">Sweep</h3>
-        <p class="brique-desc">Une <strong style="color:white;">longue mèche rapide</strong> qui casse un low puis rejette. Close au-dessus du niveau cassé. Volume élevé (≥ 3× moyenne). C'est LE signal d'action.</p>
+        <h3>Sweep</h3>
+        <p>Une <strong style="color:white;">longue mèche rapide</strong> qui casse un low puis rejette. Close au-dessus. Volume élevé ≥ 3× moyenne.</p>
       </div>
-      <div class="brique glass">
+      <div class="card brique reveal">
         <div class="brique-num">04</div>
-        <h3 class="brique-title">FVG</h3>
-        <p class="brique-desc"><strong style="color:white;">Fair Value Gap</strong>. Le "vide" créé par 3 bougies rapides post-sweep. Si high bougie 1 &lt; low bougie 3 → FVG bullish. C'est ta zone d'entrée quand le prix y revient.</p>
+        <h3>FVG</h3>
+        <p><strong style="color:white;">Fair Value Gap</strong>. Le "vide" créé par 3 bougies rapides post-sweep. C'est ta zone d'entrée quand le prix revient.</p>
       </div>
     </div>
 
-    <div class="callout success">
+    <div class="callout success reveal">
       <div class="callout-title">✅ Test de validation</div>
-      Si tu peux expliquer ces 4 briques à un pote <strong>sans regarder</strong>, tu as les fondamentaux. Sinon, relis. On ne passe pas aux étapes suivantes sans maîtriser le vocabulaire.
+      Si tu peux expliquer ces 4 briques à un pote <strong>sans regarder</strong>, tu as les fondamentaux. Sinon, relis.
     </div>
   </section>
 
-  <!-- ═══════════════════════════════════════════════════════
-       SECTION 3 — EXEMPLE CONCRET CHART
-  ═══════════════════════════════════════════════════════ -->
-  <section id="exemple">
-    <div class="section-label">03 · Cas réel</div>
-    <h2 class="section-title">Exemple concret : ARB/USDT · 24 avril 2026</h2>
-    <p class="section-desc">
-      Un setup qu'on a observé en live aujourd'hui. Étape par étape, ce qui s'est passé.
-    </p>
-
-    <div class="glass chart-panel">
-      <svg class="chart-svg" viewBox="0 0 1100 400" preserveAspectRatio="none">
-        <defs>
-          <pattern id="grid" width="55" height="40" patternUnits="userSpaceOnUse">
-            <path d="M 55 0 L 0 0 0 40" fill="none" stroke="#1d2636" stroke-width="0.5"/>
-          </pattern>
-          <linearGradient id="fvgGrad" x1="0" x2="0" y1="0" y2="1">
-            <stop offset="0%" stop-color="#4ade80" stop-opacity="0.3"/>
-            <stop offset="100%" stop-color="#4ade80" stop-opacity="0.08"/>
-          </linearGradient>
-        </defs>
-        <rect width="1100" height="400" fill="#131722"/>
-        <rect width="1100" height="400" fill="url(#grid)"/>
-
-        <!-- Liquidity line -->
-        <line x1="30" y1="280" x2="1070" y2="280" stroke="#f87171" stroke-width="1.5" stroke-dasharray="6,4" opacity="0.85"/>
-        <text x="40" y="275" fill="#f87171" font-size="11" font-weight="700" font-family="Geist Mono">💰 LIQUIDITY 0,1278</text>
-
-        <!-- FVG zone -->
-        <rect x="500" y="240" width="280" height="40" fill="url(#fvgGrad)" stroke="#4ade80" stroke-width="1.2" stroke-dasharray="4,3"/>
-        <text x="640" y="263" fill="#4ade80" font-size="12" font-weight="700" text-anchor="middle" font-family="Geist">📦 FVG BULLISH</text>
-
-        <!-- Candles -->
-        <!-- Phase 1: consolidation -->
-        <g fill="#26a69a" stroke="#26a69a">
-          <rect x="50" y="220" width="14" height="25"/><line x1="57" y1="215" x2="57" y2="250" stroke-width="1.5"/>
-          <rect x="70" y="225" width="14" height="22"/><line x1="77" y1="220" x2="77" y2="250" stroke-width="1.5"/>
-          <rect x="90" y="215" width="14" height="20"/><line x1="97" y1="210" x2="97" y2="240" stroke-width="1.5"/>
-        </g>
-        <!-- Descente -->
-        <g fill="#ef5350" stroke="#ef5350">
-          <rect x="110" y="225" width="14" height="30"/><line x1="117" y1="220" x2="117" y2="260" stroke-width="1.5"/>
-          <rect x="130" y="230" width="14" height="35"/><line x1="137" y1="225" x2="137" y2="270" stroke-width="1.5"/>
-          <rect x="150" y="240" width="14" height="30"/><line x1="157" y1="235" x2="157" y2="275" stroke-width="1.5"/>
-          <rect x="170" y="250" width="14" height="20"/><line x1="177" y1="245" x2="177" y2="275" stroke-width="1.5"/>
-          <rect x="190" y="255" width="14" height="25"/><line x1="197" y1="250" x2="197" y2="285" stroke-width="1.5"/>
-        </g>
-        <!-- SWEEP (grande mèche) -->
-        <g><line x1="217" y1="260" x2="217" y2="340" stroke="#f5a623" stroke-width="2.5"/><rect x="210" y="255" width="14" height="20" fill="#f5a623" stroke="#f5a623"/></g>
-
-        <!-- Badge SWEEP -->
-        <rect x="250" y="310" width="140" height="40" rx="8" fill="#f5a623"/>
-        <text x="320" y="336" fill="#131722" font-size="15" font-weight="900" text-anchor="middle">🎯 SWEEP 0,1275</text>
-
-        <!-- Displacement up -->
-        <g fill="#26a69a" stroke="#26a69a">
-          <rect x="230" y="225" width="14" height="35"/><line x1="237" y1="220" x2="237" y2="275" stroke-width="1.5"/>
-          <rect x="250" y="195" width="14" height="32"/><line x1="257" y1="190" x2="257" y2="230" stroke-width="1.5"/>
-          <rect x="270" y="170" width="14" height="28"/><line x1="277" y1="165" x2="277" y2="200" stroke-width="1.5"/>
-          <rect x="290" y="150" width="14" height="22"/><line x1="297" y1="145" x2="297" y2="175" stroke-width="1.5"/>
-        </g>
-        <!-- Consolidation before mitigation -->
-        <g fill="#ef5350" stroke="#ef5350">
-          <rect x="310" y="160" width="14" height="25"/><line x1="317" y1="155" x2="317" y2="190" stroke-width="1.5"/>
-          <rect x="330" y="175" width="14" height="25"/><line x1="337" y1="170" x2="337" y2="205" stroke-width="1.5"/>
-        </g>
-        <g fill="#26a69a" stroke="#26a69a">
-          <rect x="350" y="175" width="14" height="25"/><line x1="357" y1="170" x2="357" y2="205" stroke-width="1.5"/>
-          <rect x="370" y="165" width="14" height="30"/><line x1="377" y1="160" x2="377" y2="205" stroke-width="1.5"/>
-        </g>
-
-        <!-- Price approaching FVG -->
-        <g fill="#ef5350" stroke="#ef5350">
-          <rect x="390" y="195" width="14" height="30"/><line x1="397" y1="190" x2="397" y2="230" stroke-width="1.5"/>
-          <rect x="410" y="210" width="14" height="30"/><line x1="417" y1="205" x2="417" y2="245" stroke-width="1.5"/>
-          <rect x="430" y="225" width="14" height="30"/><line x1="437" y1="220" x2="437" y2="260" stroke-width="1.5"/>
-        </g>
-
-        <!-- Bougie 2 entry -->
-        <g fill="#26a69a" stroke="#26a69a">
-          <rect x="500" y="230" width="14" height="30"/><line x1="507" y1="225" x2="507" y2="265" stroke-width="1.5"/>
-          <rect x="520" y="220" width="14" height="35"/><line x1="527" y1="215" x2="527" y2="260" stroke-width="1.5"/>
-        </g>
-
-        <!-- Entry dot -->
-        <circle cx="527" cy="230" r="10" fill="#2962ff" stroke="white" stroke-width="3"/>
-        <text x="550" y="235" fill="#2962ff" font-size="13" font-weight="700" font-family="Geist">ENTRY 0,1280</text>
-
-        <!-- Rally up -->
-        <g fill="#26a69a" stroke="#26a69a">
-          <rect x="555" y="210" width="14" height="25"/><line x1="562" y1="205" x2="562" y2="240" stroke-width="1.5"/>
-          <rect x="575" y="195" width="14" height="23"/><line x1="582" y1="190" x2="582" y2="225" stroke-width="1.5"/>
-          <rect x="595" y="170" width="14" height="30"/><line x1="602" y1="165" x2="602" y2="210" stroke-width="1.5"/>
-          <rect x="615" y="150" width="14" height="25"/><line x1="622" y1="145" x2="622" y2="185" stroke-width="1.5"/>
-          <rect x="635" y="130" width="14" height="25"/><line x1="642" y1="125" x2="642" y2="165" stroke-width="1.5"/>
-        </g>
-
-        <!-- TP1 line -->
-        <line x1="520" y1="185" x2="1070" y2="185" stroke="#fbbf24" stroke-width="1.5" stroke-dasharray="4,3"/>
-        <text x="1000" y="180" fill="#fbbf24" font-size="12" font-weight="700" font-family="Geist Mono">TP1 +1,5%</text>
-
-        <!-- TP2 line -->
-        <line x1="520" y1="130" x2="1070" y2="130" stroke="#4ade80" stroke-width="2"/>
-        <text x="1000" y="125" fill="#4ade80" font-size="12" font-weight="700" font-family="Geist Mono">TP2 +3%</text>
-
-        <!-- SL line -->
-        <line x1="520" y1="340" x2="1070" y2="340" stroke="#f87171" stroke-width="1.5" stroke-dasharray="5,3"/>
-        <text x="1000" y="335" fill="#f87171" font-size="12" font-weight="700" font-family="Geist Mono">SL −1%</text>
-
-        <!-- Trophy -->
-        <text x="670" y="115" font-size="32" text-anchor="middle">🏆</text>
-      </svg>
-      <p style="margin-top: 16px; font-size: 14px; color: var(--text-muted); text-align: center;">
-        Trade observé sur ARB · 24 avril 2026 · SMC Sweep + FVG · Gain théorique +3 % (trailing V5.2)
-      </p>
-    </div>
-  </section>
-
-  <!-- ═══════════════════════════════════════════════════════
-       SECTION 4 — SETUP EN 6 ÉTAPES
-  ═══════════════════════════════════════════════════════ -->
+  <!-- SETUP 6 ÉTAPES -->
   <section id="setup">
-    <div class="section-label">04 · Procédure</div>
-    <h2 class="section-title">Le setup en 6 étapes</h2>
-    <p class="section-desc">
-      La procédure <strong style="color:white;">mécanique</strong> à suivre pour chaque trade. Zéro improvisation, zéro intuition.
-    </p>
+    <div class="section-kicker reveal">03 · Procédure</div>
+    <h2 class="section-title reveal">Le setup en <em>6 étapes.</em></h2>
+    <p class="section-desc reveal">Procédure <strong style="color:white;">mécanique</strong>. Zéro improvisation, zéro intuition.</p>
 
-    <div class="steps-list">
-
-      <div class="step glass">
-        <div class="step-num">01</div>
-        <div class="step-body">
-          <h3>Vérifier le contexte HTF (D1 + H4)</h3>
-          <p>Avant de toucher ton M15, ouvre <strong>D1</strong> puis <strong>H4</strong>. Est-ce que tu vois des <strong style="color:white;">higher highs + higher lows</strong> récents ? Si oui, biais bullish OK. Si non, tu <strong>SKIPPES</strong> cet actif.</p>
-          <div class="step-check">
-            <strong>✓ Filtre BTC bonus :</strong> vérifie aussi que <strong>BTC est bullish sur H4</strong>. 80% des alts bougent avec BTC. Si BTC bearish → skip quel que soit l'alt.
-          </div>
+    <div class="card step reveal">
+      <div class="step-num">01</div>
+      <div class="step-body">
+        <h3>Vérifier le contexte HTF</h3>
+        <p>Avant M15, ouvre <strong>D1</strong> puis <strong>H4</strong>. Tu vois <strong style="color:white;">higher highs + higher lows</strong> récents ? Si oui, biais bullish OK. Si non, <strong>SKIP</strong>.</p>
+        <div class="step-check">
+          <strong>✓ Filtre BTC bonus</strong> : BTC bullish sur H4 ? 80% des alts suivent BTC. Si BTC bearish → skip quel que soit l'alt.
         </div>
       </div>
+    </div>
 
-      <div class="step glass">
-        <div class="step-num">02</div>
-        <div class="step-body">
-          <h3>Marquer les niveaux de liquidité sur M15</h3>
-          <p>Identifie les <strong>2-3 lows récents significatifs</strong> + l'<strong>Asia Low</strong> (visible avec l'indicateur AsianSession) + les <strong>chiffres ronds proches</strong>. Trace des lignes horizontales. C'est <strong style="color:white;">là que se trouve la liquidité</strong>.</p>
-          <div class="step-check">
-            <strong>✓ Règle pratique :</strong> plus un low est <strong>visité plusieurs fois</strong>, plus il est important. C'est là que les baleines vont cibler.
-          </div>
+    <div class="card step reveal">
+      <div class="step-num">02</div>
+      <div class="step-body">
+        <h3>Marquer les niveaux de liquidité</h3>
+        <p>Identifie les <strong>2-3 lows récents significatifs</strong> + <strong>Asia Low</strong> + <strong>chiffres ronds</strong>. Trace des lignes horizontales.</p>
+        <div class="step-check">
+          <strong>✓ Règle pratique</strong> : plus un low est visité plusieurs fois, plus il est important. Les baleines vont y cibler.
         </div>
       </div>
+    </div>
 
-      <div class="step glass">
-        <div class="step-num">03</div>
-        <div class="step-body">
-          <h3>Attendre le SWEEP (patience absolue)</h3>
-          <p>Tu ne fais <strong>rien tant que tu n'as pas vu le sweep</strong>. Les 3 critères obligatoires :</p>
-          <p>① <strong>Niveau significatif cassé</strong> (low qu'on avait marqué)<br>
-          ② <strong>Longue mèche</strong> (au moins 2× le corps de la bougie)<br>
-          ③ <strong>Close AU-DESSUS</strong> du niveau cassé (pas en-dessous, sinon = vraie baisse)</p>
-          <div class="step-check">
-            <strong>✓ Bonus volume :</strong> si la bougie de sweep a un volume <strong>≥ 3× la moyenne</strong> → setup A+. Sinon setup B (TP1 only).
-          </div>
+    <div class="card step reveal">
+      <div class="step-num">03</div>
+      <div class="step-body">
+        <h3>Attendre le SWEEP</h3>
+        <p>Tu ne fais <strong>rien tant que tu n'as pas vu le sweep</strong>. Les 3 critères obligatoires :</p>
+        <p>① <strong>Niveau significatif cassé</strong><br>② <strong>Longue mèche</strong> (≥ 2× corps)<br>③ <strong>Close AU-DESSUS</strong> du niveau cassé</p>
+        <div class="step-check">
+          <strong>✓ Bonus volume</strong> : si volume ≥ 3× la moyenne 20 bougies → setup A+. Sinon B (TP1 only).
         </div>
       </div>
+    </div>
 
-      <div class="step glass">
-        <div class="step-num">04</div>
-        <div class="step-body">
-          <h3>Repérer la FVG post-sweep</h3>
-          <p>Dans les <strong>3 bougies qui suivent le sweep</strong>, cherche un "gap" (vide) entre prix. Méthode simple : <strong style="color:white;">si le high de la bougie 1 est sous le low de la bougie 3</strong> → FVG bullish formée.</p>
-          <p>Marque un rectangle vert sur cette zone. C'est ta future <strong>zone d'entrée</strong>.</p>
-          <div class="step-check">
-            <strong>✓ Taille FVG :</strong> une FVG trop petite (&lt; 0,3 %) est souvent comblée trop vite. Privilégie les FVG de 0,4 % ou plus.
-          </div>
+    <div class="card step reveal">
+      <div class="step-num">04</div>
+      <div class="step-body">
+        <h3>Repérer la FVG post-sweep</h3>
+        <p>Dans les <strong>3 bougies post-sweep</strong>, cherche un "gap". Méthode : <strong style="color:white;">high bougie 1 &lt; low bougie 3</strong> = FVG bullish.</p>
+        <div class="step-check">
+          <strong>✓ Taille FVG</strong> : privilégie les FVG de 0,4 % ou plus (trop petite = comblée trop vite).
         </div>
       </div>
+    </div>
 
-      <div class="step glass">
-        <div class="step-num">05</div>
-        <div class="step-body">
-          <h3>Attendre la mitigation + bougie 2 de confirmation</h3>
-          <p>Le prix va <strong>souvent revenir toucher la FVG</strong> pour la "combler". Quand c'est fait, tu attends <strong>UNE bougie 2 de confirmation</strong> : sa clôture doit être <strong style="color:white;">plus haute que la 1ère bougie dans la zone</strong>.</p>
-          <div class="step-check">
-            <strong>✓ Discipline :</strong> <strong>SANS bougie 2 = PAS d'entrée</strong>. C'est la règle non négociable. Tous les vrais setups donnent cette bougie 2.
-          </div>
+    <div class="card step reveal">
+      <div class="step-num">05</div>
+      <div class="step-body">
+        <h3>Mitigation + bougie 2</h3>
+        <p>Le prix revient toucher la FVG pour la "combler". Puis <strong>UNE bougie 2 de confirmation</strong> : close plus haut que la 1ère.</p>
+        <div class="step-check">
+          <strong>✓ Discipline</strong> : <strong>SANS bougie 2 = PAS d'entrée</strong>. Non négociable.
         </div>
       </div>
+    </div>
 
-      <div class="step glass">
-        <div class="step-num">06</div>
-        <div class="step-body">
-          <h3>Placer le trade (ordre paper)</h3>
-          <p>Entry = close bougie 2. SL = sous mèche du sweep + buffer 0,2 %. Calcule ton risk %. Si risk > 1,2 % → skip. Sinon place tes ordres.</p>
-          <p><strong>TP1 = +1,5 %</strong> · <strong>SL bouge à BE</strong> quand touché<br>
-          <strong>TP2 = +3 %</strong> · <strong>sortie totale</strong> quand touché</p>
-          <div class="step-check">
-            <strong>✓ Nouveauté V5.2 :</strong> on ne sort plus 50 % au TP1. On <strong>déplace seulement le SL à BE</strong>. La position entière profite du move vers TP2. (Voir section "Gestion des TP" ci-dessous.)
-          </div>
+    <div class="card step reveal">
+      <div class="step-num">06</div>
+      <div class="step-body">
+        <h3>Placer le trade</h3>
+        <p>Entry = close bougie 2. SL = sous mèche sweep + buffer 0,2 %. Risk ≤ 1,2 %.</p>
+        <p><strong>TP1</strong> = +1,5 % · SL bouge à BE<br><strong>TP2</strong> = +3 % · sortie totale</p>
+        <div class="step-check">
+          <strong>✓ Nouveauté V5.2</strong> : on ne sort plus 50 % au TP1. On <strong>déplace seulement le SL</strong>. La position entière profite du move.
         </div>
       </div>
-
     </div>
   </section>
 
-  <!-- ═══════════════════════════════════════════════════════
-       SECTION 5 — GESTION DES TP (NOUVEAUTÉ V5.2)
-  ═══════════════════════════════════════════════════════ -->
+  <!-- TRAILING TP -->
   <section id="tp">
-    <div class="section-label">05 · Gestion dynamique</div>
-    <h2 class="section-title">La règle "+3 % max" + trailing stop par paliers</h2>
-    <p class="section-desc">
-      La <strong style="color:white;">grande innovation V5.2</strong>. Au lieu de sortir 50 % au TP1 et 50 % au TP2, on garde <strong>100 % de la position</strong> et on déplace le SL par paliers. Résultat : gain bien plus stable.
-    </p>
+    <div class="section-kicker reveal">04 · Gestion dynamique</div>
+    <h2 class="section-title reveal">La règle "+3 %" + <em>trailing par paliers.</em></h2>
+    <p class="section-desc reveal">La <strong style="color:white;">grande innovation V5.2</strong>. Au lieu de sortir 50 % au TP1, on garde <strong>100 %</strong> de la position et on déplace le SL par paliers.</p>
 
     <div class="trailing-grid">
-      <div class="trailing-card t1">
+      <div class="trailing-card reveal">
         <div class="trailing-step">Palier 1 · ENTRY</div>
         <div class="trailing-price">0 %</div>
-        <div class="trailing-action">SL initial à <strong style="color:var(--accent-red);">−1 %</strong> (sous sweep)</div>
+        <div class="trailing-action">SL initial à <strong style="color:var(--red);">−1 %</strong> (sous sweep)</div>
       </div>
-      <div class="trailing-card t2">
+      <div class="trailing-card reveal">
         <div class="trailing-step">Palier 2 · +1,5 %</div>
         <div class="trailing-price">+1,5 %</div>
-        <div class="trailing-action">Prix atteint +1,5 %<br>SL bouge à <strong style="color:white;">BE (0 %)</strong></div>
+        <div class="trailing-action">Prix atteint +1,5 %<br>SL bouge à <strong>BE (0 %)</strong></div>
       </div>
-      <div class="trailing-card t3">
+      <div class="trailing-card reveal">
         <div class="trailing-step">Palier 3 · +2,5 %</div>
         <div class="trailing-price">+2,5 %</div>
-        <div class="trailing-action">Prix atteint +2,5 %<br>SL bouge à <strong style="color:var(--accent-green);">+1,5 %</strong></div>
+        <div class="trailing-action">SL bouge à <strong style="color:var(--green);">+1,5 %</strong></div>
       </div>
-      <div class="trailing-card t4">
-        <div class="trailing-step">Palier 4 · +3 %</div>
+      <div class="trailing-card last reveal">
+        <div class="trailing-step">Palier 4 · SORTIE</div>
         <div class="trailing-price">+3 %</div>
-        <div class="trailing-action"><strong>SORTIE TOTALE</strong><br>Gain max <strong style="color:var(--accent-green);">+3 %</strong></div>
+        <div class="trailing-action"><strong>SORTIE TOTALE</strong><br>Gain max +3 %</div>
       </div>
     </div>
 
-    <div class="callout success mt-large">
+    <div class="callout success reveal">
       <div class="callout-title">💡 Pourquoi cette méthode bat l'ancienne</div>
-      <strong>Ancien système</strong> (50% TP1 + 50% TP2) sur un trade qui fait +3 % : gain = 50% × 1,5% + 50% × 3% = <strong>+2,25%</strong><br>
-      <strong>Nouveau système</strong> (trailing SL) sur le même trade : gain = 100% × 3% = <strong>+3,0%</strong> 🏆<br>
-      <strong>Différence : +33 % de gain en plus sur les setups qui touchent TP2.</strong>
+      <strong>Ancien</strong> (50% TP1 + 50% TP2) sur trade +3 % : 50%×1,5% + 50%×3% = <strong>+2,25%</strong><br>
+      <strong>Nouveau</strong> sur le même trade : 100%×3% = <strong>+3,0%</strong> 🏆<br>
+      <strong>+33 % de gain en plus</strong> sur les setups qui touchent TP2.
     </div>
 
-    <h3 style="font-size: 22px; margin-top: 40px; margin-bottom: 14px; font-weight: 700;">Les 4 scénarios possibles</h3>
-    <table class="data-table">
+    <h3 style="font-size:22px; font-weight:600; margin:40px 0 14px;">Les 4 scénarios</h3>
+    <table class="data-table reveal">
       <thead>
-        <tr>
-          <th>Scénario</th>
-          <th>Ce qu'il se passe</th>
-          <th>Action</th>
-          <th>Résultat final</th>
-        </tr>
+        <tr><th>Scénario</th><th>Description</th><th>Action SL</th><th>Résultat</th></tr>
       </thead>
       <tbody>
-        <tr>
-          <td><strong>A</strong> · Move parfait</td>
-          <td>Prix atteint TP2 (+3 %)</td>
-          <td>Sortie totale à +3 %</td>
-          <td class="val-green"><strong>+3,0 % net</strong> 🏆</td>
-        </tr>
-        <tr>
-          <td><strong>B</strong> · Partiel +2,5 %</td>
-          <td>Prix atteint +2,5 % puis retombe</td>
-          <td>SL déclenché à +1,5 %</td>
-          <td class="val-green"><strong>+1,5 % net</strong> ✅</td>
-        </tr>
-        <tr>
-          <td><strong>C</strong> · Partiel +1,5 %</td>
-          <td>Prix atteint +1,5 % puis retombe</td>
-          <td>SL déclenché à BE</td>
-          <td class="val-yellow"><strong>0 % net</strong> 🟡 (BE propre)</td>
-        </tr>
-        <tr>
-          <td><strong>D</strong> · Reverse direct</td>
-          <td>Prix n'atteint jamais +1,5 %</td>
-          <td>SL déclenché à −1 %</td>
-          <td class="val-red"><strong>−1 % net</strong> ❌</td>
-        </tr>
+        <tr><td><strong>A</strong> Move parfait</td><td>Prix atteint +3 %</td><td>Sortie totale</td><td class="val-green"><strong>+3,0 %</strong> 🏆</td></tr>
+        <tr><td><strong>B</strong> Partiel +2,5 %</td><td>+2,5 % puis reverse</td><td>SL à +1,5 %</td><td class="val-green"><strong>+1,5 %</strong> ✅</td></tr>
+        <tr><td><strong>C</strong> Partiel +1,5 %</td><td>+1,5 % puis reverse</td><td>SL à BE</td><td class="val-yellow"><strong>0 %</strong> BE propre</td></tr>
+        <tr><td><strong>D</strong> Reverse direct</td><td>N'atteint jamais +1,5 %</td><td>SL initial</td><td class="val-red"><strong>−1 %</strong> ❌</td></tr>
       </tbody>
     </table>
 
-    <div class="callout warning mt-medium">
+    <div class="callout warning reveal">
       <div class="callout-title">⚠️ Le piège à éviter</div>
-      Pour que cette méthode marche, <strong>tu DOIS bouger ton SL à temps</strong> quand le prix atteint +1,5 % et +2,5 %. Si tu rates la fenêtre et que le prix reverse avant → le gain devient 0 ou pire. <strong style="color:white;">Mets des alertes TradingView à ces niveaux</strong> pour ne rien louper.
+      Pour que ça marche, <strong>bouge ton SL à temps</strong>. <strong style="color:white;">Mets des alertes TradingView</strong> à +1,5 % et +2,5 %.
     </div>
   </section>
 
-  <!-- ═══════════════════════════════════════════════════════
-       SECTION 6 — RISK MANAGEMENT
-  ═══════════════════════════════════════════════════════ -->
+  <!-- RISK -->
   <section id="risk">
-    <div class="section-label">06 · Gestion du risque</div>
-    <h2 class="section-title">Risk management non négociable</h2>
-    <p class="section-desc">
-      <strong style="color:white;">80 % des traders qui échouent</strong> échouent à cause du risk management, pas de la méthode. Respecte ces règles à la virgule près.
-    </p>
+    <div class="section-kicker reveal">05 · Gestion du risque</div>
+    <h2 class="section-title reveal">Risk management <em>non négociable.</em></h2>
+    <p class="section-desc reveal"><strong style="color:white;">80 % des traders qui échouent</strong> échouent à cause du risk, pas de la méthode. Respecte ces règles à la virgule près.</p>
 
-    <div class="briques-grid">
-      <div class="brique glass" style="border-top: 3px solid var(--accent-green);">
-        <div class="brique-num" style="color: rgba(74,222,128,0.15);">01</div>
-        <h3 class="brique-title">Risk par trade</h3>
-        <p class="brique-desc"><strong style="color:var(--accent-green);">1 % standard</strong> du capital total.<br><strong>Max 1,2 %</strong> sur setup A+.<br><strong>Jamais plus.</strong> Jamais.</p>
+    <div class="grid-3">
+      <div class="card brique reveal" style="border-top:2px solid var(--green);">
+        <div class="brique-num" style="color:rgba(74,222,128,0.1);">01</div>
+        <h3>Risk par trade</h3>
+        <p><strong style="color:var(--green);">1 % standard</strong><br><strong>Max 1,2 %</strong> sur A+<br><strong>Jamais plus.</strong></p>
       </div>
-      <div class="brique glass" style="border-top: 3px solid var(--accent-yellow);">
-        <div class="brique-num" style="color: rgba(251,191,36,0.15);">02</div>
-        <h3 class="brique-title">Calcul position</h3>
-        <p class="brique-desc">Taille = Capital × Risk% ÷ (Entry − SL) × Entry<br><strong>Exemple</strong> : 1000 € × 1% ÷ 0,62% × Entry = ~161 € en position</p>
+      <div class="card brique reveal" style="border-top:2px solid var(--yellow);">
+        <div class="brique-num" style="color:rgba(251,191,36,0.1);">02</div>
+        <h3>Calcul position</h3>
+        <p>Taille = Capital × Risk% ÷ (Entry − SL) × Entry</p>
       </div>
-      <div class="brique glass" style="border-top: 3px solid var(--accent-blue);">
-        <div class="brique-num" style="color: rgba(41,98,255,0.15);">03</div>
-        <h3 class="brique-title">RR minimum</h3>
-        <p class="brique-desc"><strong style="color:var(--accent-blue);">2,5:1 minimum</strong> pour prendre le trade.<br>Si distance Entry→TP2 &lt; 2,5× distance Entry→SL → <strong>skip</strong>.</p>
+      <div class="card brique reveal" style="border-top:2px solid var(--accent);">
+        <div class="brique-num" style="color:rgba(111,168,255,0.1);">03</div>
+        <h3>RR minimum</h3>
+        <p><strong style="color:var(--accent);">2,5:1 minimum</strong> pour prendre le trade. Sinon <strong>skip</strong>.</p>
       </div>
-      <div class="brique glass" style="border-top: 3px solid var(--accent-red);">
-        <div class="brique-num" style="color: rgba(248,113,113,0.15);">04</div>
-        <h3 class="brique-title">Stop après 2 SL</h3>
-        <p class="brique-desc">Si tu touches <strong style="color:var(--accent-red);">2 SL consécutifs dans la journée</strong>, tu ARRÊTES. Tu reprends demain. C'est la règle Hugo FX non négociable.</p>
+      <div class="card brique reveal" style="border-top:2px solid var(--red);">
+        <div class="brique-num" style="color:rgba(248,113,113,0.1);">04</div>
+        <h3>Stop après 2 SL</h3>
+        <p>2 SL consécutifs dans la journée → <strong style="color:var(--red);">ARRÊT 24h.</strong></p>
       </div>
-      <div class="brique glass" style="border-top: 3px solid var(--accent-green);">
-        <div class="brique-num" style="color: rgba(74,222,128,0.15);">05</div>
-        <h3 class="brique-title">Max trades / jour</h3>
-        <p class="brique-desc"><strong style="color:var(--accent-green);">3 trades par jour max</strong>. Quality > quantity. Sur 30 jours = 90 trades potentiels max, mais tu en prendras ~30 (les vrais A+).</p>
+      <div class="card brique reveal" style="border-top:2px solid var(--green);">
+        <div class="brique-num" style="color:rgba(74,222,128,0.1);">05</div>
+        <h3>Max trades / jour</h3>
+        <p><strong style="color:var(--green);">3 trades max</strong> par jour. Quality &gt; quantity.</p>
       </div>
-      <div class="brique glass" style="border-top: 3px solid var(--accent-yellow);">
-        <div class="brique-num" style="color: rgba(251,191,36,0.15);">06</div>
-        <h3 class="brique-title">Drawdown limit</h3>
-        <p class="brique-desc">Si tu perds <strong style="color:var(--accent-yellow);">5 % du capital</strong> en 5 trades : PAUSE 48h + revue des setups. Si 10 % perdus : ARRÊT + revue avec moi.</p>
+      <div class="card brique reveal" style="border-top:2px solid var(--yellow);">
+        <div class="brique-num" style="color:rgba(251,191,36,0.1);">06</div>
+        <h3>Drawdown limit</h3>
+        <p>−5 % / 5 trades → <strong style="color:var(--yellow);">PAUSE 48h.</strong> −10 % → <strong>ARRÊT.</strong></p>
       </div>
     </div>
   </section>
 
-  <!-- ═══════════════════════════════════════════════════════
-       SECTION 7 — CHECKLIST PRÉ-TRADE
-  ═══════════════════════════════════════════════════════ -->
+  <!-- CHECKLIST -->
   <section id="checklist">
-    <div class="section-label">07 · Avant chaque trade</div>
-    <h2 class="section-title">Checklist pré-trade (18 points)</h2>
-    <p class="section-desc">
-      <strong style="color:white;">Si 1 seule case n'est pas cochée → PAS DE TRADE.</strong> Cette checklist t'évitera 90 % des erreurs de débutant.
-    </p>
+    <div class="section-kicker reveal">06 · Avant chaque trade</div>
+    <h2 class="section-title reveal">Checklist <em>pré-trade.</em></h2>
+    <p class="section-desc reveal"><strong style="color:white;">Si 1 case non cochée → PAS DE TRADE.</strong> Cette checklist t'évitera 90 % des erreurs débutant.</p>
 
-    <div class="glass progress-container">
-      <div class="progress-label">Progression checklist</div>
-      <div class="progress-percent" id="progress-percent">0 %</div>
-      <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
-      <div class="progress-label" id="progress-text">0 / 18 conditions</div>
+    <div class="card checklist-progress reveal">
+      <div class="progress-label">Progression</div>
+      <div class="progress-percent" id="pct">0 %</div>
+      <div class="progress-bar"><div class="progress-fill" id="fill"></div></div>
+      <div class="progress-label" id="txt">0 / 18 conditions</div>
     </div>
 
-    <div class="glass checklist">
-      <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 14px; color: var(--accent-green); font-family: var(--font-mono); letter-spacing: 1px; text-transform: uppercase;">🌐 Contexte (4)</h3>
-      <label class="checklist-item">
-        <input type="checkbox" class="chk">
-        <span class="check-label">
-          <span class="main">Je suis en session NYAM</span>
-          <span class="sub">14h30 - 18h CET · hors session = pas de trade</span>
-        </span>
-      </label>
-      <label class="checklist-item">
-        <input type="checkbox" class="chk">
-        <span class="check-label">
-          <span class="main">Pas de news rouge dans les 30 prochaines minutes</span>
-          <span class="sub">calendrier éco checké (Forex Factory / Investing)</span>
-        </span>
-      </label>
-      <label class="checklist-item">
-        <input type="checkbox" class="chk">
-        <span class="check-label">
-          <span class="main">Biais D1 bullish (HH + HL)</span>
-          <span class="sub">structure haussière confirmée sur daily</span>
-        </span>
-      </label>
-      <label class="checklist-item">
-        <input type="checkbox" class="chk">
-        <span class="check-label">
-          <span class="main">Biais H4 aligné avec D1</span>
-          <span class="sub">pas de divergence HTF</span>
-        </span>
-      </label>
-
-      <h3 style="font-size: 18px; font-weight: 700; margin: 20px 0 14px; color: var(--accent-green); font-family: var(--font-mono); letter-spacing: 1px; text-transform: uppercase;">📊 Structure (4)</h3>
-      <label class="checklist-item">
-        <input type="checkbox" class="chk">
-        <span class="check-label">
-          <span class="main">Asia Low + PDH/PDL marqués</span>
-          <span class="sub">niveaux de liquidité identifiés</span>
-        </span>
-      </label>
-      <label class="checklist-item">
-        <input type="checkbox" class="chk">
-        <span class="check-label">
-          <span class="main">Sweep valide confirmé</span>
-          <span class="sub">niveau cassé + mèche longue + close au-dessus</span>
-        </span>
-      </label>
-      <label class="checklist-item">
-        <input type="checkbox" class="chk">
-        <span class="check-label">
-          <span class="main">FVG identifiée</span>
-          <span class="sub">gap entre bougie 1 et bougie 3 post-sweep</span>
-        </span>
-      </label>
-      <label class="checklist-item">
-        <input type="checkbox" class="chk">
-        <span class="check-label">
-          <span class="main">Bougie 2 de confirmation formée</span>
-          <span class="sub">close plus haut que la 1ère bougie dans la FVG</span>
-        </span>
-      </label>
-
-      <h3 style="font-size: 18px; font-weight: 700; margin: 20px 0 14px; color: var(--accent-green); font-family: var(--font-mono); letter-spacing: 1px; text-transform: uppercase;">🎯 Setup qualité (4)</h3>
-      <label class="checklist-item">
-        <input type="checkbox" class="chk">
-        <span class="check-label">
-          <span class="main">Volume sur sweep ≥ 3× moyenne 20 bougies</span>
-          <span class="sub">critère A+ · si non = setup B, TP1 only</span>
-        </span>
-      </label>
-      <label class="checklist-item">
-        <input type="checkbox" class="chk">
-        <span class="check-label">
-          <span class="main">BTC bullish sur H4</span>
-          <span class="sub">filtre macro · si BTC bearish → skip alts</span>
-        </span>
-      </label>
-      <label class="checklist-item">
-        <input type="checkbox" class="chk">
-        <span class="check-label">
-          <span class="main">RR visé ≥ 2,5:1</span>
-          <span class="sub">si risk 1 % → TP2 à minimum +2,5 % (TP2 = +3 % standard)</span>
-        </span>
-      </label>
-      <label class="checklist-item">
-        <input type="checkbox" class="chk">
-        <span class="check-label">
-          <span class="main">Pas de résistance majeure entre Entry et TP2</span>
-          <span class="sub">si résistance proche → TP2 sous la résistance</span>
-        </span>
-      </label>
-
-      <h3 style="font-size: 18px; font-weight: 700; margin: 20px 0 14px; color: var(--accent-green); font-family: var(--font-mono); letter-spacing: 1px; text-transform: uppercase;">💰 Risk (3)</h3>
-      <label class="checklist-item">
-        <input type="checkbox" class="chk">
-        <span class="check-label">
-          <span class="main">Risk 1 % standard (1,2 % max setup A+)</span>
-          <span class="sub">jamais plus</span>
-        </span>
-      </label>
-      <label class="checklist-item">
-        <input type="checkbox" class="chk">
-        <span class="check-label">
-          <span class="main">Taille position calculée</span>
-          <span class="sub">formule : capital × risk ÷ (entry - SL) × entry</span>
-        </span>
-      </label>
-      <label class="checklist-item">
-        <input type="checkbox" class="chk">
-        <span class="check-label">
-          <span class="main">Pas de 2 SL consécutifs aujourd'hui</span>
-          <span class="sub">sinon STOP trading, reprise demain</span>
-        </span>
-      </label>
-
-      <h3 style="font-size: 18px; font-weight: 700; margin: 20px 0 14px; color: var(--accent-green); font-family: var(--font-mono); letter-spacing: 1px; text-transform: uppercase;">🧠 Mental (3)</h3>
-      <label class="checklist-item">
-        <input type="checkbox" class="chk">
-        <span class="check-label">
-          <span class="main">Dormi 7h+ / pas de fatigue</span>
-          <span class="sub">règle psycho Hugo FX #4</span>
-        </span>
-      </label>
-      <label class="checklist-item">
-        <input type="checkbox" class="chk">
-        <span class="check-label">
-          <span class="main">Pas en boucle post-perte émotionnelle</span>
-          <span class="sub">si tu "veux absolument gagner" après une perte → dangereux</span>
-        </span>
-      </label>
-      <label class="checklist-item">
-        <input type="checkbox" class="chk">
-        <span class="check-label">
-          <span class="main">Trade prévu dans mon plan V5.2</span>
-          <span class="sub">pas d'impulsion, pas de FOMO</span>
-        </span>
-      </label>
-
-      <div style="text-align: center; margin-top: 24px;">
-        <button id="reset-btn" style="padding: 10px 22px; background: rgba(255,255,255,0.05); border: 1px solid var(--border); border-radius: 10px; color: var(--foreground); cursor: pointer; font-family: var(--font-sans); font-size: 13px; font-weight: 600;">⟲ Reset checklist</button>
+    <div class="checklist-grid">
+      <div class="card checklist-section reveal">
+        <h3>🌐 Contexte (4)</h3>
+        <label class="checklist-item"><input type="checkbox" class="chk"><span class="check-label"><span class="main">Session NYAM 14h30-18h CET</span><span class="sub">Hors session = pas de trade</span></span></label>
+        <label class="checklist-item"><input type="checkbox" class="chk"><span class="check-label"><span class="main">Pas de news rouge 30 min</span><span class="sub">Calendrier éco checké</span></span></label>
+        <label class="checklist-item"><input type="checkbox" class="chk"><span class="check-label"><span class="main">Biais D1 bullish (HH+HL)</span></span></label>
+        <label class="checklist-item"><input type="checkbox" class="chk"><span class="check-label"><span class="main">Biais H4 aligné avec D1</span></span></label>
       </div>
+      <div class="card checklist-section reveal">
+        <h3>📊 Structure (4)</h3>
+        <label class="checklist-item"><input type="checkbox" class="chk"><span class="check-label"><span class="main">Asia Low + PDH/PDL marqués</span></span></label>
+        <label class="checklist-item"><input type="checkbox" class="chk"><span class="check-label"><span class="main">Sweep valide (3 critères)</span></span></label>
+        <label class="checklist-item"><input type="checkbox" class="chk"><span class="check-label"><span class="main">FVG identifiée</span></span></label>
+        <label class="checklist-item"><input type="checkbox" class="chk"><span class="check-label"><span class="main">Bougie 2 de confirmation</span></span></label>
+      </div>
+      <div class="card checklist-section reveal">
+        <h3>🎯 Qualité (4)</h3>
+        <label class="checklist-item"><input type="checkbox" class="chk"><span class="check-label"><span class="main">Volume sweep ≥ 3× moyenne</span></span></label>
+        <label class="checklist-item"><input type="checkbox" class="chk"><span class="check-label"><span class="main">BTC bullish sur H4</span></span></label>
+        <label class="checklist-item"><input type="checkbox" class="chk"><span class="check-label"><span class="main">RR visé ≥ 2,5:1</span></span></label>
+        <label class="checklist-item"><input type="checkbox" class="chk"><span class="check-label"><span class="main">Pas de résistance majeure avant TP2</span></span></label>
+      </div>
+      <div class="card checklist-section reveal">
+        <h3>💰 Risk (3)</h3>
+        <label class="checklist-item"><input type="checkbox" class="chk"><span class="check-label"><span class="main">Risk ≤ 1,2 %</span></span></label>
+        <label class="checklist-item"><input type="checkbox" class="chk"><span class="check-label"><span class="main">Taille position calculée</span></span></label>
+        <label class="checklist-item"><input type="checkbox" class="chk"><span class="check-label"><span class="main">Pas de 2 SL consécutifs aujourd'hui</span></span></label>
+      </div>
+      <div class="card checklist-section reveal">
+        <h3>🧠 Mental (3)</h3>
+        <label class="checklist-item"><input type="checkbox" class="chk"><span class="check-label"><span class="main">Dormi 7h+ · pas fatigue</span></span></label>
+        <label class="checklist-item"><input type="checkbox" class="chk"><span class="check-label"><span class="main">Pas en boucle post-perte</span></span></label>
+        <label class="checklist-item"><input type="checkbox" class="chk"><span class="check-label"><span class="main">Trade prévu dans le plan</span></span></label>
+      </div>
+    </div>
+
+    <div style="text-align:center; margin-top:24px;">
+      <button class="btn-reset" id="reset">⟲ Reset checklist</button>
     </div>
   </section>
 
-  <!-- ═══════════════════════════════════════════════════════
-       SECTION 8 — JOURNAL 4 COUCHES
-  ═══════════════════════════════════════════════════════ -->
+  <!-- JOURNAL -->
   <section id="journal">
-    <div class="section-label">08 · Apprentissage continu</div>
-    <h2 class="section-title">Le journal à 4 couches</h2>
-    <p class="section-desc">
-      Inspiré de Crypto Le Trône. Chaque couche capture quelque chose de différent. C'est ce système qui te fera progresser <strong style="color:white;">2× plus vite</strong> qu'un trader normal.
-    </p>
+    <div class="section-kicker reveal">07 · Apprentissage continu</div>
+    <h2 class="section-title reveal">Journal à <em>4 couches.</em></h2>
+    <p class="section-desc reveal">Inspiré de Crypto Le Trône. Chaque couche capture quelque chose de différent. Ce système te fait progresser <strong style="color:white;">2× plus vite</strong> qu'un trader normal.</p>
 
-    <div class="journal-layers">
-      <div class="glass journal-layer">
+    <div class="grid-4">
+      <div class="journal-layer reveal">
         <div class="journal-num">Couche 01</div>
-        <div class="journal-title">Trade Log</div>
-        <p class="journal-desc">Les chiffres bruts de chaque trade. Date · Setup · Entry / SL / TP · Risk · Résultat · P&L · Score /10. <strong style="color:white;">Ton Nodex Journal existant couvre déjà ça.</strong></p>
+        <h3>Trade Log</h3>
+        <p>Chiffres bruts. Date · Setup · Entry/SL/TP · Risk · Résultat · Score /10. <strong>Ton Nodex Journal existant couvre déjà ça.</strong></p>
       </div>
-      <div class="glass journal-layer">
+      <div class="journal-layer reveal">
         <div class="journal-num">Couche 02</div>
-        <div class="journal-title">Trading Journal</div>
-        <p class="journal-desc">Texte libre, narratif émotionnel. 3 questions obligatoires en fin de journée :<br>① Comment je me sens ?<br>② Ai-je tenu mon plan ?<br>③ Qu'ai-je appris aujourd'hui ?</p>
+        <h3>Trading Journal</h3>
+        <p>Texte libre, narratif. 3 questions fin de journée :<br>① Comment je me sens ?<br>② Ai-je tenu mon plan ?<br>③ Qu'ai-je appris ?</p>
       </div>
-      <div class="glass journal-layer">
+      <div class="journal-layer reveal">
         <div class="journal-num">Couche 03</div>
-        <div class="journal-title">Psy Weekly</div>
-        <p class="journal-desc">Tableau hebdo : Win/Loss par jour · P&L · # erreurs · Net P&L sans les erreurs. Révèle les <strong style="color:white;">patterns</strong> (jours gagnants, heures gagnantes, erreurs récurrentes).</p>
+        <h3>Psy Weekly</h3>
+        <p>Tableau hebdo : Win/Loss par jour · P&L · # erreurs · Net sans erreurs. Révèle les <strong>patterns cachés</strong>.</p>
       </div>
-      <div class="glass journal-layer" style="border-color: var(--accent-red);">
-        <div class="journal-num" style="color: var(--accent-red);">Couche 04</div>
-        <div class="journal-title">🕵️ Demon Finder</div>
-        <p class="journal-desc">Matrice qui identifie tes <strong style="color:var(--accent-red);">erreurs répétées</strong>. Si ≥ 3 occurrences de la même erreur sur 10 trades → <strong style="color:white;">STOP TRADING</strong> jusqu'à résolution.</p>
+      <div class="journal-layer demon reveal">
+        <div class="journal-num">Couche 04</div>
+        <h3>🕵️ Demon Finder</h3>
+        <p>Matrice des erreurs répétées. <strong>Si ≥ 3 occurrences</strong> de la même erreur sur 10 trades → <strong style="color:var(--red);">STOP TRADING.</strong></p>
       </div>
     </div>
 
-    <div class="callout info mt-large">
-      <div class="callout-title">💡 Règle d'or du journaling</div>
-      <strong>Tu ne peux pas améliorer ce que tu ne mesures pas.</strong> 1 trade sans journal = 1 trade perdu en termes d'apprentissage. Même si tu gagnes, si tu ne notes pas pourquoi → tu ne pourras pas reproduire. Le journal = <strong style="color:white;">ton deuxième cerveau</strong>.
+    <div class="callout info reveal">
+      <div class="callout-title">💡 Règle d'or</div>
+      <strong>Tu ne peux pas améliorer ce que tu ne mesures pas.</strong> Pas de journal = pas de progrès. Le journal = <strong style="color:white;">ton deuxième cerveau</strong>.
     </div>
   </section>
 
-  <!-- ═══════════════════════════════════════════════════════
-       SECTION 9 — PLAN BACKTEST 30 TRADES
-  ═══════════════════════════════════════════════════════ -->
+  <!-- PLAN 30J -->
   <section id="plan">
-    <div class="section-label">09 · Ton objectif 30 jours</div>
-    <h2 class="section-title">Plan backtest 30 trades · 30 jours</h2>
-    <p class="section-desc">
-      Ton programme du mois à venir. Objectif : <strong style="color:white;">exécuter 30 trades V5.2 en paper trading</strong> et valider que la méthode marche pour TOI.
-    </p>
+    <div class="section-kicker reveal">08 · Ton objectif 30 jours</div>
+    <h2 class="section-title reveal">Plan backtest <em>30 trades / 30 jours.</em></h2>
+    <p class="section-desc reveal">Ton programme du mois. Objectif : <strong style="color:white;">exécuter 30 trades V5.2 en paper trading</strong> et valider que la méthode marche pour TOI.</p>
 
-    <table class="data-table">
+    <table class="data-table reveal">
       <thead>
-        <tr>
-          <th>Semaine</th>
-          <th>Trades cible</th>
-          <th>Focus</th>
-          <th>Débrief</th>
-        </tr>
+        <tr><th>Semaine</th><th>Trades</th><th>Focus</th><th>Débrief</th></tr>
       </thead>
       <tbody>
-        <tr>
-          <td><strong>Semaine 1</strong> (25 avr - 1 mai)</td>
-          <td class="val-mono">5-8</td>
-          <td>Exécution correcte de la méthode · <strong>ARB uniquement</strong></td>
-          <td class="val-green">Débrief jour 3 + jour 7</td>
-        </tr>
-        <tr>
-          <td><strong>Semaine 2</strong> (2-8 mai)</td>
-          <td class="val-mono">6-10</td>
-          <td>Ajouter <strong>TAO ou SUI</strong> si ARB fluide</td>
-          <td class="val-green">Débrief fin de semaine</td>
-        </tr>
-        <tr>
-          <td><strong>Semaine 3</strong> (9-15 mai)</td>
-          <td class="val-mono">7-10</td>
-          <td>Maîtrise trailing stop (3 paliers)</td>
-          <td class="val-green">Analyse batch 10-20</td>
-        </tr>
-        <tr>
-          <td><strong>Semaine 4</strong> (16-22 mai)</td>
-          <td class="val-mono">7-10</td>
-          <td>Stabilité + réduction des erreurs</td>
-          <td class="val-green">Bilan final 30 trades</td>
-        </tr>
-        <tr style="background: rgba(74,222,128,0.06);">
-          <td><strong>TOTAL</strong></td>
-          <td class="val-mono val-green"><strong>30+</strong></td>
-          <td>Validation Phase 3</td>
-          <td><strong>Décision Go/No-Go Phase 4</strong></td>
-        </tr>
+        <tr><td><strong>S1</strong> (25 avr - 1 mai)</td><td class="val-mono">5-8</td><td>Exécution correcte · <strong>ARB only</strong></td><td class="val-green">J3 + J7</td></tr>
+        <tr><td><strong>S2</strong> (2-8 mai)</td><td class="val-mono">6-10</td><td>Ajouter TAO/SUI si fluide</td><td class="val-green">Fin semaine</td></tr>
+        <tr><td><strong>S3</strong> (9-15 mai)</td><td class="val-mono">7-10</td><td>Maîtrise trailing 3 paliers</td><td class="val-green">Batch 10-20</td></tr>
+        <tr><td><strong>S4</strong> (16-22 mai)</td><td class="val-mono">7-10</td><td>Stabilité + réduction erreurs</td><td class="val-green">Bilan final</td></tr>
+        <tr style="background:rgba(74,222,128,0.05);"><td><strong>TOTAL</strong></td><td class="val-mono val-green"><strong>30+</strong></td><td>Validation Phase 3</td><td><strong>Go/No-Go Phase 4</strong></td></tr>
       </tbody>
     </table>
 
-    <h3 style="font-size: 22px; margin-top: 40px; margin-bottom: 14px; font-weight: 700;">Les 3 seuils à atteindre (Go/No-Go Phase 4)</h3>
-    <div class="briques-grid">
-      <div class="brique glass" style="text-align:center; padding: 32px 20px;">
-        <div style="font-size: 40px; font-weight: 900; color: var(--accent-green); font-family: var(--font-mono); line-height: 1; margin-bottom: 8px;">≥ 45 %</div>
-        <div style="font-weight: 700; font-size: 17px; margin-bottom: 6px;">Winrate</div>
-        <div style="font-size: 13px; color: var(--text-muted);">(TP1 touché minimum)</div>
+    <h3 style="font-size:22px; font-weight:600; margin:40px 0 14px;">Les 3 seuils Go/No-Go</h3>
+    <div class="grid-3">
+      <div class="card reveal" style="text-align:center; padding:32px 22px;">
+        <div style="font-size:42px; font-weight:900; background:linear-gradient(180deg, #ffffff, #6fa8ff); -webkit-background-clip:text; -webkit-text-fill-color:transparent; font-family:var(--font-mono); letter-spacing:-1px; margin-bottom:8px;">≥ 45 %</div>
+        <h3 style="font-size:17px; margin-bottom:6px;">Winrate</h3>
+        <p style="font-size:13px; color:var(--muted);">TP1 touché minimum</p>
       </div>
-      <div class="brique glass" style="text-align:center; padding: 32px 20px;">
-        <div style="font-size: 40px; font-weight: 900; color: var(--accent-green); font-family: var(--font-mono); line-height: 1; margin-bottom: 8px;">≥ 1,5</div>
-        <div style="font-weight: 700; font-size: 17px; margin-bottom: 6px;">Profit Factor</div>
-        <div style="font-size: 13px; color: var(--text-muted);">(total gains / total pertes)</div>
+      <div class="card reveal" style="text-align:center; padding:32px 22px;">
+        <div style="font-size:42px; font-weight:900; background:linear-gradient(180deg, #ffffff, #6fa8ff); -webkit-background-clip:text; -webkit-text-fill-color:transparent; font-family:var(--font-mono); letter-spacing:-1px; margin-bottom:8px;">≥ 1,5</div>
+        <h3 style="font-size:17px; margin-bottom:6px;">Profit Factor</h3>
+        <p style="font-size:13px; color:var(--muted);">Gains / pertes</p>
       </div>
-      <div class="brique glass" style="text-align:center; padding: 32px 20px;">
-        <div style="font-size: 40px; font-weight: 900; color: var(--accent-green); font-family: var(--font-mono); line-height: 1; margin-bottom: 8px;">≤ 15 %</div>
-        <div style="font-weight: 700; font-size: 17px; margin-bottom: 6px;">Drawdown max</div>
-        <div style="font-size: 13px; color: var(--text-muted);">(pire baisse consécutive)</div>
+      <div class="card reveal" style="text-align:center; padding:32px 22px;">
+        <div style="font-size:42px; font-weight:900; background:linear-gradient(180deg, #ffffff, #6fa8ff); -webkit-background-clip:text; -webkit-text-fill-color:transparent; font-family:var(--font-mono); letter-spacing:-1px; margin-bottom:8px;">≤ 15 %</div>
+        <h3 style="font-size:17px; margin-bottom:6px;">Drawdown max</h3>
+        <p style="font-size:13px; color:var(--muted);">Pire baisse consécutive</p>
       </div>
     </div>
 
-    <div class="callout success mt-large">
-      <div class="callout-title">🎯 Si tu atteins les 3 seuils</div>
-      → <strong>Passage Phase 4 : live solo avec vrai argent</strong>. 1 mois de live rentable minimum avant la Phase 5 (formation de l'équipe).
+    <div class="callout success reveal">
+      <div class="callout-title">🎯 Seuils atteints</div>
+      → <strong>Passage Phase 4</strong> : live solo avec vrai argent. 1 mois rentable avant Phase 5.
     </div>
-    <div class="callout warning">
-      <div class="callout-title">⚠️ Si tu rates 1 ou plusieurs seuils</div>
-      → <strong>Itération V5.3</strong> avec moi. On identifie les erreurs (Demon Finder) et on ajuste. Pas de passage Phase 4 tant que les seuils ne sont pas atteints. <strong style="color:white;">C'est normal et ça fait partie du process.</strong>
+    <div class="callout warning reveal">
+      <div class="callout-title">⚠️ Seuils ratés</div>
+      → <strong>Itération V5.3</strong>. On identifie les erreurs (Demon Finder) et on ajuste. <strong style="color:white;">C'est normal et ça fait partie du process.</strong>
     </div>
   </section>
 
-  <!-- ═══════════════════════════════════════════════════════
-       SECTION 10 — ERREURS À ÉVITER
-  ═══════════════════════════════════════════════════════ -->
+  <!-- ERREURS -->
   <section id="erreurs">
-    <div class="section-label">10 · Pièges classiques</div>
-    <h2 class="section-title">Les 10 erreurs qui tuent 95 % des traders</h2>
-    <p class="section-desc">
-      Apprends-les par cœur. Si tu évites ces 10 erreurs, tu seras déjà dans le <strong style="color:white;">top 10 % des traders retail</strong>.
-    </p>
+    <div class="section-kicker reveal">09 · Pièges classiques</div>
+    <h2 class="section-title reveal">Les 10 erreurs <em>qui tuent 95 %</em> des traders.</h2>
+    <p class="section-desc reveal">Apprends-les par cœur. Éviter ces 10 erreurs = tu es déjà dans le <strong style="color:white;">top 10 % retail</strong>.</p>
 
-    <div class="steps-list">
-      <div class="step glass">
-        <div class="step-num" style="color: rgba(248,113,113,0.2);">❌</div>
-        <div class="step-body">
-          <h3 style="color: var(--accent-red);">1. Trader hors session NYAM</h3>
-          <p>80 % des pertes viennent des sessions pourries (Asian, early London). <strong style="color:white;">NYAM 14h30-18h CET · sinon chart fermé.</strong></p>
-        </div>
-      </div>
-      <div class="step glass">
-        <div class="step-num" style="color: rgba(248,113,113,0.2);">❌</div>
-        <div class="step-body">
-          <h3 style="color: var(--accent-red);">2. Entrer sans bougie 2</h3>
-          <p>"Ça va remonter, j'anticipe" = suicide. Sans bougie 2 de confirmation, tu paries. <strong style="color:white;">Discipline absolue.</strong></p>
-        </div>
-      </div>
-      <div class="step glass">
-        <div class="step-num" style="color: rgba(248,113,113,0.2);">❌</div>
-        <div class="step-body">
-          <h3 style="color: var(--accent-red);">3. Bouger le SL contre soi</h3>
-          <p>Le prix approche du SL, tu le "pousses" un peu plus bas. <strong style="color:white;">Règle psycho Hugo FX #1</strong> : c'est la plus grosse erreur, elle transforme un −1 % en −3 %.</p>
-        </div>
-      </div>
-      <div class="step glass">
-        <div class="step-num" style="color: rgba(248,113,113,0.2);">❌</div>
-        <div class="step-body">
-          <h3 style="color: var(--accent-red);">4. Ignorer le filtre BTC</h3>
-          <p>BTC bearish → tous les alts s'effondrent. Trader un setup alt sans checker BTC = jouer à la roulette russe.</p>
-        </div>
-      </div>
-      <div class="step glass">
-        <div class="step-num" style="color: rgba(248,113,113,0.2);">❌</div>
-        <div class="step-body">
-          <h3 style="color: var(--accent-red);">5. Trader un actif en range serré</h3>
-          <p>FET sur notre scan = 0 % TP2. <strong style="color:white;">Amplitude &lt; 5 % sur 4 jours = skip cet actif.</strong> Cherche ARB / SUI.</p>
-        </div>
-      </div>
-      <div class="step glass">
-        <div class="step-num" style="color: rgba(248,113,113,0.2);">❌</div>
-        <div class="step-body">
-          <h3 style="color: var(--accent-red);">6. Reprendre après 2 SL</h3>
-          <p>Tu es émotionnellement compromis après 2 pertes. Chaque trade suivant = 2× plus de chance de perte. <strong style="color:white;">Stop 48h.</strong></p>
-        </div>
-      </div>
-      <div class="step glass">
-        <div class="step-num" style="color: rgba(248,113,113,0.2);">❌</div>
-        <div class="step-body">
-          <h3 style="color: var(--accent-red);">7. Augmenter le risk pour "rattraper"</h3>
-          <p>"Je passe à 2 % pour récupérer ma perte précédente" = suicide certain. <strong style="color:white;">Jamais plus de 1,2 %. Point.</strong></p>
-        </div>
-      </div>
-      <div class="step glass">
-        <div class="step-num" style="color: rgba(248,113,113,0.2);">❌</div>
-        <div class="step-body">
-          <h3 style="color: var(--accent-red);">8. Sauter le journal</h3>
-          <p>"Je le ferai plus tard" → jamais fait. Pas de journal = <strong style="color:white;">pas de progrès</strong>. 95 % des traders sans journal perdent.</p>
-        </div>
-      </div>
-      <div class="step glass">
-        <div class="step-num" style="color: rgba(248,113,113,0.2);">❌</div>
-        <div class="step-body">
-          <h3 style="color: var(--accent-red);">9. Passer au réel trop tôt</h3>
-          <p>Moins de 30 paper trades = tu n'as pas de stats. Si tu passes live, tu <strong style="color:white;">flames ton compte en 2 semaines</strong>. Patience.</p>
-        </div>
-      </div>
-      <div class="step glass">
-        <div class="step-num" style="color: rgba(248,113,113,0.2);">❌</div>
-        <div class="step-body">
-          <h3 style="color: var(--accent-red);">10. Mélanger plusieurs setups</h3>
-          <p>"Je vais ajouter R2D2 + Smiling pour avoir plus d'opportunités" = <strong style="color:white;">analysis paralysis</strong>. Tu ne sauras plus quoi appliquer. 1 setup à 70 % &gt;&gt; 3 setups à 40 %.</p>
-        </div>
-      </div>
+    <div class="grid-2">
+      <div class="card reveal" style="border-left:3px solid var(--red);"><h3 style="color:var(--red); font-size:17px; margin-bottom:8px;">1. Trader hors NYAM</h3><p style="font-size:13px; color:var(--muted);">80 % des pertes viennent des sessions pourries.</p></div>
+      <div class="card reveal" style="border-left:3px solid var(--red);"><h3 style="color:var(--red); font-size:17px; margin-bottom:8px;">2. Entrer sans bougie 2</h3><p style="font-size:13px; color:var(--muted);">"J'anticipe" = suicide. Discipline absolue.</p></div>
+      <div class="card reveal" style="border-left:3px solid var(--red);"><h3 style="color:var(--red); font-size:17px; margin-bottom:8px;">3. Bouger le SL contre soi</h3><p style="font-size:13px; color:var(--muted);">Transforme −1% en −3%. La plus grosse erreur.</p></div>
+      <div class="card reveal" style="border-left:3px solid var(--red);"><h3 style="color:var(--red); font-size:17px; margin-bottom:8px;">4. Ignorer le filtre BTC</h3><p style="font-size:13px; color:var(--muted);">BTC bearish = alts bearish. Check obligatoire.</p></div>
+      <div class="card reveal" style="border-left:3px solid var(--red);"><h3 style="color:var(--red); font-size:17px; margin-bottom:8px;">5. Trader un actif en range</h3><p style="font-size:13px; color:var(--muted);">Amplitude &lt; 5% sur 4j = skip cet actif.</p></div>
+      <div class="card reveal" style="border-left:3px solid var(--red);"><h3 style="color:var(--red); font-size:17px; margin-bottom:8px;">6. Reprendre après 2 SL</h3><p style="font-size:13px; color:var(--muted);">Émotionnellement compromis. Stop 48h.</p></div>
+      <div class="card reveal" style="border-left:3px solid var(--red);"><h3 style="color:var(--red); font-size:17px; margin-bottom:8px;">7. Augmenter risk pour rattraper</h3><p style="font-size:13px; color:var(--muted);">"Je passe à 2%" = flamber le compte.</p></div>
+      <div class="card reveal" style="border-left:3px solid var(--red);"><h3 style="color:var(--red); font-size:17px; margin-bottom:8px;">8. Sauter le journal</h3><p style="font-size:13px; color:var(--muted);">Pas de journal = pas de progrès.</p></div>
+      <div class="card reveal" style="border-left:3px solid var(--red);"><h3 style="color:var(--red); font-size:17px; margin-bottom:8px;">9. Passer au réel trop tôt</h3><p style="font-size:13px; color:var(--muted);">Moins de 30 paper trades = flamme garanti.</p></div>
+      <div class="card reveal" style="border-left:3px solid var(--red);"><h3 style="color:var(--red); font-size:17px; margin-bottom:8px;">10. Mélanger plusieurs setups</h3><p style="font-size:13px; color:var(--muted);">1 setup à 70 % &gt; 3 setups à 40 %.</p></div>
     </div>
   </section>
 
-  <!-- ═══════════════════════════════════════════════════════
-       SECTION 11 — PSYCHOLOGIE
-  ═══════════════════════════════════════════════════════ -->
-  <section id="psycho">
-    <div class="section-label">11 · Ton vrai adversaire</div>
-    <h2 class="section-title">La psychologie du trader</h2>
-    <p class="section-desc">
-      La méthode V5.2 est à 20 %. <strong style="color:white;">Ta psychologie est à 80 %.</strong> Voilà les 5 règles mentales qui séparent les gagnants des perdants.
-    </p>
+  <!-- TLDR -->
+  <section>
+    <div class="section-kicker reveal">10 · Récap</div>
+    <h2 class="section-title reveal">La V5.2 en <em>1 écran.</em></h2>
+    <p class="section-desc reveal">Si tu dois retenir <strong style="color:white;">une seule page</strong> de cette formation, c'est celle-ci.</p>
 
-    <div class="why-grid">
-      <div class="why-card">
-        <h3>🧘 Règle #1 : Détachement émotionnel</h3>
-        <p>Ton capital N'EST PAS toi. Une perte ≠ un échec personnel. Un gain ≠ ta valeur. <strong style="color:white;">Tu exécutes des probabilités</strong>, c'est tout.</p>
-      </div>
-      <div class="why-card blue">
-        <h3>⏳ Règle #2 : Patience brutale</h3>
-        <p>95 % du temps, tu ne trades pas. Tu <strong>observes</strong>. Les traders rentables sont ceux qui passent <strong style="color:white;">des heures à attendre le bon setup</strong>.</p>
-      </div>
-      <div class="why-card yellow">
-        <h3>🤖 Règle #3 : Devenir un robot</h3>
-        <p>La checklist dit "non" → tu ne trades pas, même si "ça a l'air bon". La méthode prime toujours sur l'intuition. <strong style="color:white;">Intuition = FOMO déguisée.</strong></p>
-      </div>
-      <div class="why-card red">
-        <h3>❤️‍🩹 Règle #4 : Accepter la perte</h3>
-        <p>Une perte (SL touché) <strong>N'EST PAS</strong> une erreur. C'est le coût du business. Sur 10 trades, 3-5 seront perdants. <strong style="color:white;">C'est normal. C'est prévu.</strong></p>
-      </div>
-      <div class="why-card">
-        <h3>📔 Règle #5 : Journaliser tout</h3>
-        <p>Pas de journal = pas de progrès. Chaque trade, gagnant ou perdant, est une <strong style="color:white;">leçon qu'il faut capter</strong>. Demon Finder = ton détecteur d'erreurs.</p>
-      </div>
-      <div class="why-card blue">
-        <h3>🎯 Règle #6 : Un trade à la fois</h3>
-        <p>Oublie le trade passé (gagnant ou perdant). Oublie les suivants. <strong style="color:white;">Concentre-toi 100 %</strong> sur le trade que tu analyses en ce moment.</p>
-      </div>
+    <div class="tldr reveal">
+      <pre><strong>📌 CONTEXTE</strong>
+• Session : NYAM (14h30-18h CET)
+• TF : M15
+• Actifs : ARB, TAO, SUI (skip FET en range)
+• Filtre : D1+H4 bullish + BTC H4 bullish
+
+<strong>🎯 SETUP</strong>
+Sweep (mèche + close au-dessus + volume ≥ 3×)
+→ FVG bullish (gap entre 3 bougies)
+→ Mitigation (prix revient dans FVG)
+→ Bougie 2 (close plus haut que 1ère)
+→ ENTRY
+
+<strong>💼 TRADE</strong>
+Entry : close bougie 2
+SL : sous mèche sweep + buffer 0,2 %
+Risk : 1 % standard · 1,2 % max
+RR minimum : 2,5:1
+
+<strong>📈 TRAILING (V5.2)</strong>
+• Prix +1,5 % → SL bouge à BE
+• Prix +2,5 % → SL bouge à +1,5 %
+• Prix +3 %   → SORTIE TOTALE
+
+<strong>🛑 STOP RULES</strong>
+• 2 SL consécutifs / jour → STOP 24h
+• 5 % DD / 5 trades → PAUSE 48h
+• 10 % DD → ARRÊT
+
+<strong>📝 JOURNAL (après chaque trade)</strong>
+Date · Actif · Setup · Entry/SL/TP · Risk · Résultat · Score /10 · Émotion · Leçon</pre>
     </div>
 
-    <div class="callout info mt-large">
-      <div class="callout-title">💡 La citation qui résume tout</div>
-      <em style="font-size: 18px; color: var(--foreground); font-weight: 600;">"Le marché n'est pas ton ennemi. Toi-même, tu es ton ennemi."</em><br><span style="color: var(--text-muted); font-size: 14px;">— Mark Douglas, Trading in the Zone</span>
-    </div>
-  </section>
-
-  <!-- ═══════════════════════════════════════════════════════
-       SECTION 12 — RÉCAP + NEXT STEPS
-  ═══════════════════════════════════════════════════════ -->
-  <section id="recap">
-    <div class="section-label">12 · On récapitule</div>
-    <h2 class="section-title">TL;DR — La V5.2 en 1 écran</h2>
-    <p class="section-desc">
-      Si tu dois retenir <strong style="color:white;">une seule page de cette formation</strong>, c'est celle-ci.
-    </p>
-
-    <div class="glass glass-card">
-      <div style="font-family: var(--font-mono); font-size: 13px; line-height: 1.9; color: var(--foreground);">
-<strong style="color: var(--accent-green);">📌 CONTEXTE</strong>
-• Session : <strong>NYAM</strong> (14h30-18h CET)
-• TF : <strong>M15</strong>
-• Actifs : <strong>ARB, TAO, SUI</strong> (skip FET en range)
-• Filtre : <strong>D1+H4 bullish</strong> + <strong>BTC H4 bullish</strong>
-
-<strong style="color: var(--accent-green);">🎯 SETUP</strong>
-<strong>Sweep</strong> (mèche longue + close au-dessus + volume ≥ 3×)
-→ <strong>FVG bullish</strong> (gap entre 3 bougies)
-→ <strong>Mitigation</strong> (prix revient dans FVG)
-→ <strong>Bougie 2</strong> (close plus haut que 1ère)
-→ <strong>ENTRY</strong>
-
-<strong style="color: var(--accent-green);">💼 TRADE</strong>
-Entry : <strong>close bougie 2</strong>
-SL : <strong>sous mèche sweep</strong> + buffer 0,2 %
-Risk : <strong>1 % standard</strong> / 1,2 % max
-RR minimum : <strong>2,5:1</strong>
-
-<strong style="color: var(--accent-green);">📈 GESTION TRAILING (V5.2)</strong>
-• Prix +1,5 % → <strong>SL bouge à BE</strong>
-• Prix +2,5 % → <strong>SL bouge à +1,5 %</strong>
-• Prix +3 %   → <strong>SORTIE TOTALE</strong>
-
-<strong style="color: var(--accent-green);">🛑 STOP RULES</strong>
-• 2 SL consécutifs / jour → <strong>STOP 24h</strong>
-• 5 % drawdown / 5 trades → <strong>PAUSE 48h + revue</strong>
-• 10 % drawdown → <strong>ARRÊT + revue avec Claude</strong>
-
-<strong style="color: var(--accent-green);">📝 JOURNAL (après chaque trade)</strong>
-Date · Actif · Setup · Entry/SL/TP · Risk · Résultat · Score /10 · Émotion · Leçon
-      </div>
-    </div>
-
-    <div class="briques-grid mt-large">
-      <div class="brique glass" style="padding: 32px 24px;">
-        <div style="font-size: 48px; margin-bottom: 10px;">🎓</div>
-        <h3 style="font-size: 22px; font-weight: 700; margin-bottom: 8px;">Formation complète ✅</h3>
-        <p style="color: var(--text-muted); font-size: 14px;">Tu as maintenant tout ce qu'il faut pour exécuter la V5.2 pendant 30 jours.</p>
-      </div>
-      <div class="brique glass" style="padding: 32px 24px;">
-        <div style="font-size: 48px; margin-bottom: 10px;">📊</div>
-        <h3 style="font-size: 22px; font-weight: 700; margin-bottom: 8px;">Backtest 30 trades</h3>
-        <p style="color: var(--text-muted); font-size: 14px;">Paper trading. Nodex Journal. Débrief tous les 10 trades avec Claude.</p>
-      </div>
-      <div class="brique glass" style="padding: 32px 24px;">
-        <div style="font-size: 48px; margin-bottom: 10px;">🚀</div>
-        <h3 style="font-size: 22px; font-weight: 700; margin-bottom: 8px;">Phase 4 Live</h3>
-        <p style="color: var(--text-muted); font-size: 14px;">Si 3 seuils atteints (WR ≥ 45%, PF ≥ 1.5, DD ≤ 15%) → passage réel.</p>
-      </div>
-    </div>
-
-    <div class="callout success mt-large" style="text-align: center; padding: 36px;">
-      <div style="font-size: 26px; font-weight: 800; color: var(--accent-green); margin-bottom: 12px; letter-spacing: -0.5px;">🎯 Tu es prêt.</div>
-      <p style="color: var(--foreground); font-size: 16px; line-height: 1.6;">La méthode est simple. La psychologie sera ton vrai défi. <strong>Respecte tes règles</strong>, tiens ton journal, et donne-toi 30 jours pour valider.</p>
-      <p style="color: var(--text-muted); font-size: 14px; margin-top: 14px;">La rentabilité ne vient pas de la complexité. Elle vient de <strong style="color:white;">la discipline répétée sur 100+ trades</strong>.</p>
+    <div class="final-cta reveal" style="margin-top:40px;">
+      <h3>🎯 Tu es prêt.</h3>
+      <p>La méthode est simple. La psychologie sera ton vrai défi. <strong>Respecte tes règles</strong>, tiens ton journal, donne-toi 30 jours pour valider.</p>
+      <p style="margin-top:12px; color:var(--muted);">La rentabilité ne vient pas de la complexité. Elle vient de <strong>la discipline répétée sur 100+ trades</strong>.</p>
     </div>
   </section>
-
-  <footer>
-    <p><span class="logo-text">Nodex Trading</span> · V5.2 Formation Intégrale · Généré le 24 avril 2026</p>
-    <p style="margin-top: 6px;">Fusion SMC/ICT (Hugo FX) + CLT v2 (Crypto Le Trône) · Crypto Spot · M15 NYAM · Long only</p>
-    <p style="margin-top: 6px;">Stratégie créée sur mesure pour <strong style="color:white;">Nahel</strong> · Prêt à être validée par backtest 30 jours</p>
-  </footer>
 
 </div>
 
+<footer>
+  <p><strong>Nodex Trading</strong> · V5.2 Formation Intégrale · 2026-04-24</p>
+  <p>Fusion SMC/ICT (Hugo FX) + CLT v2 · Crypto Spot · M15 NYAM · Long only</p>
+  <p>Licence personnelle non transférable · Tout partage est interdit</p>
+</footer>
+
 <script>
-// CHECKLIST INTERACTIVE
+// Checklist
 const checkboxes = document.querySelectorAll('.chk');
-const progressFill = document.getElementById('progress-fill');
-const progressPercent = document.getElementById('progress-percent');
-const progressText = document.getElementById('progress-text');
+const fill = document.getElementById('fill');
+const pct = document.getElementById('pct');
+const txt = document.getElementById('txt');
 
 function updateProgress() {
   const total = checkboxes.length;
   const checked = [...checkboxes].filter(c => c.checked).length;
-  const pct = Math.round((checked / total) * 100);
-  progressFill.style.width = pct + '%';
-  progressPercent.textContent = pct + ' %';
-  progressText.textContent = checked + ' / ' + total + ' conditions';
-  if (pct === 100) {
-    progressPercent.style.color = '#4ade80';
-    progressPercent.style.textShadow = '0 0 14px rgba(74,222,128,0.5)';
+  const percent = Math.round((checked / total) * 100);
+  fill.style.width = percent + '%';
+  pct.textContent = percent + ' %';
+  txt.textContent = checked + ' / ' + total + ' conditions';
+  if (percent === 100) {
+    pct.style.color = 'var(--green)';
+    pct.style.textShadow = '0 0 14px rgba(74,222,128,0.5)';
   } else {
-    progressPercent.style.color = 'white';
-    progressPercent.style.textShadow = '0 0 14px rgba(255,255,255,0.3)';
+    pct.style.color = 'white';
+    pct.style.textShadow = 'none';
   }
   localStorage.setItem('nodexV52_checklist', JSON.stringify([...checkboxes].map(c => c.checked)));
 }
@@ -1629,13 +1117,29 @@ function loadChecklist() {
   updateProgress();
 }
 
-document.getElementById('reset-btn').addEventListener('click', () => {
+document.getElementById('reset').addEventListener('click', () => {
   checkboxes.forEach(c => c.checked = false);
   updateProgress();
 });
 
 checkboxes.forEach(c => c.addEventListener('change', updateProgress));
 loadChecklist();
+
+// Scroll reveal
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('visible'); });
+}, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+// Parallax flares
+document.addEventListener('mousemove', (e) => {
+  const x = (e.clientX / window.innerWidth - 0.5) * 20;
+  const y = (e.clientY / window.innerHeight - 0.5) * 20;
+  document.querySelectorAll('.flare').forEach((el, i) => {
+    const factor = (i + 1) * 0.3;
+    el.style.transform = `translate(${x * factor}px, ${y * factor}px)`;
+  });
+});
 
 // Smooth scroll nav
 document.querySelectorAll('nav a[href^="#"]').forEach(link => {
@@ -1646,6 +1150,5 @@ document.querySelectorAll('nav a[href^="#"]').forEach(link => {
   });
 });
 </script>
-
 </body>
 </html>

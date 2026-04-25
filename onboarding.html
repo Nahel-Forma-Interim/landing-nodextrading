@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#000000">
+<title>Onboarding Nodex — Tes premières 24 heures</title>
+<link rel="icon" href="logo-nodex.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700;800;900&family=Geist+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root { --bg:#000; --fg:#fff; --muted:rgba(255,255,255,0.55); --subtle:rgba(255,255,255,0.3); --line:rgba(255,255,255,0.08); --line-strong:rgba(255,255,255,0.18); --accent:#6fa8ff; --green:#4ade80; --orange:#f59e0b; --gold:#f5d061; --font-sans:'Geist',sans-serif; --font-mono:'Geist Mono',monospace; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body { font-family: var(--font-sans); background: var(--bg); color: var(--fg); min-height: 100vh; overflow-x: hidden; line-height: 1.6; }
+
+.bg-layer { position: fixed; top:0; left:0; right:0; bottom:0; pointer-events:none; z-index:0; }
+.stars { background-image: radial-gradient(1px 1px at 20% 30%, white, transparent), radial-gradient(1px 1px at 60% 70%, rgba(255,255,255,0.8), transparent), radial-gradient(1px 1px at 80% 10%, white, transparent), radial-gradient(1px 1px at 33% 65%, rgba(255,255,255,0.7), transparent); background-size: 250% 250%; animation: starfall 80s linear infinite; opacity: 0.4; }
+@keyframes starfall { 0%{background-position:0% 0%;} 100%{background-position:100% 100%;} }
+.glows { background: radial-gradient(ellipse 600px 400px at 15% 85%, rgba(111,168,255,0.1) 0%, transparent 60%), radial-gradient(ellipse 700px 500px at 85% 15%, rgba(180,200,255,0.08) 0%, transparent 60%); }
+.beams { overflow: hidden; }
+.beam { position:absolute; top:-20%; width:1px; height:140%; background: linear-gradient(180deg, transparent, rgba(255,255,255,0.4) 30%, rgba(255,255,255,0.9) 50%, rgba(255,255,255,0.4) 70%, transparent); filter: blur(0.5px); animation: beamMove 12s ease-in-out infinite; opacity: 0.2; }
+.beam:nth-child(1){left:25%;} .beam:nth-child(2){left:55%;animation-delay:-4s;animation-duration:18s;} .beam:nth-child(3){left:80%;animation-delay:-8s;animation-duration:15s;}
+@keyframes beamMove { 0%,100%{opacity:0.05; transform:translateY(0) scaleY(1);} 50%{opacity:0.3; transform:translateY(-20px) scaleY(1.1);} }
+.flare { position:absolute; border-radius:50%; filter:blur(60px); opacity:0.35; animation: flareFloat 20s ease-in-out infinite; }
+.flare-1 { top:-150px; right:-150px; width:500px; height:500px; background: radial-gradient(circle, rgba(111,168,255,0.4) 0%, transparent 70%); }
+.flare-2 { bottom:-200px; left:-200px; width:600px; height:600px; background: radial-gradient(circle, rgba(180,200,255,0.3) 0%, transparent 70%); animation-delay:-10s; }
+@keyframes flareFloat { 0%,100%{transform:translate(0,0) scale(1);} 33%{transform:translate(40px,-30px) scale(1.1);} 66%{transform:translate(-30px,40px) scale(0.95);} }
+.grid-overlay { background-image: linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px); background-size: 60px 60px; opacity: 0.4; }
+
+nav.top { position: fixed; top: 0; left: 0; right: 0; z-index: 100; padding: 16px 32px; display: flex; justify-content: space-between; align-items: center; background: linear-gradient(180deg, rgba(0,0,0,0.7), transparent); backdrop-filter: blur(8px); }
+.logo-wrap { display: flex; align-items: center; gap: 12px; cursor: pointer; text-decoration: none; }
+.logo-icon { position: relative; width: 38px; height: 38px; border-radius: 22.5%; background: linear-gradient(135deg, rgba(111,168,255,0.22), rgba(180,200,255,0.05)); border: 1px solid rgba(255,255,255,0.12); display: flex; align-items: center; justify-content: center; }
+.logo-icon::before { content:''; position:absolute; top:0; left:0; right:0; height:50%; background: linear-gradient(180deg, rgba(255,255,255,0.12), transparent); border-radius: 22.5% 22.5% 0 0; }
+.logo-img { width: 22px; height: 22px; filter: brightness(0) invert(1); z-index: 1; }
+.logo-text { font-size: 15px; font-weight: 800; background: linear-gradient(135deg, #fff, #c8d8ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+.tier-pill { padding: 6px 14px; border-radius: 999px; font-size: 11px; font-family: var(--font-mono); letter-spacing: 1.5px; text-transform: uppercase; background: rgba(111,168,255,0.1); border: 1px solid rgba(111,168,255,0.25); color: var(--accent); }
+.tier-pill.gold { background: rgba(245,208,97,0.1); border-color: rgba(245,208,97,0.25); color: var(--gold); }
+
+.hero { position: relative; z-index: 10; padding: 130px 24px 50px; max-width: 920px; margin: 0 auto; text-align: center; }
+.kicker { display: inline-flex; align-items: center; gap: 8px; padding: 6px 16px; background: rgba(255,255,255,0.03); border: 1px solid var(--line); border-radius: 999px; font-size: 11px; font-family: var(--font-mono); color: var(--muted); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 24px; }
+.kicker::before { content: '●'; color: var(--green); animation: pulse 2s infinite; }
+@keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:0.3;} }
+.hero h1 { font-size: clamp(36px, 6vw, 60px); font-weight: 400; letter-spacing: -2px; line-height: 1.05; margin-bottom: 16px; }
+.hero h1 em { font-style: italic; background: linear-gradient(135deg, #fff, #6fa8ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+.hero-sub { font-size: 16px; color: var(--muted); max-width: 620px; margin: 0 auto; }
+
+.progress-wrap { max-width: 920px; margin: 0 auto 40px; padding: 0 24px; position: relative; z-index: 10; }
+.progress-stats { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+.progress-text { font-size: 12px; font-family: var(--font-mono); color: var(--muted); letter-spacing: 1.5px; text-transform: uppercase; }
+.progress-pct { font-size: 14px; font-family: var(--font-mono); color: var(--accent); font-weight: 600; }
+.progress-bar { height: 4px; background: rgba(255,255,255,0.08); border-radius: 999px; overflow: hidden; }
+.progress-fill { height: 100%; width: 0%; background: linear-gradient(90deg, var(--accent), #c8d8ff); border-radius: 999px; transition: width 0.6s cubic-bezier(0.4,0,0.2,1); }
+
+.container { position: relative; z-index: 10; max-width: 920px; margin: 0 auto; padding: 0 24px 100px; }
+
+.step { background: rgba(255,255,255,0.025); border: 1px solid var(--line); border-radius: 20px; padding: 32px; margin-bottom: 18px; backdrop-filter: blur(10px); transition: all 0.4s cubic-bezier(0.4,0,0.2,1); position: relative; overflow: hidden; }
+.step.completed { background: rgba(74,222,128,0.04); border-color: rgba(74,222,128,0.25); }
+.step.completed .step-num-circle { background: var(--green); color: #001; border-color: var(--green); }
+.step.completed .step-status { color: var(--green); }
+.step.locked { opacity: 0.4; }
+
+.step-header { display: flex; gap: 18px; align-items: flex-start; cursor: pointer; }
+.step-num-circle { width: 40px; height: 40px; border-radius: 50%; background: rgba(111,168,255,0.1); border: 1.5px solid rgba(111,168,255,0.4); color: var(--accent); display: flex; align-items: center; justify-content: center; font-weight: 600; font-family: var(--font-mono); flex-shrink: 0; transition: all 0.3s; }
+.step-info { flex: 1; }
+.step-title { font-size: 19px; font-weight: 500; letter-spacing: -0.5px; margin-bottom: 4px; }
+.step-meta { display: flex; gap: 16px; align-items: center; font-size: 12px; font-family: var(--font-mono); color: var(--muted); letter-spacing: 1px; text-transform: uppercase; }
+.step-status { color: var(--orange); }
+.step-toggle { color: var(--muted); font-size: 18px; transition: transform 0.3s; }
+.step.expanded .step-toggle { transform: rotate(45deg); }
+
+.step-body { max-height: 0; overflow: hidden; transition: max-height 0.5s cubic-bezier(0.4,0,0.2,1); }
+.step.expanded .step-body { max-height: 2000px; }
+.step-body-inner { padding-top: 24px; }
+.step-desc { font-size: 14px; color: var(--muted); line-height: 1.7; margin-bottom: 18px; }
+
+.code-block { background: rgba(0,0,0,0.5); border: 1px solid var(--line); border-radius: 10px; padding: 14px 18px; font-family: var(--font-mono); font-size: 13px; color: var(--accent); margin: 12px 0; overflow-x: auto; }
+.code-block .comment { color: var(--subtle); }
+
+.action-btn { display: inline-flex; align-items: center; gap: 8px; padding: 10px 18px; background: rgba(111,168,255,0.1); border: 1px solid rgba(111,168,255,0.3); color: var(--accent); border-radius: 999px; font-size: 13px; font-weight: 500; text-decoration: none; cursor: pointer; transition: all 0.2s; font-family: var(--font-sans); }
+.action-btn:hover { background: rgba(111,168,255,0.18); border-color: var(--accent); }
+.action-btn.primary { background: var(--fg); color: var(--bg); border: none; }
+.action-btn.primary:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(255,255,255,0.2); }
+.btn-row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 20px; }
+
+.complete-toggle { display: flex; align-items: center; gap: 12px; padding: 14px 18px; background: rgba(255,255,255,0.03); border: 1px solid var(--line); border-radius: 12px; cursor: pointer; transition: all 0.2s; margin-top: 18px; }
+.complete-toggle:hover { border-color: var(--line-strong); }
+.complete-toggle input[type="checkbox"] { display: none; }
+.complete-checkbox { width: 22px; height: 22px; border-radius: 50%; border: 2px solid var(--line-strong); display: flex; align-items: center; justify-content: center; transition: all 0.2s; flex-shrink: 0; }
+.complete-toggle.checked .complete-checkbox { background: var(--green); border-color: var(--green); }
+.complete-toggle.checked .complete-checkbox::after { content: '✓'; color: #001; font-weight: 700; font-size: 13px; }
+.complete-text { font-size: 14px; color: var(--fg); }
+.complete-toggle.checked .complete-text { color: var(--muted); }
+
+.tier-bonus { background: linear-gradient(135deg, rgba(111,168,255,0.08), rgba(180,200,255,0.03)); border: 1px solid rgba(111,168,255,0.25); border-radius: 14px; padding: 18px 22px; margin-top: 16px; }
+.tier-bonus.gold { background: linear-gradient(135deg, rgba(245,208,97,0.08), rgba(255,255,255,0.02)); border-color: rgba(245,208,97,0.25); }
+.tier-bonus-title { font-size: 11px; font-family: var(--font-mono); color: var(--accent); letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 8px; }
+.tier-bonus.gold .tier-bonus-title { color: var(--gold); }
+.tier-bonus-text { font-size: 13px; color: var(--muted); line-height: 1.6; }
+
+.final-celebration { display: none; text-align: center; padding: 60px 24px; background: linear-gradient(135deg, rgba(74,222,128,0.08), rgba(111,168,255,0.04)); border: 1px solid rgba(74,222,128,0.3); border-radius: 24px; margin-top: 40px; }
+.final-celebration.show { display: block; animation: celebrate 0.8s cubic-bezier(0.4,0,0.2,1); }
+@keyframes celebrate { 0%{opacity:0; transform:scale(0.95);} 100%{opacity:1; transform:scale(1);} }
+.celebrate-icon { font-size: 48px; margin-bottom: 16px; }
+.celebrate-title { font-size: clamp(28px, 4vw, 40px); font-weight: 400; letter-spacing: -1.5px; margin-bottom: 14px; }
+.celebrate-title em { font-style: italic; background: linear-gradient(135deg, #fff, #4ade80); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+.celebrate-text { color: var(--muted); margin-bottom: 24px; max-width: 580px; margin-left: auto; margin-right: auto; }
+</style>
+</head>
+<body>
+
+<div class="bg-layer glows"></div>
+<div class="bg-layer stars"></div>
+<div class="bg-layer beams"><div class="beam"></div><div class="beam"></div><div class="beam"></div></div>
+<div class="bg-layer"><div class="flare flare-1"></div><div class="flare flare-2"></div></div>
+<div class="bg-layer grid-overlay"></div>
+
+<nav class="top">
+  <a href="landing.html" class="logo-wrap">
+    <div class="logo-icon"><img src="logo-nodex.png" alt="Nodex" class="logo-img" onerror="this.style.display='none'"></div>
+    <span class="logo-text">NODEX</span>
+  </a>
+  <span class="tier-pill" id="tierPill">Tier · Essentiel</span>
+</nav>
+
+<header class="hero">
+  <div class="kicker">Bienvenue · Onboarding</div>
+  <h1>Tes 24 premières heures, <em>guidées.</em></h1>
+  <p class="hero-sub">Suis les étapes dans l'ordre. Coche au fur et à mesure. À la fin, tu auras le skill installé, TradingView configuré, et ton premier paper trade journalé.</p>
+</header>
+
+<div class="progress-wrap">
+  <div class="progress-stats">
+    <span class="progress-text">Progression onboarding</span>
+    <span class="progress-pct" id="onboardPct">0 / 0 étapes</span>
+  </div>
+  <div class="progress-bar"><div class="progress-fill" id="onboardFill"></div></div>
+</div>
+
+<div class="container">
+
+  <div id="stepsContainer"></div>
+
+  <div class="final-celebration" id="celebration">
+    <div class="celebrate-icon">🎯</div>
+    <h2 class="celebrate-title">Tu es <em>opérationnel.</em></h2>
+    <p class="celebrate-text">Onboarding terminé. Tu as installé le skill, configuré TradingView, journalé ton premier paper trade. À partir de maintenant, c'est Nodex IA qui te coache directement dans Claude Code. Bonne chasse aux Sweeps.</p>
+    <a href="fiche-nodex-v5.2.html" class="action-btn primary">Ouvrir la fiche cockpit →</a>
+  </div>
+
+</div>
+
+<script>
+const params = new URLSearchParams(window.location.search);
+const tier = params.get('tier') || localStorage.getItem('nodex_active_tier') || 'essentiel';
+
+const tierPill = document.getElementById('tierPill');
+tierPill.textContent = 'Tier · ' + (tier === 'essentiel' ? 'Essentiel' : tier === 'pro' ? 'Pro' : 'Elite');
+if (tier === 'elite') tierPill.classList.add('gold');
+
+const baseSteps = [
+  {
+    id: 'download',
+    title: 'Télécharge tes fichiers',
+    meta: '2 minutes',
+    desc: 'Récupère ton ZIP du skill, le pack Pine Script, et la fiche cockpit. Tout est dans l\'email reçu après ta commande.',
+    body: `
+      <div class="btn-row">
+        <a href="email-preview.html?tier=${tier}" class="action-btn">Voir mon email →</a>
+        <a href="fiche-nodex-v5.2.html" class="action-btn">Ouvrir la fiche cockpit</a>
+      </div>
+    `
+  },
+  {
+    id: 'install',
+    title: 'Installe le skill dans Claude Code',
+    meta: '3 minutes',
+    desc: 'Décompresse le ZIP, place le dossier dans ton projet, lance le script PowerShell. Pas de manipulation Git, pas de ligne de commande compliquée.',
+    body: `
+      <div class="step-desc">Dans le ZIP, tu trouves un fichier <strong>install.ps1</strong>. Clic droit dessus, puis "Exécuter avec PowerShell".</div>
+      <div class="code-block">
+<span class="comment"># Ou en ligne de commande :</span><br>
+PowerShell -ExecutionPolicy Bypass -File install.ps1
+      </div>
+      <div class="step-desc">Le script te demande où installer (projet spécifique recommandé) puis copie tous les fichiers automatiquement.</div>
+    `
+  },
+  {
+    id: 'activate',
+    title: 'Active le skill avec ton code',
+    meta: '1 minute',
+    desc: 'Ouvre Claude Code dans ton dossier de trading, et dis simplement : "Nodex, tu es là ?". Le formateur te demande ton code d\'activation, tu colles celui de ton email, c\'est validé pour toujours.',
+    body: `
+      <div class="code-block">
+<span class="comment"># Dans Claude Code :</span><br>
+Nodex, tu es là ?
+      </div>
+      <div class="step-desc">Si Nodex ne répond pas avec son message d'accueil, ferme et relance Claude Code, puis réessaie.</div>
+    `
+  },
+  {
+    id: 'tradingview',
+    title: 'Configure TradingView (4 indicateurs)',
+    meta: '8 minutes',
+    desc: 'Dans le pack Pine, tu as 4 fichiers .pine. Pour chacun : ouvre TradingView, clique sur Pine Editor en bas, copie-colle le contenu, "Add to chart". Répète 4 fois.',
+    body: `
+      <ul style="color: var(--muted); padding-left: 20px; line-height: 1.9; font-size: 14px;">
+        <li><strong>nodex-sweep-detector.pine</strong> — Détection automatique des Sweeps PDH/PWH</li>
+        <li><strong>nodex-fvg-auto.pine</strong> — Trace tous les FVG vierges</li>
+        <li><strong>nodex-volume-filter.pine</strong> — Tableau qualité du setup</li>
+        <li><strong>nodex-htf-bias.pine</strong> — Verdict LONG OK / SHORT OK / NO TRADE</li>
+      </ul>
+      <div class="step-desc" style="margin-top: 16px;">Une fois ajoutés, sauvegarde ton layout dans TradingView : "Layout > Save as > Nodex V5.2". Tu y reviendras à chaque session.</div>
+    `
+  },
+  {
+    id: 'diagnostic',
+    title: 'Passe le diagnostic 10 questions',
+    meta: '12 minutes',
+    desc: 'Dans Claude Code, dis "Je suis prêt pour le diagnostic". Nodex te pose 10 questions sur ton niveau, ton capital, tes erreurs passées, ta disponibilité. Aucune mauvaise réponse — c\'est juste pour calibrer ton programme.',
+    body: `
+      <div class="step-desc">À la fin du diagnostic, Nodex te génère un programme adaptatif :</div>
+      <ul style="color: var(--muted); padding-left: 20px; line-height: 1.9; font-size: 14px;">
+        <li><strong>Programme 1 semaine</strong> — Si tu as déjà l'expérience SMC/ICT</li>
+        <li><strong>Programme 2 semaines</strong> — Si tu connais le trading mais pas SMC</li>
+        <li><strong>Programme 3 semaines</strong> — Si tu débutes complètement</li>
+      </ul>
+    `
+  },
+  {
+    id: 'paper',
+    title: 'Lance ton premier paper trade',
+    meta: '15-30 minutes',
+    desc: 'Sur TradingView, choisis un asset de la watchlist (FET, TAO, ARB ou PENDLE). Attends une session NYAM (13h30-16h UTC). Cherche un Sweep + FVG + Bougie 2. Si tu en trouves un, ouvre la fiche cockpit, valide les 18 points, calcule ta position, et journalise.',
+    body: `
+      <div class="btn-row">
+        <a href="fiche-nodex-v5.2.html" class="action-btn primary">Ouvrir la fiche cockpit →</a>
+      </div>
+      <div class="step-desc" style="margin-top: 16px;">Aucune urgence. Si tu ne trouves pas de setup propre aujourd'hui, c'est normal. La discipline, c'est de ne PAS forcer.</div>
+    `
+  },
+  {
+    id: 'journal',
+    title: 'Journalise ton premier trade',
+    meta: '5 minutes',
+    desc: 'Que ton paper trade soit gagnant ou perdant, journalise-le dans la fiche cockpit. Le journal calcule ton WR et ton RR moyen automatiquement. C\'est ton arme contre l\'oubli des erreurs.',
+    body: `
+      <div class="btn-row">
+        <a href="fiche-nodex-v5.2.html#sec-journal" class="action-btn">Aller au journal →</a>
+      </div>
+    `
+  }
+];
+
+const proSteps = [
+  {
+    id: 'telegram',
+    title: 'Rejoins le Telegram positions Nahel',
+    meta: '1 minute',
+    desc: 'Le lien d\'invitation Telegram est dans ton email. Clique, accepte, tu es dans le channel privé. Tu vois ce que Nahel surveille en direct.',
+    body: `
+      <div class="tier-bonus">
+        <div class="tier-bonus-title">Bonus Pro</div>
+        <div class="tier-bonus-text">Le Telegram est en lecture seule. Tu reçois 5-15 messages/jour : zones surveillées, entrées potentielles, résultats des trades clos. Pas de groupe de discussion, pas de bruit.</div>
+      </div>
+    `
+  },
+  {
+    id: 'watchlist',
+    title: 'Importe la watchlist crypto privée',
+    meta: '2 minutes',
+    desc: 'Dans ton email, tu as un fichier watchlist-tv.json. Dans TradingView : "Watchlist > Import list" → sélectionne le fichier. Tu vois maintenant les 8-12 alts validés par Nahel cette semaine.',
+    body: ''
+  }
+];
+
+const eliteSteps = [
+  {
+    id: 'priority',
+    title: 'Inscris-toi sur la liste prioritaire bot',
+    meta: '2 minutes',
+    desc: 'Le bot Nodex Auto Scanner sera déployé après validation des 30 trades en live profitable (Q3 2026). En tant qu\'Elite early access, tu reçois un email dès que la phase de test bêta commence.',
+    body: `
+      <div class="tier-bonus gold">
+        <div class="tier-bonus-title">Bonus Elite</div>
+        <div class="tier-bonus-text">Tu participes aux sondages privés sur les paramètres du bot (timeframes, filtres, RR cible). Ta voix compte dans la définition finale.</div>
+      </div>
+    `
+  }
+];
+
+let allSteps = [...baseSteps];
+if (tier === 'pro') allSteps = [...baseSteps, ...proSteps];
+if (tier === 'elite') allSteps = [...baseSteps, ...proSteps, ...eliteSteps];
+
+const STORAGE_KEY = 'nodex_onboarding_state';
+let state = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+
+function renderSteps() {
+  const container = document.getElementById('stepsContainer');
+  container.innerHTML = allSteps.map((s, i) => `
+    <div class="step ${state[s.id] ? 'completed' : ''}" data-id="${s.id}" id="step-${s.id}">
+      <div class="step-header" onclick="toggleStep('${s.id}')">
+        <div class="step-num-circle">${state[s.id] ? '✓' : String(i+1).padStart(2,'0')}</div>
+        <div class="step-info">
+          <div class="step-title">${s.title}</div>
+          <div class="step-meta">
+            <span>${s.meta}</span>
+            <span class="step-status">${state[s.id] ? 'Complété' : 'À faire'}</span>
+          </div>
+        </div>
+        <span class="step-toggle">+</span>
+      </div>
+      <div class="step-body">
+        <div class="step-body-inner">
+          <div class="step-desc">${s.desc}</div>
+          ${s.body || ''}
+          <div class="complete-toggle ${state[s.id] ? 'checked' : ''}" onclick="markComplete('${s.id}', event)">
+            <div class="complete-checkbox"></div>
+            <div class="complete-text">${state[s.id] ? 'Étape terminée' : 'Marquer comme terminé'}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  `).join('');
+  updateProgress();
+}
+
+function toggleStep(id) {
+  const el = document.getElementById('step-' + id);
+  el.classList.toggle('expanded');
+}
+
+function markComplete(id, e) {
+  e.stopPropagation();
+  state[id] = !state[id];
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  renderSteps();
+  // Re-expand the step user just clicked
+  setTimeout(() => {
+    document.getElementById('step-' + id).classList.add('expanded');
+  }, 50);
+}
+
+function updateProgress() {
+  const total = allSteps.length;
+  const done = allSteps.filter(s => state[s.id]).length;
+  const pct = total ? (done / total) * 100 : 0;
+  document.getElementById('onboardFill').style.width = pct + '%';
+  document.getElementById('onboardPct').textContent = `${done} / ${total} étapes`;
+  if (done === total && total > 0) {
+    document.getElementById('celebration').classList.add('show');
+  } else {
+    document.getElementById('celebration').classList.remove('show');
+  }
+}
+
+renderSteps();
+
+// Auto-expand first non-completed step
+const firstUnchecked = allSteps.find(s => !state[s.id]);
+if (firstUnchecked) {
+  setTimeout(() => document.getElementById('step-' + firstUnchecked.id).classList.add('expanded'), 200);
+}
+
+// Mouse parallax
+document.addEventListener('mousemove', (e) => {
+  const x = (e.clientX / window.innerWidth - 0.5) * 30;
+  const y = (e.clientY / window.innerHeight - 0.5) * 30;
+  const f1 = document.querySelector('.flare-1'); const f2 = document.querySelector('.flare-2');
+  if (f1) f1.style.transform = `translate(${x*0.4}px, ${y*0.4}px)`;
+  if (f2) f2.style.transform = `translate(${x*0.7}px, ${y*0.7}px)`;
+});
+</script>
+</body>
+</html>

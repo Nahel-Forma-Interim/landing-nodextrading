@@ -1,0 +1,144 @@
+//@version=5
+// ═══════════════════════════════════════════════════════════════════
+// NODEX FVG AUTO — V1.0
+// ═══════════════════════════════════════════════════════════════════
+// Détecte automatiquement les Fair Value Gaps (FVG) haussiers et
+// baissiers et trace les boîtes correspondantes. Marque le FVG
+// comme "mitigé" quand le prix le retouche.
+//
+// Définition FVG haussier :
+//   - Bougie 1 : low[2]
+//   - Bougie 3 : high[0]
+//   - FVG = zone entre high[2] et low[0] si low[0] > high[2]
+//
+// Filtres qualité :
+//   - Taille minimum % du prix (élimine les micro-gaps)
+//   - Marquage automatique de la mitigation
+//   - Effacement après N bougies si non mitigé
+//
+// © 2026 Nodex Trading — Strategy V5.2 — Licence personnelle
+// ═══════════════════════════════════════════════════════════════════
+
+indicator("Nodex FVG Auto", shorttitle="NDX-FVG", overlay=true, max_boxes_count=500, max_labels_count=500)
+
+// ─── INPUTS ────────────────────────────────────────────────────────
+grpDetect = "Détection"
+detectBull = input.bool(true, "FVG haussiers", group=grpDetect)
+detectBear = input.bool(false, "FVG baissiers", group=grpDetect, tooltip="Désactivé par défaut — Nodex V5.2 = long only")
+minSize = input.float(0.3, "Taille min. (%)", minval=0.05, maxval=5.0, step=0.05, group=grpDetect,
+     tooltip="Taille minimum du FVG en % du prix. 0,3% = élimine le bruit M15.")
+
+grpLifecycle = "Cycle de vie"
+maxAge = input.int(50, "Effacer après N bougies", minval=10, maxval=500, group=grpLifecycle)
+showMitigated = input.bool(true, "Garder les FVG mitigés (grisés)", group=grpLifecycle)
+
+grpVisu = "Affichage"
+bullColor = input.color(color.new(#4ade80, 80), "Couleur FVG haussier", group=grpVisu)
+bullBorder = input.color(color.new(#4ade80, 50), "Bordure FVG haussier", group=grpVisu)
+bearColor = input.color(color.new(#ef4444, 80), "Couleur FVG baissier", group=grpVisu)
+bearBorder = input.color(color.new(#ef4444, 50), "Bordure FVG baissier", group=grpVisu)
+mitigatedColor = input.color(color.new(#888888, 90), "Couleur mitigée", group=grpVisu)
+showLabel = input.bool(true, "Label FVG (taille %)", group=grpVisu)
+
+// ─── DÉTECTION FVG ─────────────────────────────────────────────────
+// FVG haussier : low du bar courant > high de bar[2]
+// FVG baissier : high du bar courant < low de bar[2]
+
+var array<box> bullFVGs = array.new<box>()
+var array<box> bearFVGs = array.new<box>()
+var array<float> bullTops = array.new<float>()
+var array<float> bullBots = array.new<float>()
+var array<bool> bullMitigated = array.new<bool>()
+var array<float> bearTops = array.new<float>()
+var array<float> bearBots = array.new<float>()
+var array<bool> bearMitigated = array.new<bool>()
+
+// Détection FVG haussier
+fvgBullTop = low
+fvgBullBot = high[2]
+isBullFVG = detectBull and low > high[2]
+sizeBullPct = isBullFVG ? ((fvgBullTop - fvgBullBot) / close) * 100 : 0
+validBull = isBullFVG and sizeBullPct >= minSize
+
+if validBull
+    b = box.new(bar_index - 2, fvgBullTop, bar_index + 30, fvgBullBot, border_color=bullBorder, bgcolor=bullColor, border_width=1)
+    array.push(bullFVGs, b)
+    array.push(bullTops, fvgBullTop)
+    array.push(bullBots, fvgBullBot)
+    array.push(bullMitigated, false)
+    if showLabel
+        label.new(bar_index, fvgBullTop, str.tostring(sizeBullPct, "#.##") + "%", style=label.style_none, textcolor=color.new(#4ade80, 0), size=size.tiny)
+
+// Détection FVG baissier
+fvgBearTop = low[2]
+fvgBearBot = high
+isBearFVG = detectBear and high < low[2]
+sizeBearPct = isBearFVG ? ((fvgBearTop - fvgBearBot) / close) * 100 : 0
+validBear = isBearFVG and sizeBearPct >= minSize
+
+if validBear
+    b = box.new(bar_index - 2, fvgBearTop, bar_index + 30, fvgBearBot, border_color=bearBorder, bgcolor=bearColor, border_width=1)
+    array.push(bearFVGs, b)
+    array.push(bearTops, fvgBearTop)
+    array.push(bearBots, fvgBearBot)
+    array.push(bearMitigated, false)
+
+// ─── MITIGATION & MAINTENANCE ─────────────────────────────────────
+if array.size(bullFVGs) > 0
+    for i = array.size(bullFVGs) - 1 to 0
+        b = array.get(bullFVGs, i)
+        topPx = array.get(bullTops, i)
+        botPx = array.get(bullBots, i)
+        wasMitig = array.get(bullMitigated, i)
+        // Mitigation = prix touche le top du FVG par le haut
+        if not wasMitig and low <= topPx and high >= botPx
+            array.set(bullMitigated, i, true)
+            if showMitigated
+                box.set_bgcolor(b, mitigatedColor)
+                box.set_border_color(b, mitigatedColor)
+            else
+                box.delete(b)
+                array.remove(bullFVGs, i)
+                array.remove(bullTops, i)
+                array.remove(bullBots, i)
+                array.remove(bullMitigated, i)
+                continue
+        // Étendre la box vers la droite
+        box.set_right(b, bar_index + 5)
+        // Effacement par âge
+        if bar_index - box.get_left(b) > maxAge
+            box.delete(b)
+            array.remove(bullFVGs, i)
+            array.remove(bullTops, i)
+            array.remove(bullBots, i)
+            array.remove(bullMitigated, i)
+
+if array.size(bearFVGs) > 0
+    for i = array.size(bearFVGs) - 1 to 0
+        b = array.get(bearFVGs, i)
+        topPx = array.get(bearTops, i)
+        botPx = array.get(bearBots, i)
+        wasMitig = array.get(bearMitigated, i)
+        if not wasMitig and high >= botPx and low <= topPx
+            array.set(bearMitigated, i, true)
+            if showMitigated
+                box.set_bgcolor(b, mitigatedColor)
+                box.set_border_color(b, mitigatedColor)
+            else
+                box.delete(b)
+                array.remove(bearFVGs, i)
+                array.remove(bearTops, i)
+                array.remove(bearBots, i)
+                array.remove(bearMitigated, i)
+                continue
+        box.set_right(b, bar_index + 5)
+        if bar_index - box.get_left(b) > maxAge
+            box.delete(b)
+            array.remove(bearFVGs, i)
+            array.remove(bearTops, i)
+            array.remove(bearBots, i)
+            array.remove(bearMitigated, i)
+
+// ─── ALERTES ───────────────────────────────────────────────────────
+alertcondition(validBull, title="Nodex FVG Haussier", message="FVG haussier détecté sur {{ticker}} {{interval}} — Surveille la mitigation pour entrée.")
+alertcondition(validBear, title="Nodex FVG Baissier", message="FVG baissier détecté sur {{ticker}} {{interval}}.")

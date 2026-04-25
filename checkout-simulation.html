@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#000000">
+<title>Checkout simulation — Nodex Trading</title>
+<link rel="icon" href="logo-nodex.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700;800;900&family=Geist+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root { --bg:#000; --fg:#fff; --muted:rgba(255,255,255,0.55); --subtle:rgba(255,255,255,0.3); --line:rgba(255,255,255,0.08); --line-strong:rgba(255,255,255,0.18); --accent:#6fa8ff; --green:#4ade80; --orange:#f59e0b; --font-sans:'Geist',sans-serif; --font-mono:'Geist Mono',monospace; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body { font-family: var(--font-sans); background: var(--bg); color: var(--fg); min-height: 100vh; overflow-x: hidden; line-height: 1.6; }
+
+.bg-layer { position: fixed; top:0; left:0; right:0; bottom:0; pointer-events:none; z-index:0; }
+.stars { background-image: radial-gradient(1px 1px at 20% 30%, white, transparent), radial-gradient(1px 1px at 60% 70%, rgba(255,255,255,0.8), transparent), radial-gradient(1px 1px at 80% 10%, white, transparent), radial-gradient(1px 1px at 33% 65%, rgba(255,255,255,0.7), transparent); background-size: 250% 250%; animation: starfall 80s linear infinite; opacity: 0.3; }
+@keyframes starfall { 0%{background-position:0% 0%;} 100%{background-position:100% 100%;} }
+.glows { background: radial-gradient(ellipse 600px 400px at 15% 85%, rgba(111,168,255,0.1) 0%, transparent 60%), radial-gradient(ellipse 700px 500px at 85% 15%, rgba(180,200,255,0.06) 0%, transparent 60%); }
+.flare { position:absolute; border-radius:50%; filter:blur(60px); opacity:0.3; }
+.flare-1 { top:-150px; right:-150px; width:500px; height:500px; background: radial-gradient(circle, rgba(111,168,255,0.4) 0%, transparent 70%); }
+.flare-2 { bottom:-200px; left:-200px; width:600px; height:600px; background: radial-gradient(circle, rgba(180,200,255,0.3) 0%, transparent 70%); }
+.grid-overlay { background-image: linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px); background-size: 60px 60px; opacity: 0.4; }
+
+.simulation-banner { position: fixed; top: 0; left: 0; right: 0; z-index: 200; padding: 14px 24px; background: linear-gradient(90deg, rgba(245,158,11,0.95), rgba(245,158,11,0.85), rgba(245,158,11,0.95)); color: #001; text-align: center; font-size: 13px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; font-family: var(--font-mono); }
+
+nav.top { position: fixed; top: 50px; left: 0; right: 0; z-index: 100; padding: 16px 32px; display: flex; justify-content: space-between; align-items: center; background: linear-gradient(180deg, rgba(0,0,0,0.7), transparent); backdrop-filter: blur(8px); }
+.logo-wrap { display: flex; align-items: center; gap: 12px; cursor: pointer; text-decoration: none; }
+.logo-icon { position: relative; width: 38px; height: 38px; border-radius: 22.5%; background: linear-gradient(135deg, rgba(111,168,255,0.22), rgba(180,200,255,0.05)); border: 1px solid rgba(255,255,255,0.12); display: flex; align-items: center; justify-content: center; }
+.logo-icon::before { content:''; position:absolute; top:0; left:0; right:0; height:50%; background: linear-gradient(180deg, rgba(255,255,255,0.12), transparent); border-radius: 22.5% 22.5% 0 0; }
+.logo-img { width: 22px; height: 22px; filter: brightness(0) invert(1); z-index: 1; }
+.logo-text { font-size: 15px; font-weight: 800; background: linear-gradient(135deg, #fff, #c8d8ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+.secure-badge { display: inline-flex; align-items: center; gap: 6px; font-size: 11px; font-family: var(--font-mono); color: var(--muted); letter-spacing: 1px; text-transform: uppercase; }
+.secure-badge::before { content: '🔒'; }
+
+.checkout-wrap { position: relative; z-index: 10; padding: 160px 24px 60px; max-width: 1100px; margin: 0 auto; display: grid; grid-template-columns: 1.2fr 1fr; gap: 40px; }
+@media (max-width: 900px) { .checkout-wrap { grid-template-columns: 1fr; } }
+
+.checkout-form { background: rgba(255,255,255,0.025); border: 1px solid var(--line); border-radius: 24px; padding: 36px; backdrop-filter: blur(10px); }
+.checkout-title { font-size: 28px; font-weight: 400; letter-spacing: -1px; margin-bottom: 8px; }
+.checkout-title em { font-style: italic; background: linear-gradient(135deg, #fff, #6fa8ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+.checkout-sub { font-size: 14px; color: var(--muted); margin-bottom: 28px; }
+
+.form-section { margin-bottom: 28px; }
+.form-section-title { font-size: 11px; font-family: var(--font-mono); color: var(--muted); letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 14px; }
+.input-group { margin-bottom: 14px; }
+.input-label { display: block; font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+.input-field { width: 100%; padding: 13px 16px; background: rgba(255,255,255,0.04); border: 1px solid var(--line); border-radius: 10px; color: var(--fg); font-size: 15px; font-family: var(--font-sans); transition: all 0.2s; }
+.input-field:focus { outline: none; border-color: var(--accent); background: rgba(111,168,255,0.05); }
+.input-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+.payment-method { background: rgba(245,158,11,0.06); border: 1px solid rgba(245,158,11,0.2); border-radius: 14px; padding: 18px 22px; margin-bottom: 24px; }
+.payment-method-title { font-size: 13px; font-family: var(--font-mono); color: var(--orange); letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 8px; }
+.payment-method-text { font-size: 14px; color: var(--muted); line-height: 1.6; }
+
+.btn-pay { width: 100%; padding: 16px; background: var(--fg); color: var(--bg); border: none; border-radius: 12px; font-size: 16px; font-weight: 600; cursor: pointer; font-family: var(--font-sans); transition: all 0.2s; }
+.btn-pay:hover { transform: translateY(-1px); box-shadow: 0 8px 30px rgba(255,255,255,0.25); }
+.btn-pay:active { transform: scale(0.98); }
+.btn-pay:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+.terms-text { font-size: 11px; color: var(--subtle); text-align: center; margin-top: 14px; line-height: 1.5; }
+.terms-text a { color: var(--muted); text-decoration: underline; }
+
+.summary { background: linear-gradient(135deg, rgba(111,168,255,0.08), rgba(180,200,255,0.03)); border: 1px solid rgba(111,168,255,0.2); border-radius: 24px; padding: 36px; backdrop-filter: blur(10px); position: sticky; top: 140px; height: fit-content; }
+.summary-title { font-size: 11px; font-family: var(--font-mono); color: var(--accent); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 20px; }
+.summary-tier { font-size: 32px; font-weight: 400; letter-spacing: -1px; margin-bottom: 24px; }
+.summary-tier em { font-style: italic; background: linear-gradient(135deg, #fff, #6fa8ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+.summary-line { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--line); font-size: 14px; }
+.summary-line:last-of-type { border-bottom: none; }
+.summary-line-label { color: var(--muted); }
+.summary-line-value { color: var(--fg); }
+.summary-total { display: flex; justify-content: space-between; align-items: baseline; margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--line); }
+.summary-total-label { font-size: 13px; font-family: var(--font-mono); color: var(--muted); letter-spacing: 1.5px; text-transform: uppercase; }
+.summary-total-amount { font-size: 38px; font-weight: 700; letter-spacing: -1px; background: linear-gradient(135deg, #fff, #6fa8ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+.summary-includes { margin-top: 24px; padding-top: 24px; border-top: 1px solid var(--line); }
+.summary-includes-title { font-size: 11px; font-family: var(--font-mono); color: var(--muted); letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 12px; }
+.summary-includes-list { display: flex; flex-direction: column; gap: 8px; }
+.summary-includes-item { display: flex; gap: 10px; align-items: flex-start; font-size: 13px; }
+.summary-includes-item-check { color: var(--green); font-weight: 700; flex-shrink: 0; }
+
+.guarantee-block { margin-top: 24px; padding: 18px 22px; background: rgba(74,222,128,0.05); border: 1px solid rgba(74,222,128,0.18); border-radius: 12px; font-size: 13px; color: var(--muted); display: flex; gap: 12px; align-items: flex-start; }
+.guarantee-icon { color: var(--green); font-weight: 700; flex-shrink: 0; }
+
+.loader { display: none; width: 18px; height: 18px; border: 2px solid rgba(0,0,0,0.2); border-top-color: var(--bg); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.btn-pay.loading .pay-text { display: none; }
+.btn-pay.loading .loader { display: inline-block; }
+</style>
+</head>
+<body>
+
+<div class="simulation-banner">⚠ Mode simulation · Aucun paiement réel · Données fictives</div>
+
+<div class="bg-layer glows"></div>
+<div class="bg-layer stars"></div>
+<div class="bg-layer"><div class="flare flare-1"></div><div class="flare flare-2"></div></div>
+<div class="bg-layer grid-overlay"></div>
+
+<nav class="top">
+  <a href="landing.html" class="logo-wrap">
+    <div class="logo-icon"><img src="logo-nodex.png" alt="Nodex" class="logo-img" onerror="this.style.display='none'"></div>
+    <span class="logo-text">NODEX</span>
+  </a>
+  <span class="secure-badge">Connexion sécurisée · SSL</span>
+</nav>
+
+<div class="checkout-wrap">
+
+  <div class="checkout-form">
+    <h1 class="checkout-title">Plus que <em>2 minutes.</em></h1>
+    <p class="checkout-sub">Tu reçois ton accès par email immédiatement après confirmation.</p>
+
+    <form id="checkoutForm" onsubmit="processSimulatedPayment(event)">
+
+      <div class="form-section">
+        <div class="form-section-title">Informations</div>
+        <div class="input-group">
+          <label class="input-label">Email (où on t'envoie les fichiers)</label>
+          <input type="email" class="input-field" id="email" required placeholder="ton.email@exemple.com">
+        </div>
+        <div class="input-grid">
+          <div class="input-group">
+            <label class="input-label">Prénom</label>
+            <input type="text" class="input-field" id="firstname" required placeholder="Prénom">
+          </div>
+          <div class="input-group">
+            <label class="input-label">Nom</label>
+            <input type="text" class="input-field" id="lastname" required placeholder="Nom">
+          </div>
+        </div>
+        <div class="input-group">
+          <label class="input-label">Pays</label>
+          <input type="text" class="input-field" id="country" required placeholder="France" value="France">
+        </div>
+      </div>
+
+      <div class="form-section">
+        <div class="form-section-title">Paiement</div>
+        <div class="payment-method">
+          <div class="payment-method-title">Mode simulation</div>
+          <div class="payment-method-text">Aucune carte n'est demandée. En cliquant sur "Confirmer la commande", tu seras redirigé vers la page de confirmation comme si le paiement avait réussi. C'est un test du parcours complet — Stripe sera branché plus tard.</div>
+        </div>
+
+        <div class="input-group">
+          <label class="input-label">Numéro de carte (désactivé en simulation)</label>
+          <input type="text" class="input-field" placeholder="•••• •••• •••• ••••" disabled style="opacity: 0.4;">
+        </div>
+        <div class="input-grid">
+          <div class="input-group">
+            <label class="input-label">Expiration</label>
+            <input type="text" class="input-field" placeholder="MM/AA" disabled style="opacity: 0.4;">
+          </div>
+          <div class="input-group">
+            <label class="input-label">CVC</label>
+            <input type="text" class="input-field" placeholder="•••" disabled style="opacity: 0.4;">
+          </div>
+        </div>
+      </div>
+
+      <button type="submit" class="btn-pay" id="payBtn">
+        <span class="pay-text">Confirmer la commande →</span>
+        <span class="loader"></span>
+      </button>
+
+      <p class="terms-text">En confirmant, tu acceptes nos <a href="#">CGV</a> et notre politique de remboursement (14 jours).</p>
+    </form>
+  </div>
+
+  <aside class="summary">
+    <div class="summary-title">Récapitulatif</div>
+    <h2 class="summary-tier" id="tierName">Nodex <em>Essentiel</em></h2>
+
+    <div class="summary-line"><span class="summary-line-label">Tier</span><span class="summary-line-value" id="tierLabel">Essentiel</span></div>
+    <div class="summary-line"><span class="summary-line-label">Type</span><span class="summary-line-value">Paiement unique</span></div>
+    <div class="summary-line"><span class="summary-line-label">Accès</span><span class="summary-line-value">Immédiat (email)</span></div>
+    <div class="summary-line"><span class="summary-line-label">Garantie</span><span class="summary-line-value">14 jours</span></div>
+
+    <div class="summary-total">
+      <span class="summary-total-label">Total</span>
+      <span class="summary-total-amount" id="totalAmount">497€</span>
+    </div>
+
+    <div class="summary-includes">
+      <div class="summary-includes-title">Tu reçois</div>
+      <div class="summary-includes-list" id="includesList"></div>
+    </div>
+
+    <div class="guarantee-block">
+      <span class="guarantee-icon">✓</span>
+      <span>14 jours pour tester. Si la méthode ne te convient pas, remboursement intégral sur simple email à nodexcontact@gmail.com.</span>
+    </div>
+  </aside>
+
+</div>
+
+<script>
+const params = new URLSearchParams(window.location.search);
+const tier = params.get('tier') || 'essentiel';
+const price = params.get('price') || '497';
+
+const tierData = {
+  essentiel: { name: 'Essentiel', label: 'Essentiel', items: [
+    'Skill IA Nodex V5.2',
+    '4 indicateurs Pine Script',
+    'Fiche interactive cockpit',
+    'Guide TradingView'
+  ]},
+  pro: { name: 'Pro', label: 'Pro · Recommandé', items: [
+    'Tout Essentiel',
+    'Telegram positions Nahel',
+    'Watchlist crypto privée',
+    'Brief weekly hebdomadaire'
+  ]},
+  elite: { name: 'Elite', label: 'Elite', items: [
+    'Tout Pro',
+    'Bot Auto Scanner Telegram',
+    'Watchlist personnalisable',
+    'Crédit cloud première année'
+  ]}
+};
+
+const data = tierData[tier] || tierData.essentiel;
+document.getElementById('tierName').innerHTML = `Nodex <em>${data.name}</em>`;
+document.getElementById('tierLabel').textContent = data.label;
+document.getElementById('totalAmount').textContent = price + '€';
+document.getElementById('includesList').innerHTML = data.items.map(i =>
+  `<div class="summary-includes-item"><span class="summary-includes-item-check">✓</span><span>${i}</span></div>`
+).join('');
+
+function processSimulatedPayment(e) {
+  e.preventDefault();
+  const btn = document.getElementById('payBtn');
+  btn.classList.add('loading');
+  btn.disabled = true;
+
+  // Sauvegarde des infos pour la confirmation
+  const orderInfo = {
+    tier: tier,
+    price: price,
+    email: document.getElementById('email').value,
+    firstname: document.getElementById('firstname').value,
+    lastname: document.getElementById('lastname').value,
+    country: document.getElementById('country').value,
+    orderId: 'NDX-' + Date.now().toString(36).toUpperCase(),
+    date: new Date().toISOString()
+  };
+  localStorage.setItem('nodex_last_order', JSON.stringify(orderInfo));
+
+  // Simule un délai de paiement
+  setTimeout(() => {
+    window.location.href = `confirmation-simulation.html?tier=${tier}&price=${price}&order=${orderInfo.orderId}`;
+  }, 1800);
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#000000">
+<title>Aperçu email — Tes accès Nodex</title>
+<link rel="icon" href="logo-nodex.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700;800;900&family=Geist+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root { --bg:#000; --fg:#fff; --muted:rgba(255,255,255,0.55); --subtle:rgba(255,255,255,0.3); --line:rgba(255,255,255,0.08); --line-strong:rgba(255,255,255,0.18); --accent:#6fa8ff; --green:#4ade80; --orange:#f59e0b; --font-sans:'Geist',sans-serif; --font-mono:'Geist Mono',monospace; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: var(--font-sans); background: var(--bg); color: var(--fg); min-height: 100vh; overflow-x: hidden; line-height: 1.6; }
+
+.bg-layer { position: fixed; top:0; left:0; right:0; bottom:0; pointer-events:none; z-index:0; }
+.glows { background: radial-gradient(ellipse 600px 400px at 15% 85%, rgba(111,168,255,0.08) 0%, transparent 60%), radial-gradient(ellipse 700px 500px at 85% 15%, rgba(180,200,255,0.06) 0%, transparent 60%); }
+.flare { position:absolute; border-radius:50%; filter:blur(60px); opacity:0.3; }
+.flare-1 { top:-150px; right:-150px; width:500px; height:500px; background: radial-gradient(circle, rgba(111,168,255,0.3) 0%, transparent 70%); }
+.flare-2 { bottom:-200px; left:-200px; width:600px; height:600px; background: radial-gradient(circle, rgba(180,200,255,0.25) 0%, transparent 70%); }
+.grid-overlay { background-image: linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px); background-size: 60px 60px; opacity: 0.3; }
+
+.simulation-banner { position: fixed; top: 0; left: 0; right: 0; z-index: 200; padding: 14px 24px; background: linear-gradient(90deg, rgba(245,158,11,0.95), rgba(245,158,11,0.85), rgba(245,158,11,0.95)); color: #001; text-align: center; font-size: 13px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; font-family: var(--font-mono); }
+
+nav.top { position: fixed; top: 50px; left: 0; right: 0; z-index: 100; padding: 16px 32px; display: flex; justify-content: space-between; align-items: center; background: linear-gradient(180deg, rgba(0,0,0,0.7), transparent); backdrop-filter: blur(8px); }
+.logo-wrap { display: flex; align-items: center; gap: 12px; cursor: pointer; text-decoration: none; }
+.logo-icon { position: relative; width: 38px; height: 38px; border-radius: 22.5%; background: linear-gradient(135deg, rgba(111,168,255,0.22), rgba(180,200,255,0.05)); border: 1px solid rgba(255,255,255,0.12); display: flex; align-items: center; justify-content: center; }
+.logo-icon::before { content:''; position:absolute; top:0; left:0; right:0; height:50%; background: linear-gradient(180deg, rgba(255,255,255,0.12), transparent); border-radius: 22.5% 22.5% 0 0; }
+.logo-img { width: 22px; height: 22px; filter: brightness(0) invert(1); z-index: 1; }
+.logo-text { font-size: 15px; font-weight: 800; background: linear-gradient(135deg, #fff, #c8d8ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+.nav-back { color: var(--muted); text-decoration: none; font-size: 13px; font-family: var(--font-mono); letter-spacing: 1px; text-transform: uppercase; }
+.nav-back:hover { color: var(--fg); }
+
+.email-page { position: relative; z-index: 10; padding: 140px 24px 60px; max-width: 720px; margin: 0 auto; }
+.page-title { text-align: center; margin-bottom: 40px; }
+.page-kicker { font-size: 11px; font-family: var(--font-mono); color: var(--accent); letter-spacing: 2.5px; text-transform: uppercase; margin-bottom: 12px; }
+.page-h1 { font-size: clamp(28px, 4.5vw, 42px); font-weight: 400; letter-spacing: -1.5px; line-height: 1.1; }
+.page-h1 em { font-style: italic; background: linear-gradient(135deg, #fff, #6fa8ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+.page-sub { font-size: 14px; color: var(--muted); margin-top: 10px; }
+
+.email-mock { background: rgba(255,255,255,0.025); border: 1px solid var(--line); border-radius: 20px; overflow: hidden; backdrop-filter: blur(10px); }
+.email-header { padding: 24px 28px; border-bottom: 1px solid var(--line); }
+.email-from { display: flex; align-items: center; gap: 14px; margin-bottom: 14px; }
+.email-avatar { width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, #6fa8ff, #c8d8ff); display: flex; align-items: center; justify-content: center; color: #001; font-weight: 700; font-size: 16px; }
+.email-from-info { flex: 1; }
+.email-from-name { font-size: 14px; font-weight: 600; }
+.email-from-mail { font-size: 12px; color: var(--muted); font-family: var(--font-mono); }
+.email-meta { font-size: 11px; color: var(--subtle); font-family: var(--font-mono); display: flex; gap: 16px; }
+.email-subject { font-size: 22px; font-weight: 500; letter-spacing: -0.5px; }
+
+.email-body { padding: 32px 28px; font-size: 15px; line-height: 1.8; color: rgba(255,255,255,0.85); }
+.email-body p { margin-bottom: 16px; }
+.email-body strong { color: var(--fg); font-weight: 600; }
+.email-body .accent { color: var(--accent); }
+.email-greeting { font-size: 18px; font-weight: 500; margin-bottom: 24px; }
+
+.activation-box { background: linear-gradient(135deg, rgba(111,168,255,0.08), rgba(180,200,255,0.03)); border: 1px solid rgba(111,168,255,0.25); border-radius: 14px; padding: 20px 24px; margin: 20px 0; }
+.activation-label { font-size: 11px; font-family: var(--font-mono); color: var(--accent); letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 8px; }
+.activation-code { font-family: var(--font-mono); font-size: 18px; font-weight: 600; color: var(--fg); letter-spacing: 2px; user-select: all; }
+
+.download-list { background: rgba(255,255,255,0.03); border: 1px solid var(--line); border-radius: 14px; padding: 20px 24px; margin: 24px 0; }
+.download-list-title { font-size: 11px; font-family: var(--font-mono); color: var(--muted); letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 14px; }
+.download-item { display: flex; align-items: center; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid var(--line); }
+.download-item:last-child { border-bottom: none; }
+.download-name { font-size: 14px; }
+.download-name-icon { color: var(--accent); margin-right: 8px; font-family: var(--font-mono); }
+.download-link { color: var(--accent); font-size: 13px; text-decoration: none; font-family: var(--font-mono); letter-spacing: 0.5px; }
+.download-link:hover { text-decoration: underline; }
+
+.cta-email-btn { display: inline-block; padding: 14px 28px; background: var(--fg); color: var(--bg); border-radius: 999px; font-size: 14px; font-weight: 600; text-decoration: none; margin: 16px 0; transition: all 0.2s; }
+.cta-email-btn:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(255,255,255,0.2); }
+
+.email-footer { padding: 24px 28px; border-top: 1px solid var(--line); font-size: 12px; color: var(--subtle); }
+.email-footer a { color: var(--muted); text-decoration: underline; }
+
+.action-row { display: flex; gap: 14px; justify-content: center; margin-top: 32px; flex-wrap: wrap; }
+.btn-primary { padding: 14px 26px; background: var(--fg); color: var(--bg); border: none; border-radius: 999px; font-size: 14px; font-weight: 600; cursor: pointer; font-family: var(--font-sans); text-decoration: none; transition: all 0.2s; }
+.btn-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(255,255,255,0.2); }
+.btn-secondary { padding: 14px 22px; background: transparent; color: var(--fg); border: 1px solid var(--line-strong); border-radius: 999px; font-size: 14px; text-decoration: none; transition: all 0.2s; }
+.btn-secondary:hover { border-color: var(--accent); }
+</style>
+</head>
+<body>
+
+<div class="simulation-banner">⚠ Mode simulation · Aperçu de l'email qui sera envoyé après paiement réel</div>
+
+<div class="bg-layer glows"></div>
+<div class="bg-layer"><div class="flare flare-1"></div><div class="flare flare-2"></div></div>
+<div class="bg-layer grid-overlay"></div>
+
+<nav class="top">
+  <a href="landing.html" class="logo-wrap">
+    <div class="logo-icon"><img src="logo-nodex.png" alt="Nodex" class="logo-img" onerror="this.style.display='none'"></div>
+    <span class="logo-text">NODEX</span>
+  </a>
+  <a href="confirmation-simulation.html" class="nav-back">← Retour à la confirmation</a>
+</nav>
+
+<div class="email-page">
+
+  <div class="page-title">
+    <div class="page-kicker">Boîte mail · Aperçu</div>
+    <h1 class="page-h1">L'email que tu reçois <em>en vrai.</em></h1>
+    <p class="page-sub">Voici exactement ce que ton inbox affiche après ton achat. Identifiant, code, liens, instructions.</p>
+  </div>
+
+  <div class="email-mock">
+    <div class="email-header">
+      <div class="email-from">
+        <div class="email-avatar">N</div>
+        <div class="email-from-info">
+          <div class="email-from-name">Nahel · Nodex Trading</div>
+          <div class="email-from-mail">nodexcontact@gmail.com</div>
+        </div>
+      </div>
+      <div class="email-subject" id="emailSubject">[Nodex] Tes accès sont prêts — Bienvenue dans Essentiel</div>
+      <div class="email-meta" style="margin-top: 8px;">
+        <span>À : <span id="emailTo">toi@exemple.com</span></span>
+        <span id="emailDate">25 avril 2026 · 14:32</span>
+      </div>
+    </div>
+
+    <div class="email-body">
+      <p class="email-greeting">Salut <span id="firstName">[Prénom]</span>,</p>
+
+      <p>Merci d'avoir rejoint <strong>Nodex Trading</strong>. Tu viens de prendre le tier <strong class="accent" id="tierLabel">Essentiel</strong>, et tout est prêt pour toi.</p>
+
+      <p>Avant de plonger, garde précieusement ton <strong>code d'activation</strong>. Il te servira à débloquer le skill Nodex dans Claude Code, et il est lié uniquement à ton email.</p>
+
+      <div class="activation-box">
+        <div class="activation-label">Ton code d'activation</div>
+        <div class="activation-code" id="activationCode">NDX-XXXX-XXXX-XXXX</div>
+      </div>
+
+      <p><strong>Voici tes téléchargements :</strong></p>
+
+      <div class="download-list">
+        <div class="download-list-title" id="dlTitle">Tier Essentiel · 4 livrables</div>
+        <div id="downloadItems"></div>
+      </div>
+
+      <p><strong>Pour démarrer en 5 minutes :</strong></p>
+
+      <p>1. Télécharge le ZIP du skill et lance <code style="background:rgba(255,255,255,0.05); padding:2px 8px; border-radius:4px; font-family:var(--font-mono); font-size:13px;">install.ps1</code> en clic droit > "Exécuter avec PowerShell".<br>
+      2. Ouvre Claude Code dans ton dossier de trading.<br>
+      3. Dis simplement : <em>"Nodex, tu es là ?"</em><br>
+      4. Le formateur Nodex prend le relais et te fait passer ton diagnostic 10 questions.</p>
+
+      <p style="text-align: center; margin: 32px 0;">
+        <a href="onboarding.html" class="cta-email-btn" id="onboardingBtn">Lancer mon onboarding →</a>
+      </p>
+
+      <p><strong>Une question ?</strong> Réponds simplement à cet email. Je lis tout, je réponds en moins de 24h. Pas de bot, pas de support tier 1 — c'est moi.</p>
+
+      <p>Bon trading,<br>
+      <strong>Nahel Zamouri</strong><br>
+      <span style="color: var(--muted); font-size: 13px;">Fondateur · Nodex Trading</span></p>
+    </div>
+
+    <div class="email-footer">
+      Cet email a été envoyé à <span id="emailToFooter">toi@exemple.com</span> car tu as commandé le tier Nodex <span id="tierFooter">Essentiel</span>.<br>
+      Garantie 14 jours · <a href="#">CGV</a> · <a href="#">Mentions légales</a> · <a href="mailto:nodexcontact@gmail.com">Contact</a><br>
+      © 2026 Nodex Trading · Toulouse, France
+    </div>
+  </div>
+
+  <div class="action-row">
+    <a href="onboarding.html" id="actionOnboard" class="btn-primary">Lancer l'onboarding →</a>
+    <a href="confirmation-simulation.html" class="btn-secondary">← Retour confirmation</a>
+  </div>
+
+</div>
+
+<script>
+const params = new URLSearchParams(window.location.search);
+const tier = params.get('tier') || 'essentiel';
+const orderId = params.get('order') || 'NDX-' + Date.now().toString(36).toUpperCase();
+
+const lastOrder = JSON.parse(localStorage.getItem('nodex_last_order') || '{}');
+
+const tierData = {
+  essentiel: {
+    label: 'Essentiel',
+    items: [
+      { name: 'nodex-v5.2-skill.zip', size: '43 KB', label: 'Skill Claude Code' },
+      { name: 'nodex-pine-pack.zip', size: '8 KB', label: '4 indicateurs Pine Script' },
+      { name: 'fiche-nodex-v5.2.html', size: '52 KB', label: 'Fiche interactive cockpit' },
+      { name: 'guide-tradingview.html', size: '18 KB', label: 'Guide installation TV' }
+    ]
+  },
+  pro: {
+    label: 'Pro',
+    items: [
+      { name: 'nodex-v5.2-skill.zip', size: '43 KB', label: 'Skill Claude Code' },
+      { name: 'nodex-pine-pack.zip', size: '8 KB', label: '4 indicateurs Pine Script' },
+      { name: 'fiche-nodex-v5.2.html', size: '52 KB', label: 'Fiche interactive cockpit' },
+      { name: 'guide-tradingview.html', size: '18 KB', label: 'Guide installation TV' },
+      { name: 'lien Telegram privé', size: 'invitation', label: 'Channel positions Nahel' },
+      { name: 'watchlist-tv.json', size: '2 KB', label: 'Watchlist TradingView importable' }
+    ]
+  },
+  elite: {
+    label: 'Elite',
+    items: [
+      { name: 'nodex-v5.2-skill.zip', size: '43 KB', label: 'Skill Claude Code' },
+      { name: 'nodex-pine-pack.zip', size: '8 KB', label: '4 indicateurs Pine Script' },
+      { name: 'fiche-nodex-v5.2.html', size: '52 KB', label: 'Fiche interactive cockpit' },
+      { name: 'guide-tradingview.html', size: '18 KB', label: 'Guide installation TV' },
+      { name: 'lien Telegram privé', size: 'invitation', label: 'Channel positions Nahel' },
+      { name: 'watchlist-tv.json', size: '2 KB', label: 'Watchlist TradingView importable' },
+      { name: 'liste prioritaire bot', size: 'inscription', label: 'Accès prioritaire Nodex Auto Scanner Q3 2026' }
+    ]
+  }
+};
+
+const data = tierData[tier] || tierData.essentiel;
+
+function genCode() {
+  const seg = () => Math.random().toString(36).substring(2, 6).toUpperCase();
+  return `NDX-${seg()}-${seg()}-${seg()}`;
+}
+
+const code = lastOrder.activationCode || genCode();
+if (!lastOrder.activationCode) {
+  lastOrder.activationCode = code;
+  localStorage.setItem('nodex_last_order', JSON.stringify(lastOrder));
+}
+
+const email = lastOrder.email || 'toi@exemple.com';
+const firstname = lastOrder.firstname || 'là';
+
+document.getElementById('emailSubject').textContent = `[Nodex] Tes accès sont prêts — Bienvenue dans ${data.label}`;
+document.getElementById('emailTo').textContent = email;
+document.getElementById('emailToFooter').textContent = email;
+document.getElementById('emailDate').textContent = new Date().toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+document.getElementById('firstName').textContent = firstname;
+document.getElementById('tierLabel').textContent = data.label;
+document.getElementById('tierFooter').textContent = data.label;
+document.getElementById('activationCode').textContent = code;
+document.getElementById('dlTitle').textContent = `Tier ${data.label} · ${data.items.length} livrables`;
+
+document.getElementById('downloadItems').innerHTML = data.items.map(it => `
+  <div class="download-item">
+    <span class="download-name"><span class="download-name-icon">▸</span>${it.name} <span style="color:var(--subtle); font-size:12px;">· ${it.size}</span><br><span style="color:var(--muted); font-size:12px; margin-left:18px;">${it.label}</span></span>
+    <a href="#" class="download-link" onclick="event.preventDefault();">Télécharger →</a>
+  </div>
+`).join('');
+
+document.getElementById('onboardingBtn').href = `onboarding.html?tier=${tier}`;
+document.getElementById('actionOnboard').href = `onboarding.html?tier=${tier}`;
+</script>
+</body>
+</html>

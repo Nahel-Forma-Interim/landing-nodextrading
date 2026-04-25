@@ -1,0 +1,1126 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#000000">
+<title>Nodex Trading — La stratégie crypto qui fait la différence</title>
+<meta name="description" content="Nodex V5.2 — La méthode SMC/ICT simplifiée pour le crypto spot Binance. Formation complète + coaching IA personnel + backtest validé. Deviens rentable en 30 jours.">
+<link rel="icon" href="logo-nodex.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700;800;900&family=Geist+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #000000;
+  --bg-2: #030308;
+  --bg-3: #060612;
+  --fg: #ffffff;
+  --muted: rgba(255,255,255,0.55);
+  --subtle: rgba(255,255,255,0.3);
+  --line: rgba(255,255,255,0.08);
+  --glow: rgba(180, 200, 255, 0.15);
+  --accent: #6fa8ff;
+  --green: #4ade80;
+  --font-sans: 'Geist', -apple-system, BlinkMacSystemFont, Arial, sans-serif;
+  --font-mono: 'Geist Mono', monospace;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: var(--font-sans);
+  background: var(--bg);
+  color: var(--fg);
+  min-height: 100vh;
+  overflow-x: hidden;
+  line-height: 1.6;
+}
+
+/* ═══════════════════════════════════════════════════════
+   BACKGROUND EFFECTS (the magic)
+═══════════════════════════════════════════════════════ */
+.bg-layer {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Stars layer */
+.stars {
+  background-image:
+    radial-gradient(1px 1px at 20% 30%, white, transparent),
+    radial-gradient(1px 1px at 60% 70%, rgba(255,255,255,0.8), transparent),
+    radial-gradient(1px 1px at 50% 50%, rgba(255,255,255,0.6), transparent),
+    radial-gradient(1px 1px at 80% 10%, white, transparent),
+    radial-gradient(1px 1px at 90% 40%, rgba(255,255,255,0.5), transparent),
+    radial-gradient(1px 1px at 33% 65%, rgba(255,255,255,0.7), transparent),
+    radial-gradient(1px 1px at 15% 80%, white, transparent),
+    radial-gradient(1px 1px at 70% 85%, rgba(255,255,255,0.4), transparent),
+    radial-gradient(1px 1px at 40% 20%, rgba(255,255,255,0.6), transparent),
+    radial-gradient(1px 1px at 5% 50%, rgba(255,255,255,0.7), transparent);
+  background-size: 250% 250%;
+  animation: starfall 80s linear infinite;
+  opacity: 0.5;
+}
+@keyframes starfall {
+  0% { background-position: 0% 0%; }
+  100% { background-position: 100% 100%; }
+}
+
+/* Radial glows */
+.glows {
+  background:
+    radial-gradient(ellipse 600px 400px at 15% 85%, rgba(111, 168, 255, 0.12) 0%, transparent 60%),
+    radial-gradient(ellipse 700px 500px at 85% 15%, rgba(180, 200, 255, 0.08) 0%, transparent 60%),
+    radial-gradient(ellipse 500px 800px at 50% 100%, rgba(74, 222, 128, 0.08) 0%, transparent 60%);
+}
+
+/* Vertical light beams (animated) */
+.beams {
+  overflow: hidden;
+}
+.beam {
+  position: absolute;
+  top: -20%;
+  width: 1px;
+  height: 140%;
+  background: linear-gradient(180deg,
+    transparent 0%,
+    rgba(255,255,255,0.4) 30%,
+    rgba(255,255,255,0.9) 50%,
+    rgba(255,255,255,0.4) 70%,
+    transparent 100%);
+  filter: blur(0.5px);
+  animation: beamMove 12s ease-in-out infinite;
+  opacity: 0.3;
+}
+.beam:nth-child(1) { left: 20%; animation-delay: 0s; }
+.beam:nth-child(2) { left: 45%; animation-delay: -4s; animation-duration: 18s; }
+.beam:nth-child(3) { left: 72%; animation-delay: -8s; animation-duration: 15s; }
+.beam:nth-child(4) { left: 10%; animation-delay: -2s; animation-duration: 20s; }
+.beam:nth-child(5) { left: 88%; animation-delay: -6s; animation-duration: 14s; }
+@keyframes beamMove {
+  0%, 100% { opacity: 0.1; transform: translateY(0) scaleY(1); }
+  50% { opacity: 0.5; transform: translateY(-20px) scaleY(1.1); }
+}
+
+/* Lens flares (coin flares) */
+.flare {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(60px);
+  opacity: 0.4;
+  animation: flareFloat 20s ease-in-out infinite;
+}
+.flare-1 {
+  top: -150px;
+  right: -150px;
+  width: 500px; height: 500px;
+  background: radial-gradient(circle, rgba(111,168,255,0.4) 0%, transparent 70%);
+}
+.flare-2 {
+  bottom: -200px;
+  left: -200px;
+  width: 600px; height: 600px;
+  background: radial-gradient(circle, rgba(180,200,255,0.3) 0%, transparent 70%);
+  animation-delay: -10s;
+}
+.flare-3 {
+  top: 40%;
+  left: 40%;
+  width: 300px; height: 300px;
+  background: radial-gradient(circle, rgba(74,222,128,0.15) 0%, transparent 70%);
+  animation-delay: -5s;
+  animation-duration: 25s;
+}
+@keyframes flareFloat {
+  0%, 100% { transform: translate(0,0) scale(1); }
+  33% { transform: translate(40px, -30px) scale(1.1); }
+  66% { transform: translate(-30px, 40px) scale(0.95); }
+}
+
+/* Grid pattern overlay */
+.grid-overlay {
+  background-image:
+    linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px);
+  background-size: 60px 60px;
+  opacity: 0.4;
+}
+
+/* ═══════════════════════════════════════════════════════
+   NAVIGATION
+═══════════════════════════════════════════════════════ */
+nav.top {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 100;
+  padding: 20px 40px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: linear-gradient(180deg, rgba(0,0,0,0.6) 0%, transparent 100%);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+.logo-wrap {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+}
+/* Apple-style squircle icon wrapper */
+.logo-icon {
+  position: relative;
+  width: 42px;
+  height: 42px;
+  border-radius: 22.5%;              /* Apple squircle radius */
+  background: linear-gradient(135deg,
+    rgba(111, 168, 255, 0.22) 0%,
+    rgba(140, 180, 255, 0.12) 50%,
+    rgba(180, 200, 255, 0.05) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow:
+    0 2px 12px rgba(111, 168, 255, 0.15),
+    0 0 0 1px rgba(111, 168, 255, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.2);
+  transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.logo-icon::before {
+  /* Inner highlight glow (Apple-style sheen) */
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 50%;
+  background: linear-gradient(180deg, rgba(255,255,255,0.12) 0%, transparent 100%);
+  pointer-events: none;
+  border-radius: 22.5% 22.5% 0 0;
+}
+.logo-icon::after {
+  /* Subtle blue glow pulse */
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border-radius: 22.5%;
+  background: radial-gradient(circle at 50% 50%, rgba(111, 168, 255, 0.25) 0%, transparent 65%);
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  z-index: -1;
+  filter: blur(8px);
+}
+.logo-wrap:hover .logo-icon {
+  border-color: rgba(255, 255, 255, 0.22);
+  transform: translateY(-1px) scale(1.03);
+  box-shadow:
+    0 6px 24px rgba(111, 168, 255, 0.3),
+    0 0 0 1px rgba(111, 168, 255, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+.logo-wrap:hover .logo-icon::after { opacity: 1; }
+
+.logo-img {
+  width: 26px;
+  height: 26px;
+  object-fit: contain;
+  /* Adapt to dark theme: whiten the logo + soft blue tint via filters */
+  filter: brightness(0) saturate(100%) invert(100%);
+  z-index: 1;
+  transition: filter 0.3s ease;
+}
+.logo-wrap:hover .logo-img {
+  filter: brightness(0) saturate(100%) invert(100%) drop-shadow(0 0 6px rgba(111, 168, 255, 0.6));
+}
+
+.logo-text {
+  font-size: 17px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  background: linear-gradient(135deg, #ffffff 0%, #c8d8ff 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.nav-links {
+  display: flex;
+  gap: 32px;
+  font-size: 14px;
+  color: var(--muted);
+}
+.nav-links a {
+  color: inherit;
+  text-decoration: none;
+  transition: color 0.2s;
+  font-weight: 500;
+}
+.nav-links a:hover { color: var(--fg); }
+.nav-cta {
+  padding: 10px 18px;
+  background: var(--fg);
+  color: var(--bg);
+  border: none;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: var(--font-sans);
+  transition: all 0.2s;
+}
+.nav-cta:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 0 20px rgba(255,255,255,0.3);
+}
+
+/* ═══════════════════════════════════════════════════════
+   HERO
+═══════════════════════════════════════════════════════ */
+.hero {
+  position: relative;
+  z-index: 10;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 120px 24px 80px;
+  text-align: center;
+}
+.hero-kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 16px;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  font-size: 12px;
+  font-family: var(--font-mono);
+  color: var(--muted);
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  margin-bottom: 28px;
+  animation: fadeInUp 1s 0.1s both;
+}
+.hero-kicker::before {
+  content: '●';
+  color: var(--green);
+  animation: pulse 2s infinite;
+}
+@keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:0.3;} }
+
+.hero h1 {
+  font-size: clamp(40px, 8vw, 100px);
+  font-weight: 400;
+  letter-spacing: -3px;
+  line-height: 1.02;
+  margin-bottom: 24px;
+  max-width: 1100px;
+  animation: fadeInUp 1s 0.2s both;
+}
+.hero h1 em {
+  font-style: normal;
+  background: linear-gradient(135deg, #ffffff 0%, #6fa8ff 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.hero-sub {
+  font-size: 18px;
+  color: var(--muted);
+  max-width: 680px;
+  margin: 0 auto 40px;
+  font-weight: 400;
+  animation: fadeInUp 1s 0.4s both;
+}
+
+.hero-ctas {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+  justify-content: center;
+  animation: fadeInUp 1s 0.6s both;
+}
+.btn {
+  padding: 14px 26px;
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 600;
+  font-family: var(--font-sans);
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.25s ease;
+  border: 1px solid transparent;
+}
+.btn-primary {
+  background: var(--fg);
+  color: var(--bg);
+}
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 32px rgba(255,255,255,0.25);
+}
+.btn-ghost {
+  background: rgba(255,255,255,0.03);
+  color: var(--fg);
+  border-color: var(--line);
+}
+.btn-ghost:hover {
+  background: rgba(255,255,255,0.08);
+  border-color: rgba(255,255,255,0.2);
+}
+
+.hero-tagline {
+  position: absolute;
+  bottom: 40px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 30px;
+  font-size: 13px;
+  color: var(--subtle);
+  font-family: var(--font-mono);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  white-space: nowrap;
+  animation: fadeInUp 1s 0.8s both;
+}
+.hero-tagline span { display: inline-flex; align-items: center; gap: 8px; }
+.hero-tagline span::before { content: '—'; opacity: 0.5; }
+.hero-tagline span:first-child::before { display: none; }
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ═══════════════════════════════════════════════════════
+   SECTIONS GÉNÉRIQUES
+═══════════════════════════════════════════════════════ */
+section {
+  position: relative;
+  z-index: 10;
+  padding: 100px 24px;
+}
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+.section-kicker {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--accent);
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  margin-bottom: 16px;
+  font-weight: 600;
+}
+.section-title {
+  font-size: clamp(32px, 5vw, 64px);
+  font-weight: 400;
+  letter-spacing: -2px;
+  line-height: 1.1;
+  margin-bottom: 24px;
+}
+.section-title em {
+  font-style: normal;
+  background: linear-gradient(135deg, #ffffff 0%, #6fa8ff 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.section-desc {
+  font-size: 17px;
+  color: var(--muted);
+  max-width: 720px;
+  margin-bottom: 56px;
+}
+
+/* ═══════════════════════════════════════════════════════
+   STATS / NUMBERS
+═══════════════════════════════════════════════════════ */
+.stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 40px;
+  padding: 80px 0;
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  margin: 40px 0 80px;
+}
+.stat {
+  text-align: center;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: all 0.8s ease;
+}
+.stat.visible { opacity: 1; transform: translateY(0); }
+.stat-num {
+  font-size: clamp(40px, 6vw, 72px);
+  font-weight: 900;
+  letter-spacing: -3px;
+  line-height: 1;
+  background: linear-gradient(180deg, #ffffff 0%, #6fa8ff 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 10px;
+}
+.stat-label {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--muted);
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+}
+
+/* ═══════════════════════════════════════════════════════
+   PILLARS / 6 ÉTAPES
+═══════════════════════════════════════════════════════ */
+.pillars {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 24px;
+}
+.pillar {
+  padding: 36px 28px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.01) 100%);
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  position: relative;
+  transition: all 0.4s ease;
+  overflow: hidden;
+}
+.pillar::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(111,168,255,0.4), transparent);
+  opacity: 0;
+  transition: opacity 0.4s;
+}
+.pillar:hover::before { opacity: 1; }
+.pillar:hover {
+  transform: translateY(-4px);
+  border-color: rgba(255,255,255,0.2);
+  background: linear-gradient(180deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.02) 100%);
+}
+.pillar-num {
+  font-family: var(--font-mono);
+  font-size: 14px;
+  color: var(--accent);
+  letter-spacing: 2px;
+  margin-bottom: 20px;
+}
+.pillar h3 {
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: -0.5px;
+  margin-bottom: 12px;
+}
+.pillar p {
+  font-size: 14px;
+  color: var(--muted);
+  line-height: 1.65;
+}
+
+/* ═══════════════════════════════════════════════════════
+   PRICING
+═══════════════════════════════════════════════════════ */
+.pricing {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 24px;
+  margin-top: 40px;
+}
+.price-card {
+  padding: 40px 32px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.02) 0%, rgba(255,255,255,0.005) 100%);
+  border: 1px solid var(--line);
+  border-radius: 24px;
+  position: relative;
+  transition: all 0.4s;
+}
+.price-card.featured {
+  background: linear-gradient(180deg, rgba(111,168,255,0.08) 0%, rgba(111,168,255,0.02) 100%);
+  border-color: rgba(111,168,255,0.3);
+  box-shadow: 0 0 40px rgba(111,168,255,0.1);
+  transform: scale(1.02);
+}
+.price-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(255,255,255,0.2);
+}
+.price-card.featured:hover { transform: scale(1.02) translateY(-4px); }
+.price-badge {
+  position: absolute;
+  top: -12px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 4px 14px;
+  background: linear-gradient(135deg, #6fa8ff 0%, #4ade80 100%);
+  color: var(--bg);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  border-radius: 999px;
+  font-family: var(--font-mono);
+}
+.price-tier {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--accent);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+  font-weight: 600;
+}
+.price-amount {
+  font-size: 48px;
+  font-weight: 800;
+  letter-spacing: -2px;
+  line-height: 1;
+  margin-bottom: 6px;
+}
+.price-amount .currency {
+  font-size: 24px;
+  color: var(--muted);
+  font-weight: 400;
+  margin-right: 2px;
+}
+.price-desc {
+  font-size: 14px;
+  color: var(--muted);
+  margin-bottom: 28px;
+  min-height: 42px;
+}
+.price-features {
+  list-style: none;
+  margin-bottom: 32px;
+}
+.price-features li {
+  padding: 10px 0;
+  border-bottom: 1px solid var(--line);
+  font-size: 14px;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+.price-features li:last-child { border-bottom: none; }
+.price-features li::before {
+  content: '✓';
+  color: var(--green);
+  font-weight: 700;
+  flex-shrink: 0;
+}
+.price-cta {
+  width: 100%;
+  padding: 14px;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: none;
+  font-family: var(--font-sans);
+}
+.price-cta.primary {
+  background: var(--fg);
+  color: var(--bg);
+}
+.price-cta.ghost {
+  background: rgba(255,255,255,0.05);
+  color: var(--fg);
+  border: 1px solid var(--line);
+}
+.price-cta:hover { transform: translateY(-1px); }
+
+/* ═══════════════════════════════════════════════════════
+   FAQ
+═══════════════════════════════════════════════════════ */
+.faq-list { max-width: 820px; margin: 0 auto; }
+.faq {
+  padding: 24px 28px;
+  border-bottom: 1px solid var(--line);
+  cursor: pointer;
+  transition: all 0.3s;
+}
+.faq:first-child { border-top: 1px solid var(--line); }
+.faq summary {
+  list-style: none;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 17px;
+  font-weight: 500;
+  color: var(--fg);
+}
+.faq summary::marker, .faq summary::-webkit-details-marker { display: none; }
+.faq summary::after {
+  content: '+';
+  font-size: 22px;
+  color: var(--muted);
+  transition: transform 0.3s;
+}
+.faq[open] summary::after { transform: rotate(45deg); color: var(--accent); }
+.faq-answer {
+  margin-top: 14px;
+  font-size: 15px;
+  color: var(--muted);
+  line-height: 1.7;
+}
+
+/* ═══════════════════════════════════════════════════════
+   FINAL CTA
+═══════════════════════════════════════════════════════ */
+.final-cta {
+  text-align: center;
+  padding: 140px 24px;
+  position: relative;
+  z-index: 10;
+}
+.final-cta h2 {
+  font-size: clamp(36px, 6vw, 72px);
+  font-weight: 400;
+  letter-spacing: -2.5px;
+  line-height: 1.05;
+  max-width: 900px;
+  margin: 0 auto 32px;
+}
+.final-cta h2 em {
+  font-style: normal;
+  background: linear-gradient(135deg, #ffffff 0%, #6fa8ff 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.final-cta p {
+  font-size: 18px;
+  color: var(--muted);
+  margin-bottom: 40px;
+  max-width: 580px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* ═══════════════════════════════════════════════════════
+   FOOTER
+═══════════════════════════════════════════════════════ */
+footer {
+  position: relative;
+  z-index: 10;
+  padding: 60px 24px 40px;
+  border-top: 1px solid var(--line);
+  background: var(--bg);
+}
+.footer-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+.footer-copy {
+  font-size: 13px;
+  color: var(--subtle);
+  font-family: var(--font-mono);
+}
+.footer-links {
+  display: flex;
+  gap: 24px;
+  font-size: 13px;
+}
+.footer-links a {
+  color: var(--muted);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+.footer-links a:hover { color: var(--fg); }
+
+/* ═══════════════════════════════════════════════════════
+   SCROLL ANIMATIONS
+═══════════════════════════════════════════════════════ */
+.reveal {
+  opacity: 0;
+  transform: translateY(40px);
+  transition: opacity 0.9s ease, transform 0.9s ease;
+}
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ═══════════════════════════════════════════════════════
+   RESPONSIVE
+═══════════════════════════════════════════════════════ */
+@media (max-width: 768px) {
+  nav.top { padding: 16px 20px; }
+  .nav-links { display: none; }
+  .hero { padding: 100px 16px 60px; }
+  .hero h1 { font-size: 42px; letter-spacing: -1.5px; }
+  .hero-tagline { font-size: 10px; gap: 14px; flex-direction: column; }
+  .hero-tagline span::before { display: none; }
+  section { padding: 60px 16px; }
+  .section-title { font-size: 32px; }
+  .stats { padding: 40px 0; gap: 30px; }
+  .price-card.featured { transform: none; }
+  .price-card.featured:hover { transform: translateY(-4px); }
+}
+</style>
+</head>
+<body>
+
+<!-- BACKGROUND LAYERS -->
+<div class="bg-layer stars"></div>
+<div class="bg-layer glows"></div>
+<div class="bg-layer beams">
+  <div class="beam"></div>
+  <div class="beam"></div>
+  <div class="beam"></div>
+  <div class="beam"></div>
+  <div class="beam"></div>
+</div>
+<div class="bg-layer grid-overlay"></div>
+<div class="bg-layer">
+  <div class="flare flare-1"></div>
+  <div class="flare flare-2"></div>
+  <div class="flare flare-3"></div>
+</div>
+
+<!-- NAVIGATION -->
+<nav class="top">
+  <a href="#" class="logo-wrap" style="text-decoration:none; color:inherit;">
+    <div class="logo-icon">
+      <img src="logo-nodex.png" alt="Nodex" class="logo-img" onerror="this.style.display='none'">
+    </div>
+    <div class="logo-text">NODEX</div>
+  </a>
+  <div class="nav-links">
+    <a href="#strategy">Stratégie</a>
+    <a href="#method">Méthode</a>
+    <a href="#stats">Résultats</a>
+    <a href="#pricing">Tarifs</a>
+    <a href="#faq">FAQ</a>
+  </div>
+  <button class="nav-cta" onclick="document.getElementById('pricing').scrollIntoView()">Commencer →</button>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-kicker">Nodex V5.2 · Formation + Coaching IA</div>
+  <h1>
+    La stratégie crypto<br>
+    qui fait <em>vraiment</em><br>
+    la différence.
+  </h1>
+  <p class="hero-sub">
+    Une méthode SMC/ICT simplifiée, un coaching IA 24/7 et la discipline qui transforme le trading en activité rentable. 30 jours pour valider ta transformation.
+  </p>
+  <div class="hero-ctas">
+    <a href="#pricing" class="btn btn-primary">Accéder à la formation →</a>
+    <a href="#method" class="btn btn-ghost">Découvrir la méthode</a>
+  </div>
+  <div class="hero-tagline">
+    <span>Spot Crypto</span>
+    <span>M15 NYAM</span>
+    <span>Risk 1 %</span>
+    <span>Long Only</span>
+  </div>
+</section>
+
+<!-- STATS -->
+<section id="stats">
+  <div class="container">
+    <div class="stats">
+      <div class="stat reveal">
+        <div class="stat-num">75 %</div>
+        <div class="stat-label">WR observé sur ARB</div>
+      </div>
+      <div class="stat reveal">
+        <div class="stat-num">+3 %</div>
+        <div class="stat-label">Gain max par trade</div>
+      </div>
+      <div class="stat reveal">
+        <div class="stat-num">30j</div>
+        <div class="stat-label">Pour valider ta transition</div>
+      </div>
+      <div class="stat reveal">
+        <div class="stat-num">24/7</div>
+        <div class="stat-label">Coaching IA disponible</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- STRATEGY -->
+<section id="strategy">
+  <div class="container">
+    <div class="section-kicker reveal">01 · La stratégie</div>
+    <h2 class="section-title reveal">
+      Un seul setup. <em>Maîtrisé à 100 %.</em>
+    </h2>
+    <p class="section-desc reveal">
+      Pas de surcharge d'informations. Pas de 10 setups à apprendre. Juste <strong style="color:#fff;">Sweep + FVG</strong>, le setup institutionnel le plus testé au monde, optimisé pour le crypto spot Binance en session New York.
+    </p>
+
+    <div class="pillars">
+      <div class="pillar reveal">
+        <div class="pillar-num">01 · Sweep</div>
+        <h3>Le piège des baleines</h3>
+        <p>Les institutions poussent le prix sous un low pour déclencher tous les stops retail. Tu identifies ce signal et tu sais que le vrai mouvement arrive.</p>
+      </div>
+      <div class="pillar reveal">
+        <div class="pillar-num">02 · FVG</div>
+        <h3>Le vide qui aimante</h3>
+        <p>Après le sweep, un gap de prix se crée — une Fair Value Gap. Le marché va OBLIGATOIREMENT revenir le combler. C'est ta zone d'entrée.</p>
+      </div>
+      <div class="pillar reveal">
+        <div class="pillar-num">03 · Bougie 2</div>
+        <h3>La confirmation</h3>
+        <p>Pas d'anticipation, pas de pari. Tu attends que la 2ᵉ bougie confirme dans la FVG avec une clôture haussière. Entry propre, risque calculé.</p>
+      </div>
+      <div class="pillar reveal">
+        <div class="pillar-num">04 · Trailing</div>
+        <h3>TP par paliers</h3>
+        <p>Nouveau en V5.2 : tu ne sors plus 50 % au TP1. Tu gardes 100 % de la position et tu déplaces le SL par paliers jusqu'à +3 %. Gain jusqu'à 3× supérieur.</p>
+      </div>
+      <div class="pillar reveal">
+        <div class="pillar-num">05 · Risk</div>
+        <h3>1 % non négociable</h3>
+        <p>Plafond strict. RR minimum 2,5:1. Stop après 2 SL consécutifs. Des règles simples qui protègent ton capital mieux que n'importe quelle intuition.</p>
+      </div>
+      <div class="pillar reveal">
+        <div class="pillar-num">06 · Journal</div>
+        <h3>4 couches · 0 excuse</h3>
+        <p>Trade log, journal émotionnel, revue hebdo, Demon Finder. Chaque erreur est capturée, analysée, éliminée. La progression n'est pas optionnelle.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- METHOD -->
+<section id="method">
+  <div class="container">
+    <div class="section-kicker reveal">02 · La méthode</div>
+    <h2 class="section-title reveal">
+      Un formateur IA qui <em>ne te lâche pas.</em>
+    </h2>
+    <p class="section-desc reveal">
+      Tu installes le skill <strong style="color:#fff;">Nodex</strong> dans ton Claude Code. Dès l'activation, il se transforme en <strong style="color:#fff;">formateur personnel 24/7</strong>, t'accueille, évalue ton niveau en 10 questions, et crée ton programme sur-mesure.
+    </p>
+
+    <div class="pillars">
+      <div class="pillar reveal">
+        <div class="pillar-num">Étape 01</div>
+        <h3>Diagnostic 10 questions</h3>
+        <p>Nodex évalue ton expérience, tes résultats passés, ta discipline, ton temps disponible. Aucune formation standard. Tout est personnalisé.</p>
+      </div>
+      <div class="pillar reveal">
+        <div class="pillar-num">Étape 02</div>
+        <h3>Programme adaptatif</h3>
+        <p><strong style="color:#fff;">Débutant</strong> : 3 semaines · <strong style="color:#fff;">Intermédiaire</strong> : 2 semaines · <strong style="color:#fff;">Avancé</strong> : 1 semaine. Nodex ajuste la vitesse selon ta progression réelle.</p>
+      </div>
+      <div class="pillar reveal">
+        <div class="pillar-num">Étape 03</div>
+        <h3>Setup TradingView guidé</h3>
+        <p>Installation pas à pas de TV Desktop + connexion directe au chart. Nodex voit ton graphique en temps réel pour te coacher en live.</p>
+      </div>
+      <div class="pillar reveal">
+        <div class="pillar-num">Étape 04</div>
+        <h3>Paper trading coaché</h3>
+        <p>Tes 30 premiers trades sont en simulation. Nodex valide chaque setup avant que tu cliques. Zéro argent perdu pendant l'apprentissage.</p>
+      </div>
+      <div class="pillar reveal">
+        <div class="pillar-num">Étape 05</div>
+        <h3>Journal & stats live</h3>
+        <p>Chaque trade loggué. WR, PF, Drawdown calculés en temps réel. Détection automatique des patterns d'erreurs répétés.</p>
+      </div>
+      <div class="pillar reveal">
+        <div class="pillar-num">Étape 06</div>
+        <h3>Validation Go/No-Go</h3>
+        <p>Après 30 trades : WR ≥ 45 %, PF ≥ 1,5, DD ≤ 15 %. Si les 3 seuils tombent → Nodex valide ton passage au réel. Sinon → itération.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section id="pricing">
+  <div class="container">
+    <div class="section-kicker reveal">03 · Tarifs</div>
+    <h2 class="section-title reveal">
+      Choisis ton <em>niveau d'engagement.</em>
+    </h2>
+    <p class="section-desc reveal">
+      Un paiement unique. Accès à vie au skill Nodex V5.2. Mises à jour régulières incluses selon le tier choisi.
+    </p>
+
+    <div class="pricing">
+      <div class="price-card reveal">
+        <div class="price-tier">Essentiel</div>
+        <div class="price-amount"><span class="currency">€</span>497</div>
+        <div class="price-desc">La méthode complète, en autonomie. Tu lis, tu appliques, tu valides à ton rythme.</div>
+        <ul class="price-features">
+          <li>Skill IA Nodex V5.2 (formateur perso)</li>
+          <li>4 indicateurs Pine Script TradingView</li>
+          <li>Fiche interactive cockpit</li>
+          <li>Guide d'installation TradingView</li>
+          <li>Garantie 14 jours · support email</li>
+        </ul>
+        <a href="tier-essentiel.html" class="price-cta ghost" style="text-decoration:none; display:inline-block; text-align:center;">Choisir Essentiel</a>
+      </div>
+
+      <div class="price-card featured reveal">
+        <div class="price-badge">Recommandé</div>
+        <div class="price-tier">Pro</div>
+        <div class="price-amount"><span class="currency">€</span>997</div>
+        <div class="price-desc">L'Essentiel + accès au Telegram privé où Nahel partage ses zones et positions potentielles.</div>
+        <ul class="price-features">
+          <li>Tout le tier Essentiel</li>
+          <li>Telegram positions de Nahel</li>
+          <li>Watchlist crypto privée hebdo</li>
+          <li>Brief weekly Nahel (3-5 min de lecture)</li>
+          <li>Garantie 14 jours · support email</li>
+        </ul>
+        <a href="tier-pro.html" class="price-cta primary" style="text-decoration:none; display:inline-block; text-align:center;">Choisir Pro</a>
+      </div>
+
+      <div class="price-card reveal">
+        <div class="price-tier">Elite</div>
+        <div class="price-amount"><span class="currency">€</span>2497</div>
+        <div class="price-desc">Le bot qui chasse pour toi. Tu reçois les setups Sweep+FVG en direct, tu décides en 30 secondes.</div>
+        <ul class="price-features">
+          <li>Tout le tier Pro</li>
+          <li>Bot Telegram Auto Scanner (24/7)</li>
+          <li>Watchlist personnalisable (max 30)</li>
+          <li>Crédit cloud première année offert</li>
+          <li>Accès prioritaire bêta bot Q3 2026</li>
+        </ul>
+        <a href="tier-elite.html" class="price-cta ghost" style="text-decoration:none; display:inline-block; text-align:center;">Choisir Elite</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section id="faq">
+  <div class="container">
+    <div class="section-kicker reveal">04 · Questions fréquentes</div>
+    <h2 class="section-title reveal" style="margin-bottom:56px;">
+      Tout ce que tu dois <em>savoir.</em>
+    </h2>
+
+    <div class="faq-list">
+      <details class="faq">
+        <summary>Je suis débutant total, c'est fait pour moi ?</summary>
+        <div class="faq-answer">
+          Oui. Nodex adapte automatiquement son programme à ton niveau. En version <strong>Essentiel</strong>, le programme débutant dure 3 semaines et démarre de zéro : vocabulaire, structure de marché, liquidité, setup, risk management. Rien n'est acquis au départ.
+        </div>
+      </details>
+      <details class="faq">
+        <summary>Combien de temps avant d'être rentable ?</summary>
+        <div class="faq-answer">
+          Soyons honnêtes : <strong>1 à 3 mois</strong> sont nécessaires pour valider la méthode en paper trading, puis 1 mois de live pour confirmer la rentabilité. Pas de promesses de "rentable en 7 jours". Ce qu'on promet : une méthode testée + la discipline nécessaire pour t'y tenir.
+        </div>
+      </details>
+      <details class="faq">
+        <summary>Je n'ai pas Claude Code, qu'est-ce que je fais ?</summary>
+        <div class="faq-answer">
+          Claude Code est <strong>gratuit</strong> — tu le télécharges sur <a href="https://claude.ai/code" style="color:#6fa8ff;">claude.ai/code</a>. L'accès à Claude en lui-même nécessite un compte Anthropic (gratuit avec limites, ~20 €/mois en Pro pour usage intensif).
+        </div>
+      </details>
+      <details class="faq">
+        <summary>Y a-t-il une garantie satisfait ou remboursé ?</summary>
+        <div class="faq-answer">
+          <strong>14 jours</strong> de garantie satisfait ou remboursé sur tous les tiers. Si tu as complété le diagnostic, lancé l'onboarding et journalé au moins 10 paper trades, et que tu estimes que ça ne te convient pas, remboursement intégral sur simple email à nodexcontact@gmail.com — sans discussion.
+        </div>
+      </details>
+      <details class="faq">
+        <summary>Puis-je partager le skill avec un ami ?</summary>
+        <div class="faq-answer">
+          Non. Chaque licence est <strong>personnelle et non transférable</strong>. Des watermarks invisibles identifient chaque acheteur. Le partage, la revente, ou la redistribution constituent une violation de propriété intellectuelle passible de poursuites. Si un ami veut accéder au skill, il doit acheter sa propre licence.
+        </div>
+      </details>
+      <details class="faq">
+        <summary>Quel capital faut-il pour démarrer ?</summary>
+        <div class="faq-answer">
+          En paper trading : <strong>zéro</strong>. Pour le passage au live, on recommande <strong>minimum 500 €</strong> pour que le risk de 1 % soit significatif. Mais la méthode fonctionne à n'importe quelle taille — les pourcentages sont les mêmes.
+        </div>
+      </details>
+      <details class="faq">
+        <summary>La stratégie marche sur d'autres marchés que le crypto ?</summary>
+        <div class="faq-answer">
+          La V5.2 est <strong>spécifiquement calibrée pour le crypto spot alts sur Binance en M15 NYAM</strong>. Les principes SMC/ICT sous-jacents s'appliquent à tous les marchés, mais les paramètres exacts (buffers SL, timing, filtres) sont optimisés crypto. Pour forex ou stocks, il faudrait réajuster — ce qui sort du cadre de la formation.
+        </div>
+      </details>
+    </div>
+  </div>
+</section>
+
+<!-- FINAL CTA -->
+<section class="final-cta">
+  <div class="container">
+    <h2 class="reveal">
+      Prêt à <em>changer de dimension</em><br>dans ton trading ?
+    </h2>
+    <p class="reveal">
+      30 jours. Un skill. Une méthode. Un coach IA qui t'accompagne. C'est tout ce qu'il te faut pour rejoindre les 5 % de traders retail rentables.
+    </p>
+    <div class="hero-ctas reveal">
+      <a href="#pricing" class="btn btn-primary">Accéder à Nodex V5.2 →</a>
+      <a href="#faq" class="btn btn-ghost">J'ai encore des questions</a>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-copy">
+      © 2026 Nodex Trading · Nahel Zamouri
+    </div>
+    <div class="footer-links">
+      <a href="#">CGV</a>
+      <a href="#">Licence</a>
+      <a href="#">Contact</a>
+      <a href="#">Mentions légales</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+// Scroll reveal animation
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('visible');
+    }
+  });
+}, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+
+document.querySelectorAll('.reveal, .stat').forEach(el => observer.observe(el));
+
+// Parallax subtle on background
+document.addEventListener('mousemove', (e) => {
+  const x = (e.clientX / window.innerWidth - 0.5) * 20;
+  const y = (e.clientY / window.innerHeight - 0.5) * 20;
+  document.querySelectorAll('.flare').forEach((el, i) => {
+    const factor = (i + 1) * 0.3;
+    el.style.transform = `translate(${x * factor}px, ${y * factor}px)`;
+  });
+});
+</script>
+
+</body>
+</html>

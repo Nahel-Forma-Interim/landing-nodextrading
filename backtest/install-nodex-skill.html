@@ -1,0 +1,720 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#030818">
+<title>Nodex V5.2 — Guide d'installation</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700;800;900&family=Geist+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --background: #031021;
+  --background-darker: #020a15;
+  --foreground: #ffffff;
+  --surface: rgba(10, 24, 48, 0.7);
+  --surface-solid: #0a1a33;
+  --surface-light: rgba(14, 28, 58, 0.6);
+  --border: rgba(255, 255, 255, 0.1);
+  --border-strong: rgba(255, 255, 255, 0.25);
+  --accent-green: #4ade80;
+  --accent-red: #f87171;
+  --accent-yellow: #fbbf24;
+  --accent-blue: #2962ff;
+  --text-muted: rgba(255, 255, 255, 0.55);
+  --glass-bg: rgba(3, 16, 33, 0.75);
+  --font-sans: 'Geist', -apple-system, BlinkMacSystemFont, 'SF Pro Display', Arial, sans-serif;
+  --font-mono: 'Geist Mono', 'SF Mono', Monaco, monospace;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; scroll-behavior: smooth; }
+body {
+  font-family: var(--font-sans);
+  background: var(--background);
+  color: var(--foreground);
+  min-height: 100vh;
+  line-height: 1.65;
+  background-image:
+    radial-gradient(at 15% 10%, rgba(22, 40, 78, 0.6) 0px, transparent 55%),
+    radial-gradient(at 85% 85%, rgba(14, 28, 58, 0.5) 0px, transparent 55%);
+  background-attachment: fixed;
+  padding-bottom: 80px;
+}
+.container {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 40px 24px;
+}
+
+/* HERO */
+.hero {
+  text-align: center;
+  padding: 70px 0 40px;
+}
+.hero-badge {
+  display: inline-block;
+  padding: 6px 14px;
+  background: rgba(74,222,128,0.1);
+  border: 1px solid rgba(74,222,128,0.3);
+  color: var(--accent-green);
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 1.2px;
+  font-family: var(--font-mono);
+  margin-bottom: 24px;
+  text-transform: uppercase;
+}
+.hero h1 {
+  font-size: clamp(42px, 6vw, 72px);
+  font-weight: 900;
+  letter-spacing: -2.5px;
+  line-height: 1.05;
+  margin-bottom: 18px;
+}
+.gradient {
+  background: linear-gradient(135deg, #ffffff 0%, #4ade80 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.hero-sub {
+  font-size: 18px;
+  color: var(--text-muted);
+  max-width: 680px;
+  margin: 0 auto 28px;
+}
+.hero-stats {
+  display: flex;
+  justify-content: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+.stat {
+  padding: 14px 22px;
+  background: var(--glass-bg);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 140px;
+}
+.stat-v {
+  font-size: 22px;
+  font-weight: 800;
+  font-family: var(--font-mono);
+  color: white;
+  letter-spacing: -0.5px;
+}
+.stat-k {
+  font-size: 11px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  font-family: var(--font-mono);
+  letter-spacing: 1.2px;
+}
+
+/* SECTIONS */
+section { padding: 50px 0; }
+.section-label {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--accent-green);
+  letter-spacing: 2.2px;
+  text-transform: uppercase;
+  margin-bottom: 12px;
+  font-weight: 600;
+}
+.section-title {
+  font-size: clamp(28px, 4vw, 40px);
+  font-weight: 800;
+  letter-spacing: -1.3px;
+  margin-bottom: 14px;
+}
+.section-desc {
+  font-size: 17px;
+  color: var(--text-muted);
+  max-width: 720px;
+  margin-bottom: 36px;
+}
+
+/* GLASS */
+.glass {
+  background: var(--glass-bg);
+  backdrop-filter: blur(24px);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.05);
+}
+.card { padding: 28px; }
+
+/* PRE-REQUIS */
+.prereq-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 14px;
+}
+.prereq {
+  padding: 20px;
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+}
+.prereq-icon {
+  font-size: 28px;
+  flex-shrink: 0;
+}
+.prereq-content h3 { font-size: 16px; font-weight: 700; margin-bottom: 4px; }
+.prereq-content p { font-size: 13px; color: var(--text-muted); line-height: 1.5; }
+
+/* TABS */
+.tabs {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+.tab {
+  padding: 12px 20px;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-family: var(--font-sans);
+  font-size: 14px;
+  font-weight: 600;
+  transition: all 0.2s;
+}
+.tab:hover { background: rgba(255,255,255,0.07); color: white; }
+.tab.active {
+  background: var(--accent-green);
+  color: var(--background);
+  border-color: var(--accent-green);
+  box-shadow: 0 0 14px rgba(74,222,128,0.35);
+}
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+
+/* STEPS */
+.step {
+  padding: 24px 28px;
+  margin-bottom: 16px;
+  display: grid;
+  grid-template-columns: 56px 1fr;
+  gap: 20px;
+  align-items: start;
+}
+.step-num {
+  font-family: var(--font-mono);
+  font-size: 40px;
+  font-weight: 900;
+  color: rgba(255,255,255,0.1);
+  line-height: 1;
+  letter-spacing: -2px;
+}
+.step-body h3 {
+  font-size: 19px;
+  font-weight: 700;
+  margin-bottom: 8px;
+  letter-spacing: -0.3px;
+}
+.step-body p { font-size: 14px; color: var(--text-muted); margin-bottom: 12px; line-height: 1.55; }
+
+/* CODE BLOCK */
+.code {
+  background: #0a1526;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 14px 16px;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: #d1d4dc;
+  overflow-x: auto;
+  position: relative;
+  margin-top: 10px;
+}
+.code::before {
+  content: attr(data-label);
+  position: absolute;
+  top: -8px;
+  left: 12px;
+  font-size: 10px;
+  color: var(--accent-green);
+  background: var(--background);
+  padding: 0 8px;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+}
+.code.bash::before { content: "BASH"; }
+.code.ps::before { content: "POWERSHELL"; }
+.code.output::before { content: "OUTPUT"; color: var(--accent-yellow); }
+
+.copy-btn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  padding: 4px 10px;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  color: var(--text-muted);
+  font-size: 11px;
+  cursor: pointer;
+  font-family: var(--font-sans);
+}
+.copy-btn:hover { color: white; background: rgba(255,255,255,0.1); }
+
+/* CALLOUT */
+.callout {
+  padding: 18px 22px;
+  border-radius: 12px;
+  margin: 16px 0;
+  font-size: 14px;
+  border: 1px solid;
+}
+.callout.warning { background: rgba(251,191,36,0.08); border-color: rgba(251,191,36,0.3); }
+.callout.success { background: rgba(74,222,128,0.08); border-color: rgba(74,222,128,0.3); }
+.callout.info { background: rgba(41,98,255,0.08); border-color: rgba(41,98,255,0.3); }
+.callout-title {
+  font-weight: 700;
+  font-size: 12px;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+  font-family: var(--font-mono);
+}
+.callout.warning .callout-title { color: var(--accent-yellow); }
+.callout.success .callout-title { color: var(--accent-green); }
+.callout.info .callout-title { color: var(--accent-blue); }
+
+/* TREE */
+.tree {
+  background: #0a1526;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 18px 20px;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  line-height: 1.7;
+  color: #d1d4dc;
+  margin-top: 10px;
+}
+.tree .dir { color: var(--accent-green); font-weight: 600; }
+.tree .file { color: var(--text-muted); }
+
+/* VERIFY */
+.verify-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 16px;
+  margin-top: 16px;
+}
+.verify {
+  padding: 18px;
+  border-left: 3px solid var(--accent-green);
+  background: rgba(74,222,128,0.04);
+  border-radius: 0 10px 10px 0;
+}
+.verify h4 { font-size: 15px; margin-bottom: 6px; }
+.verify p { font-size: 13px; color: var(--text-muted); }
+
+/* FAQ */
+.faq-item {
+  padding: 20px 24px;
+  margin-bottom: 10px;
+  cursor: pointer;
+}
+.faq-item h4 { font-size: 15px; font-weight: 600; margin-bottom: 0; }
+.faq-item .ans { margin-top: 8px; font-size: 14px; color: var(--text-muted); display: none; }
+.faq-item.open .ans { display: block; }
+.faq-item.open h4::after { content: " ▼"; color: var(--accent-green); }
+.faq-item h4::after { content: " ▶"; color: var(--text-muted); font-size: 10px; }
+
+/* FOOTER */
+footer {
+  margin-top: 60px;
+  padding-top: 30px;
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 13px;
+  border-top: 1px solid var(--border);
+}
+
+@media (max-width: 768px) {
+  .hero h1 { font-size: 36px; }
+  .step { grid-template-columns: 1fr; gap: 8px; }
+  .step-num { font-size: 32px; }
+  .container { padding: 20px 16px; }
+  section { padding: 30px 0; }
+  .hero { padding: 30px 0 20px; }
+  .hero-stats { flex-direction: column; }
+  .stat { min-width: auto; }
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <!-- HERO -->
+  <section class="hero">
+    <span class="hero-badge">● GUIDE D'INSTALLATION</span>
+    <h1>Installer <span class="gradient">Nodex V5.2</span><br>dans ton Claude</h1>
+    <p class="hero-sub">
+      3 options, 3 minutes max. Une fois installé, Nodex t'accueille avec son message standard et démarre ta formation personnalisée.
+    </p>
+    <div class="hero-stats">
+      <div class="stat"><span class="stat-v">3 min</span><span class="stat-k">Installation</span></div>
+      <div class="stat"><span class="stat-v">3 options</span><span class="stat-k">Méthodes</span></div>
+      <div class="stat"><span class="stat-v">Windows / Mac / Linux</span><span class="stat-k">Compatible</span></div>
+    </div>
+  </section>
+
+  <!-- PRÉ-REQUIS -->
+  <section>
+    <div class="section-label">01 · Pré-requis</div>
+    <h2 class="section-title">Ce qu'il te faut avant de commencer</h2>
+    <p class="section-desc">Vérifie que tu as tout ça installé. Sinon, prends 5 minutes pour les mettre en place.</p>
+
+    <div class="prereq-grid">
+      <div class="glass prereq">
+        <div class="prereq-icon">💻</div>
+        <div class="prereq-content">
+          <h3>Claude Code</h3>
+          <p>Télécharger sur <a href="https://claude.ai/code" target="_blank" style="color:var(--accent-green);">claude.ai/code</a></p>
+        </div>
+      </div>
+      <div class="glass prereq">
+        <div class="prereq-icon">📁</div>
+        <div class="prereq-content">
+          <h3>Un dossier de projet</h3>
+          <p>Où tu utilises Claude Code habituellement</p>
+        </div>
+      </div>
+      <div class="glass prereq">
+        <div class="prereq-icon">🔑</div>
+        <div class="prereq-content">
+          <h3>Ton code d'activation</h3>
+          <p>Reçu par email après ton achat (<code>NDX-V52-...</code>)</p>
+        </div>
+      </div>
+      <div class="glass prereq">
+        <div class="prereq-icon">📦</div>
+        <div class="prereq-content">
+          <h3>Le ZIP du skill</h3>
+          <p><code>nodex-v5.2-skill.zip</code> fourni avec ta commande</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3 OPTIONS -->
+  <section>
+    <div class="section-label">02 · Choisis ta méthode</div>
+    <h2 class="section-title">3 façons d'installer le skill</h2>
+    <p class="section-desc">Choisis la méthode qui te convient le mieux selon ton niveau technique.</p>
+
+    <div class="tabs">
+      <button class="tab active" onclick="switchTab('auto')">🟢 Automatique (recommandée)</button>
+      <button class="tab" onclick="switchTab('manual')">🟡 Manuelle</button>
+      <button class="tab" onclick="switchTab('git')">🔵 GitHub (avancée)</button>
+    </div>
+
+    <!-- OPTION 1 : AUTO -->
+    <div class="tab-content active" id="auto">
+      <div class="glass step">
+        <div class="step-num">01</div>
+        <div class="step-body">
+          <h3>Télécharge et décompresse le ZIP</h3>
+          <p>Extrais <code>nodex-v5.2-skill.zip</code> dans <strong>Téléchargements</strong> (ou où tu veux).</p>
+          <p>Tu obtiens un dossier <code>nodex-v5.2/</code>.</p>
+        </div>
+      </div>
+
+      <div class="glass step">
+        <div class="step-num">02</div>
+        <div class="step-body">
+          <h3>Ouvre PowerShell (Windows) ou Terminal (Mac/Linux)</h3>
+          <p><strong>Windows</strong> : clique droit sur Démarrer → "Terminal" ou "PowerShell"</p>
+          <p><strong>Mac/Linux</strong> : Cmd+Espace → "Terminal"</p>
+        </div>
+      </div>
+
+      <div class="glass step">
+        <div class="step-num">03</div>
+        <div class="step-body">
+          <h3>Lance le script d'installation</h3>
+          <p><strong>Windows</strong> :</p>
+          <div class="code ps">cd $HOME\Downloads\nodex-v5.2
+.\install.ps1<button class="copy-btn" onclick="copyCode(this)">Copier</button></div>
+          <p style="margin-top:14px;"><strong>Mac / Linux</strong> :</p>
+          <div class="code bash">cd ~/Downloads/nodex-v5.2
+chmod +x install.sh
+./install.sh<button class="copy-btn" onclick="copyCode(this)">Copier</button></div>
+        </div>
+      </div>
+
+      <div class="glass step">
+        <div class="step-num">04</div>
+        <div class="step-body">
+          <h3>Réponds aux 2 questions</h3>
+          <p>Le script te demande :</p>
+          <ul style="margin-left:20px; color: var(--text-muted); font-size:14px;">
+            <li>Installation <strong>locale (projet)</strong> ou <strong>globale</strong> ?</li>
+            <li>Chemin du projet (si locale)</li>
+          </ul>
+          <div class="callout success">
+            <div class="callout-title">✓ Si tout est OK</div>
+            Tu verras <strong>"INSTALLATION RÉUSSIE !"</strong> à la fin. Passe à l'étape 5.
+          </div>
+        </div>
+      </div>
+
+      <div class="glass step">
+        <div class="step-num">05</div>
+        <div class="step-body">
+          <h3>Redémarre Claude Code</h3>
+          <p>Ferme complètement Claude Code puis relance. Ouvre ton projet et tape :</p>
+          <div class="code">Nodex, tu es là ?<button class="copy-btn" onclick="copyCode(this)">Copier</button></div>
+          <div class="callout success" style="margin-top:16px;">
+            <div class="callout-title">🎯 Résultat attendu</div>
+            Nodex doit te répondre avec son message standard :<br><em>"Bonjour 👋 Je suis Nodex, ton formateur en trading..."</em>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- OPTION 2 : MANUAL -->
+    <div class="tab-content" id="manual">
+      <div class="glass step">
+        <div class="step-num">01</div>
+        <div class="step-body">
+          <h3>Décompresse le ZIP</h3>
+          <p>Clic droit → "Extraire tout" (Windows) ou double-clic (Mac).</p>
+          <p>Tu obtiens un dossier <code>nodex-v5.2/</code>.</p>
+        </div>
+      </div>
+
+      <div class="glass step">
+        <div class="step-num">02</div>
+        <div class="step-body">
+          <h3>Trouve ton dossier <code>.claude/skills/</code></h3>
+          <p>Il se trouve soit dans <strong>ton projet</strong> :</p>
+          <div class="code"><ton-projet>/.claude/skills/<button class="copy-btn" onclick="copyCode(this)">Copier</button></div>
+          <p style="margin-top:12px;">Soit <strong>global</strong> (tous tes projets) :</p>
+          <div class="code">C:\Users\<TonNom>\.claude\skills\  (Windows)
+~/.claude/skills/                    (Mac/Linux)<button class="copy-btn" onclick="copyCode(this)">Copier</button></div>
+          <div class="callout info" style="margin-top:14px;">
+            <div class="callout-title">💡 Astuce</div>
+            Si le dossier <code>.claude/skills/</code> n'existe pas, <strong>crée-le</strong>.
+          </div>
+        </div>
+      </div>
+
+      <div class="glass step">
+        <div class="step-num">03</div>
+        <div class="step-body">
+          <h3>Copie le dossier <code>nodex-v5.2/</code></h3>
+          <p>Déplace le dossier <strong>ENTIER</strong> vers :</p>
+          <div class="code"><destination>/.claude/skills/nodex-v5.2/<button class="copy-btn" onclick="copyCode(this)">Copier</button></div>
+          <p style="margin-top:14px;">L'arborescence finale doit être :</p>
+          <div class="tree">
+<span class="dir">ton-projet/</span>
+└── <span class="dir">.claude/</span>
+    └── <span class="dir">skills/</span>
+        └── <span class="dir">nodex-v5.2/</span>
+            ├── <span class="file">SKILL.md</span>
+            ├── <span class="file">FIRST-MESSAGE.md</span>
+            ├── <span class="file">PERSONA.md</span>
+            └── <span class="file">(autres dossiers...)</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="glass step">
+        <div class="step-num">04</div>
+        <div class="step-body">
+          <h3>Redémarre Claude Code et teste</h3>
+          <p>Ferme Claude Code, relance. Ouvre ton projet. Tape :</p>
+          <div class="code">Nodex, tu es là ?<button class="copy-btn" onclick="copyCode(this)">Copier</button></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- OPTION 3 : GITHUB -->
+    <div class="tab-content" id="git">
+      <div class="callout info">
+        <div class="callout-title">⚠️ Pré-requis</div>
+        Tu dois avoir reçu une <strong>invitation GitHub</strong> au repo privé (dans ton email de livraison). Si pas encore reçue → contacte le support.
+      </div>
+
+      <div class="glass step">
+        <div class="step-num">01</div>
+        <div class="step-body">
+          <h3>Accepte l'invitation GitHub</h3>
+          <p>Dans l'email de livraison, clique sur le lien d'invitation GitHub. Connecte-toi à ton compte, accepte l'accès au repo <code>nodex-skill-licensed</code>.</p>
+        </div>
+      </div>
+
+      <div class="glass step">
+        <div class="step-num">02</div>
+        <div class="step-body">
+          <h3>Clone le repo directement dans ton projet</h3>
+          <div class="code bash">cd <ton-projet>
+git clone https://github.com/Nahel-Forma-Interim/nodex-skill-licensed.git .claude/skills/nodex-v5.2<button class="copy-btn" onclick="copyCode(this)">Copier</button></div>
+          <p style="margin-top:12px; color:var(--text-muted); font-size:13px;">Remplace l'URL par celle fournie dans ton email si différente.</p>
+        </div>
+      </div>
+
+      <div class="glass step">
+        <div class="step-num">03</div>
+        <div class="step-body">
+          <h3>Redémarre Claude et teste</h3>
+          <div class="code">Nodex, tu es là ?<button class="copy-btn" onclick="copyCode(this)">Copier</button></div>
+          <div class="callout success" style="margin-top:14px;">
+            <div class="callout-title">💡 Bonus</div>
+            Avec cette méthode, tu peux mettre à jour le skill avec <code>git pull</code> à chaque nouvelle version.
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- VÉRIFICATION -->
+  <section>
+    <div class="section-label">03 · Vérification</div>
+    <h2 class="section-title">Est-ce que ça marche ?</h2>
+    <p class="section-desc">Voici comment vérifier que ton installation est bien fonctionnelle.</p>
+
+    <div class="verify-grid">
+      <div class="glass verify">
+        <h4>✓ Test 1 — Message d'accueil</h4>
+        <p>Tape "<em>Nodex tu es là ?</em>". Nodex doit répondre avec son message standard commençant par "Bonjour 👋 Je suis Nodex...".</p>
+      </div>
+      <div class="glass verify">
+        <h4>✓ Test 2 — Questionnaire</h4>
+        <p>Quand tu dis "<em>Oui je veux apprendre</em>", Nodex enchaîne avec la Question 1 du diagnostic (depuis combien de temps tu trades).</p>
+      </div>
+      <div class="glass verify">
+        <h4>✓ Test 3 — Code d'activation</h4>
+        <p>Nodex te demande ton <strong>code d'activation</strong> (format <code>NDX-V52-...</code>). Entre-le. Il valide.</p>
+      </div>
+      <div class="glass verify">
+        <h4>✓ Test 4 — Persona stable</h4>
+        <p>Après plusieurs messages, Nodex se présente TOUJOURS comme "Nodex", jamais comme "Claude" ou "un assistant".</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- TROUBLESHOOTING -->
+  <section>
+    <div class="section-label">04 · Troubleshooting</div>
+    <h2 class="section-title">Ça ne marche pas ?</h2>
+    <p class="section-desc">Les problèmes courants et leurs solutions.</p>
+
+    <div class="glass faq-item" onclick="this.classList.toggle('open')">
+      <h4>Nodex ne répond pas du tout</h4>
+      <div class="ans">
+        Vérifie que le dossier <code>.claude/skills/nodex-v5.2/</code> existe bien dans ton projet.<br>
+        Vérifie que le fichier <code>SKILL.md</code> est à la <strong>racine</strong> du dossier (pas dans un sous-dossier).<br>
+        <strong>Redémarre Claude Code</strong> complètement (ferme et relance).
+      </div>
+    </div>
+
+    <div class="glass faq-item" onclick="this.classList.toggle('open')">
+      <h4>Le message d'accueil est différent à chaque fois</h4>
+      <div class="ans">
+        Impossible si le fichier <code>FIRST-MESSAGE.md</code> est intact. Vérifie qu'il est présent dans le dossier skill et qu'il n'a pas été modifié.<br>
+        Si le problème persiste, <strong>réinstalle depuis le ZIP original</strong>.
+      </div>
+    </div>
+
+    <div class="glass faq-item" onclick="this.classList.toggle('open')">
+      <h4>Le code d'activation ne fonctionne pas</h4>
+      <div class="ans">
+        Vérifie le format (<code>NDX-V52-YYYYMMDD-XXXXXX</code>).<br>
+        Vérifie que tu ne l'as pas déjà activé sur un autre PC.<br>
+        Si tu as changé de machine, <strong>contacte le support</strong> pour transférer ta licence.
+      </div>
+    </div>
+
+    <div class="glass faq-item" onclick="this.classList.toggle('open')">
+      <h4>Le script d'installation est bloqué sur Windows</h4>
+      <div class="ans">
+        PowerShell bloque parfois les scripts non signés. Lance PowerShell en <strong>admin</strong> et tape :
+        <div class="code ps">Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser</div>
+        Puis relance <code>install.ps1</code>.
+      </div>
+    </div>
+
+    <div class="glass faq-item" onclick="this.classList.toggle('open')">
+      <h4>Sur Mac, permission refusée</h4>
+      <div class="ans">
+        Donne les droits d'exécution au script :
+        <div class="code bash">chmod +x install.sh
+./install.sh</div>
+      </div>
+    </div>
+
+    <div class="glass faq-item" onclick="this.classList.toggle('open')">
+      <h4>Claude dit "je ne connais pas le skill nodex-v5.2"</h4>
+      <div class="ans">
+        Le skill n'est pas dans le bon dossier. Vérifie que <code>.claude/skills/nodex-v5.2/SKILL.md</code> existe.<br>
+        <strong>Redémarre Claude Code</strong> après installation.
+      </div>
+    </div>
+  </section>
+
+  <!-- SUPPORT -->
+  <section>
+    <div class="section-label">05 · Support</div>
+    <h2 class="section-title">Besoin d'aide ?</h2>
+    <p class="section-desc">Si aucune solution ci-dessus ne marche, contacte-nous :</p>
+
+    <div class="glass card" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(240px,1fr)); gap:24px; text-align:center;">
+      <div>
+        <div style="font-size:32px; margin-bottom:8px;">📧</div>
+        <h3 style="font-size:16px; margin-bottom:6px;">Email</h3>
+        <p style="color:var(--text-muted); font-size:13px;"><span style="color:var(--accent-green);">support@nodex-trading.com</span><br>Réponse 24-48h</p>
+      </div>
+      <div>
+        <div style="font-size:32px; margin-bottom:8px;">💬</div>
+        <h3 style="font-size:16px; margin-bottom:6px;">Discord</h3>
+        <p style="color:var(--text-muted); font-size:13px;">Invitation reçue par email<br>Support communautaire</p>
+      </div>
+      <div>
+        <div style="font-size:32px; margin-bottom:8px;">🎥</div>
+        <h3 style="font-size:16px; margin-bottom:6px;">Session 1-on-1</h3>
+        <p style="color:var(--text-muted); font-size:13px;">Si tier Pro ou Elite<br>30 min Zoom sur demande</p>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <p><strong style="color:white;">Nodex Trading</strong> · Guide d'installation V5.2 · © 2026 Nahel Zamouri</p>
+    <p style="margin-top:6px;">Licence personnelle non transférable · Tout partage est interdit</p>
+  </footer>
+
+</div>
+
+<script>
+function switchTab(id) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  event.target.classList.add('active');
+  document.getElementById(id).classList.add('active');
+}
+function copyCode(btn) {
+  const code = btn.parentElement.innerText.replace('Copier','').trim();
+  navigator.clipboard.writeText(code);
+  const original = btn.innerText;
+  btn.innerText = '✓ Copié';
+  setTimeout(() => btn.innerText = original, 2000);
+}
+</script>
+
+</body>
+</html>

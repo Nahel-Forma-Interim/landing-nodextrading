@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#000000">
+<title>Commande confirmée — Nodex Trading</title>
+<link rel="icon" href="logo-nodex.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700;800;900&family=Geist+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root { --bg:#000; --fg:#fff; --muted:rgba(255,255,255,0.55); --subtle:rgba(255,255,255,0.3); --line:rgba(255,255,255,0.08); --line-strong:rgba(255,255,255,0.18); --accent:#6fa8ff; --green:#4ade80; --orange:#f59e0b; --font-sans:'Geist',sans-serif; --font-mono:'Geist Mono',monospace; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: var(--font-sans); background: var(--bg); color: var(--fg); min-height: 100vh; overflow-x: hidden; line-height: 1.6; }
+
+.bg-layer { position: fixed; top:0; left:0; right:0; bottom:0; pointer-events:none; z-index:0; }
+.stars { background-image: radial-gradient(1px 1px at 20% 30%, white, transparent), radial-gradient(1px 1px at 60% 70%, rgba(255,255,255,0.8), transparent), radial-gradient(1px 1px at 80% 10%, white, transparent), radial-gradient(1px 1px at 33% 65%, rgba(255,255,255,0.7), transparent); background-size: 250% 250%; animation: starfall 80s linear infinite; opacity: 0.4; }
+@keyframes starfall { 0%{background-position:0% 0%;} 100%{background-position:100% 100%;} }
+.glows { background: radial-gradient(ellipse 800px 600px at 50% 50%, rgba(74,222,128,0.1) 0%, transparent 60%); }
+.flare { position:absolute; border-radius:50%; filter:blur(60px); opacity:0.4; animation: flareFloat 20s ease-in-out infinite; }
+.flare-1 { top:-150px; right:-150px; width:500px; height:500px; background: radial-gradient(circle, rgba(74,222,128,0.3) 0%, transparent 70%); }
+.flare-2 { bottom:-200px; left:-200px; width:600px; height:600px; background: radial-gradient(circle, rgba(111,168,255,0.3) 0%, transparent 70%); animation-delay: -10s; }
+@keyframes flareFloat { 0%,100%{transform:translate(0,0) scale(1);} 50%{transform:translate(30px,-20px) scale(1.05);} }
+.grid-overlay { background-image: linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px); background-size: 60px 60px; opacity: 0.3; }
+
+.simulation-banner { position: fixed; top: 0; left: 0; right: 0; z-index: 200; padding: 14px 24px; background: linear-gradient(90deg, rgba(245,158,11,0.95), rgba(245,158,11,0.85), rgba(245,158,11,0.95)); color: #001; text-align: center; font-size: 13px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; font-family: var(--font-mono); }
+
+nav.top { position: fixed; top: 50px; left: 0; right: 0; z-index: 100; padding: 16px 32px; display: flex; justify-content: space-between; align-items: center; background: linear-gradient(180deg, rgba(0,0,0,0.7), transparent); backdrop-filter: blur(8px); }
+.logo-wrap { display: flex; align-items: center; gap: 12px; cursor: pointer; text-decoration: none; }
+.logo-icon { position: relative; width: 38px; height: 38px; border-radius: 22.5%; background: linear-gradient(135deg, rgba(111,168,255,0.22), rgba(180,200,255,0.05)); border: 1px solid rgba(255,255,255,0.12); display: flex; align-items: center; justify-content: center; }
+.logo-icon::before { content:''; position:absolute; top:0; left:0; right:0; height:50%; background: linear-gradient(180deg, rgba(255,255,255,0.12), transparent); border-radius: 22.5% 22.5% 0 0; }
+.logo-img { width: 22px; height: 22px; filter: brightness(0) invert(1); z-index: 1; }
+.logo-text { font-size: 15px; font-weight: 800; background: linear-gradient(135deg, #fff, #c8d8ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+
+.confirmation { position: relative; z-index: 10; padding: 160px 24px 60px; max-width: 800px; margin: 0 auto; text-align: center; }
+
+.success-circle { width: 88px; height: 88px; border-radius: 50%; background: radial-gradient(circle, rgba(74,222,128,0.15) 0%, transparent 70%); border: 2px solid rgba(74,222,128,0.5); display: flex; align-items: center; justify-content: center; margin: 0 auto 32px; position: relative; animation: successPop 0.6s cubic-bezier(0.4,0,0.2,1); }
+@keyframes successPop { 0%{transform:scale(0); opacity:0;} 60%{transform:scale(1.1);} 100%{transform:scale(1); opacity:1;} }
+.success-check { font-size: 44px; color: var(--green); animation: checkDraw 0.4s 0.4s both; }
+@keyframes checkDraw { from { opacity: 0; transform: scale(0); } to { opacity: 1; transform: scale(1); } }
+.success-circle::before { content: ''; position: absolute; inset: -8px; border-radius: 50%; border: 1px solid rgba(74,222,128,0.2); animation: successRing 2s ease-out infinite; }
+@keyframes successRing { 0%{transform:scale(1); opacity:1;} 100%{transform:scale(1.5); opacity:0;} }
+
+.confirmation h1 { font-size: clamp(38px, 6vw, 64px); font-weight: 400; letter-spacing: -2px; line-height: 1.05; margin-bottom: 16px; }
+.confirmation h1 em { font-style: italic; background: linear-gradient(135deg, #fff, #4ade80); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+.confirmation-sub { font-size: 18px; color: var(--muted); max-width: 580px; margin: 0 auto 40px; }
+
+.order-card { background: rgba(255,255,255,0.03); border: 1px solid var(--line); border-radius: 20px; padding: 32px; backdrop-filter: blur(10px); margin-bottom: 32px; text-align: left; }
+.order-row { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid var(--line); font-size: 14px; }
+.order-row:last-child { border-bottom: none; }
+.order-row-label { color: var(--muted); font-family: var(--font-mono); font-size: 12px; letter-spacing: 1.5px; text-transform: uppercase; }
+.order-row-value { color: var(--fg); font-weight: 500; }
+.order-id { font-family: var(--font-mono); color: var(--accent); }
+.order-amount { font-size: 18px; font-weight: 700; background: linear-gradient(135deg, #fff, #6fa8ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+
+.next-steps { text-align: left; margin-bottom: 40px; }
+.next-steps-title { font-size: 11px; font-family: var(--font-mono); color: var(--accent); letter-spacing: 2.5px; text-transform: uppercase; margin-bottom: 16px; text-align: center; }
+.steps-list { display: flex; flex-direction: column; gap: 12px; }
+.step-item { display: flex; gap: 18px; padding: 20px 22px; background: rgba(255,255,255,0.025); border: 1px solid var(--line); border-radius: 14px; transition: all 0.3s; }
+.step-item:hover { border-color: var(--line-strong); transform: translateX(4px); }
+.step-num { font-family: var(--font-mono); font-size: 16px; color: var(--accent); font-weight: 600; flex-shrink: 0; min-width: 32px; }
+.step-content { flex: 1; text-align: left; }
+.step-title { font-size: 15px; font-weight: 500; margin-bottom: 4px; }
+.step-desc { font-size: 13px; color: var(--muted); }
+
+.cta-row { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; margin-top: 32px; }
+.btn-primary { padding: 16px 32px; background: var(--fg); color: var(--bg); border: none; border-radius: 999px; font-size: 15px; font-weight: 600; cursor: pointer; font-family: var(--font-sans); text-decoration: none; display: inline-flex; align-items: center; gap: 8px; transition: all 0.2s; }
+.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(255,255,255,0.25); }
+.btn-secondary { padding: 16px 28px; background: transparent; color: var(--fg); border: 1px solid var(--line-strong); border-radius: 999px; font-size: 15px; font-weight: 500; text-decoration: none; transition: all 0.2s; display: inline-flex; align-items: center; gap: 8px; }
+.btn-secondary:hover { border-color: var(--accent); }
+
+.note { font-size: 12px; color: var(--subtle); text-align: center; max-width: 500px; margin: 32px auto 0; line-height: 1.6; font-family: var(--font-mono); letter-spacing: 0.5px; }
+</style>
+</head>
+<body>
+
+<div class="simulation-banner">⚠ Mode simulation · Aucun paiement réel n'a été effectué</div>
+
+<div class="bg-layer glows"></div>
+<div class="bg-layer stars"></div>
+<div class="bg-layer"><div class="flare flare-1"></div><div class="flare flare-2"></div></div>
+<div class="bg-layer grid-overlay"></div>
+
+<nav class="top">
+  <a href="landing.html" class="logo-wrap">
+    <div class="logo-icon"><img src="logo-nodex.png" alt="Nodex" class="logo-img" onerror="this.style.display='none'"></div>
+    <span class="logo-text">NODEX</span>
+  </a>
+</nav>
+
+<div class="confirmation">
+
+  <div class="success-circle">
+    <span class="success-check">✓</span>
+  </div>
+
+  <h1>Bienvenue dans <em>Nodex.</em></h1>
+  <p class="confirmation-sub">Ta commande est confirmée. Un email avec tes accès vient d'être envoyé à <strong id="emailDisplay">ton email</strong>. Vérifie aussi tes spams si tu ne le vois pas dans 2 minutes.</p>
+
+  <div class="order-card">
+    <div class="order-row">
+      <span class="order-row-label">N° commande</span>
+      <span class="order-row-value order-id" id="orderId">NDX-XXXXXXX</span>
+    </div>
+    <div class="order-row">
+      <span class="order-row-label">Tier</span>
+      <span class="order-row-value" id="tierName">Essentiel</span>
+    </div>
+    <div class="order-row">
+      <span class="order-row-label">Email</span>
+      <span class="order-row-value" id="emailRow">—</span>
+    </div>
+    <div class="order-row">
+      <span class="order-row-label">Date</span>
+      <span class="order-row-value" id="orderDate">—</span>
+    </div>
+    <div class="order-row">
+      <span class="order-row-label">Montant</span>
+      <span class="order-row-value order-amount" id="orderAmount">497€</span>
+    </div>
+  </div>
+
+  <div class="next-steps">
+    <div class="next-steps-title">Tes prochaines étapes</div>
+    <div class="steps-list">
+      <div class="step-item">
+        <span class="step-num">01</span>
+        <div class="step-content">
+          <div class="step-title">Vérifie ton email</div>
+          <div class="step-desc">L'email contient le lien de téléchargement du skill, le code d'activation, et les liens vers les Pine Scripts. Tu peux aussi voir un aperçu via le bouton ci-dessous.</div>
+        </div>
+      </div>
+      <div class="step-item">
+        <span class="step-num">02</span>
+        <div class="step-content">
+          <div class="step-title">Lance ton onboarding Nodex</div>
+          <div class="step-desc">Le bouton "Démarrer l'onboarding" t'amène directement à ton parcours adapté à ton tier : installation skill, configuration TradingView, premier diagnostic.</div>
+        </div>
+      </div>
+      <div class="step-item">
+        <span class="step-num">03</span>
+        <div class="step-content">
+          <div class="step-title">Installe le skill dans Claude Code</div>
+          <div class="step-desc">Suis les instructions de l'onboarding. 2 minutes top chrono. Ensuite tu dis "Nodex tu es là ?" dans Claude et le formateur prend le relais.</div>
+        </div>
+      </div>
+      <div class="step-item">
+        <span class="step-num">04</span>
+        <div class="step-content">
+          <div class="step-title">Première session paper trading</div>
+          <div class="step-desc">Nodex te fait passer le diagnostic 10 questions et te génère ton programme adaptatif (1, 2 ou 3 semaines selon ton niveau).</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="cta-row">
+    <a href="onboarding.html" id="onboardingLink" class="btn-primary">Démarrer l'onboarding →</a>
+    <a href="email-preview.html" id="emailPreviewLink" class="btn-secondary">Voir l'email reçu</a>
+  </div>
+
+  <p class="note">Une question ? Écris à nodexcontact@gmail.com — Nahel répond sous 24h.</p>
+
+</div>
+
+<script>
+const params = new URLSearchParams(window.location.search);
+const tier = params.get('tier') || 'essentiel';
+const price = params.get('price') || '497';
+const orderId = params.get('order') || 'NDX-' + Date.now().toString(36).toUpperCase();
+
+const tierLabels = { essentiel: 'Essentiel', pro: 'Pro · Recommandé', elite: 'Elite' };
+
+const lastOrder = JSON.parse(localStorage.getItem('nodex_last_order') || '{}');
+
+document.getElementById('orderId').textContent = orderId;
+document.getElementById('tierName').textContent = tierLabels[tier] || 'Essentiel';
+document.getElementById('emailRow').textContent = lastOrder.email || 'ton email';
+document.getElementById('emailDisplay').textContent = lastOrder.email || 'ton email';
+document.getElementById('orderAmount').textContent = price + '€';
+document.getElementById('orderDate').textContent = new Date().toLocaleDateString('fr-FR', { day: '2-digit', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+
+document.getElementById('onboardingLink').href = `onboarding.html?tier=${tier}`;
+document.getElementById('emailPreviewLink').href = `email-preview.html?tier=${tier}&order=${orderId}`;
+
+// Mark this order as the active session
+localStorage.setItem('nodex_active_tier', tier);
+localStorage.setItem('nodex_active_order', orderId);
+</script>
+</body>
+</html>
