@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#000000">
+<title>Calculateur de projection trading — Nodex</title>
+<meta name="description" content="Calcule combien ton capital trading peut atteindre dans X mois selon ta stratégie, ta discipline et tes objectifs.">
+<link rel="icon" type="image/x-icon" href="favicon.ico">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="favicon-16.png">
+<link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+<link rel="manifest" href="site.webmanifest">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700;800;900&family=Geist+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#000; --fg:#fff;
+  --muted:rgba(255,255,255,0.55); --subtle:rgba(255,255,255,0.3);
+  --line:rgba(255,255,255,0.08); --line-strong:rgba(255,255,255,0.18);
+  --accent:#6fa8ff; --green:#4ade80; --red:#ef4444; --orange:#f59e0b;
+  --font-sans:'Geist',sans-serif; --font-mono:'Geist Mono',monospace;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body { font-family: var(--font-sans); background: var(--bg); color: var(--fg); min-height: 100vh; overflow-x: hidden; line-height: 1.6; }
+
+/* Background effects */
+.bg-layer { position: fixed; top:0; left:0; right:0; bottom:0; pointer-events:none; z-index:0; }
+.stars {
+  background-image:
+    radial-gradient(1px 1px at 20% 30%, white, transparent),
+    radial-gradient(1px 1px at 60% 70%, rgba(255,255,255,0.8), transparent),
+    radial-gradient(1px 1px at 50% 50%, rgba(255,255,255,0.6), transparent),
+    radial-gradient(1px 1px at 80% 10%, white, transparent),
+    radial-gradient(1px 1px at 90% 40%, rgba(255,255,255,0.5), transparent),
+    radial-gradient(1px 1px at 33% 65%, rgba(255,255,255,0.7), transparent);
+  background-size: 250% 250%;
+  animation: starfall 80s linear infinite; opacity: 0.4;
+}
+@keyframes starfall { 0%{background-position:0% 0%;} 100%{background-position:100% 100%;} }
+.glows {
+  background: radial-gradient(ellipse 600px 400px at 15% 85%, rgba(111,168,255,0.12) 0%, transparent 60%),
+              radial-gradient(ellipse 700px 500px at 85% 15%, rgba(180,200,255,0.08) 0%, transparent 60%),
+              radial-gradient(ellipse 500px 800px at 50% 100%, rgba(74,222,128,0.08) 0%, transparent 60%);
+}
+.beams { overflow: hidden; }
+.beam { position:absolute; top:-20%; width:1px; height:140%; background: linear-gradient(180deg, transparent, rgba(255,255,255,0.4) 30%, rgba(255,255,255,0.9) 50%, rgba(255,255,255,0.4) 70%, transparent); filter: blur(0.5px); animation: beamMove 12s ease-in-out infinite; opacity: 0.25; }
+.beam:nth-child(1){left:20%;} .beam:nth-child(2){left:45%;animation-delay:-4s;animation-duration:18s;} .beam:nth-child(3){left:72%;animation-delay:-8s;animation-duration:15s;} .beam:nth-child(4){left:10%;animation-delay:-2s;animation-duration:20s;} .beam:nth-child(5){left:88%;animation-delay:-6s;animation-duration:14s;}
+@keyframes beamMove { 0%,100%{opacity:0.08; transform:translateY(0) scaleY(1);} 50%{opacity:0.4; transform:translateY(-20px) scaleY(1.1);} }
+.flare { position:absolute; border-radius:50%; filter:blur(60px); opacity:0.35; animation: flareFloat 20s ease-in-out infinite; }
+.flare-1 { top:-150px; right:-150px; width:500px; height:500px; background: radial-gradient(circle, rgba(111,168,255,0.4) 0%, transparent 70%); }
+.flare-2 { bottom:-200px; left:-200px; width:600px; height:600px; background: radial-gradient(circle, rgba(180,200,255,0.3) 0%, transparent 70%); animation-delay:-10s; }
+.flare-3 { top:40%; left:40%; width:300px; height:300px; background: radial-gradient(circle, rgba(74,222,128,0.15) 0%, transparent 70%); animation-delay:-5s; animation-duration:25s; }
+@keyframes flareFloat { 0%,100%{transform:translate(0,0) scale(1);} 33%{transform:translate(40px,-30px) scale(1.1);} 66%{transform:translate(-30px,40px) scale(0.95);} }
+.grid-overlay { background-image: linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px); background-size: 60px 60px; opacity: 0.4; }
+
+/* Nav */
+nav.top { position: fixed; top: 0; left: 0; right: 0; z-index: 100; padding: 16px 32px; display: flex; justify-content: space-between; align-items: center; background: linear-gradient(180deg, rgba(0,0,0,0.7), transparent); backdrop-filter: blur(8px); }
+.logo-wrap { display: flex; align-items: center; gap: 12px; cursor: pointer; text-decoration: none; }
+.logo-icon { position: relative; width: 38px; height: 38px; border-radius: 22.5%; background: linear-gradient(135deg, rgba(111,168,255,0.22), rgba(180,200,255,0.05)); border: 1px solid rgba(255,255,255,0.12); display: flex; align-items: center; justify-content: center; }
+.logo-icon::before { content:''; position:absolute; top:0; left:0; right:0; height:50%; background: linear-gradient(180deg, rgba(255,255,255,0.12), transparent); border-radius: 22.5% 22.5% 0 0; }
+.logo-img { width: 22px; height: 22px; filter: brightness(0) invert(1); z-index: 1; }
+.logo-text { font-size: 15px; font-weight: 800; background: linear-gradient(135deg, #fff, #c8d8ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+.nav-back { color: var(--muted); text-decoration: none; font-size: 13px; font-family: var(--font-mono); letter-spacing: 1px; text-transform: uppercase; }
+.nav-back:hover { color: var(--fg); }
+
+/* Container */
+.container { position: relative; z-index: 10; max-width: 1200px; margin: 0 auto; padding: 130px 24px 80px; }
+
+/* Header */
+.page-header { text-align: center; margin-bottom: 60px; }
+.kicker { display: inline-flex; align-items: center; gap: 8px; padding: 6px 16px; background: rgba(255,255,255,0.03); border: 1px solid var(--line); border-radius: 999px; font-size: 11px; font-family: var(--font-mono); color: var(--muted); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 24px; }
+.kicker::before { content: '●'; color: var(--green); animation: pulse 2s infinite; }
+@keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:0.3;} }
+.page-h1 { font-size: clamp(36px, 6vw, 64px); font-weight: 400; letter-spacing: -2px; line-height: 1.05; margin-bottom: 18px; }
+.page-h1 em { font-style: italic; background: linear-gradient(135deg, #fff, #6fa8ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; padding-right: 0.12em; display: inline-block; }
+.page-sub { font-size: 18px; color: var(--muted); max-width: 700px; margin: 0 auto; }
+
+/* Layout 2 colonnes */
+.calc-grid { display: grid; grid-template-columns: 1fr 1.4fr; gap: 32px; }
+@media (max-width: 980px) { .calc-grid { grid-template-columns: 1fr; } }
+
+/* Inputs panel */
+.inputs-panel { background: rgba(255,255,255,0.025); border: 1px solid var(--line); border-radius: 24px; padding: 32px; backdrop-filter: blur(10px); height: fit-content; position: sticky; top: 100px; }
+.inputs-title { font-size: 13px; font-family: var(--font-mono); color: var(--accent); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 20px; }
+.input-section { margin-bottom: 24px; padding-bottom: 24px; border-bottom: 1px solid var(--line); }
+.input-section:last-child { border-bottom: none; padding-bottom: 0; }
+.section-title { font-size: 11px; font-family: var(--font-mono); color: var(--muted); letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 14px; }
+
+.input-group { margin-bottom: 14px; }
+.input-label { display: flex; justify-content: space-between; align-items: center; font-size: 12px; color: var(--muted); margin-bottom: 8px; font-family: var(--font-mono); }
+.input-value { color: var(--accent); font-weight: 600; }
+.input-field { width: 100%; padding: 12px 14px; background: rgba(255,255,255,0.04); border: 1px solid var(--line); border-radius: 10px; color: var(--fg); font-size: 14px; font-family: var(--font-mono); transition: all 0.2s; }
+.input-field:focus { outline: none; border-color: var(--accent); background: rgba(111,168,255,0.05); }
+
+/* Sliders */
+input[type="range"] { -webkit-appearance: none; appearance: none; width: 100%; height: 4px; background: rgba(255,255,255,0.08); border-radius: 999px; outline: none; }
+input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 16px; height: 16px; background: var(--accent); border-radius: 50%; cursor: pointer; box-shadow: 0 0 0 4px rgba(111,168,255,0.18); transition: all 0.2s; }
+input[type="range"]::-webkit-slider-thumb:hover { box-shadow: 0 0 0 6px rgba(111,168,255,0.25); }
+input[type="range"]::-moz-range-thumb { width: 16px; height: 16px; background: var(--accent); border-radius: 50%; cursor: pointer; border: 0; box-shadow: 0 0 0 4px rgba(111,168,255,0.18); }
+
+/* Preset buttons */
+.presets { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
+.preset-btn { padding: 6px 12px; background: rgba(255,255,255,0.03); border: 1px solid var(--line); color: var(--muted); border-radius: 999px; font-size: 11px; font-family: var(--font-mono); letter-spacing: 0.5px; cursor: pointer; transition: all 0.2s; }
+.preset-btn:hover { border-color: var(--accent); color: var(--accent); }
+.preset-btn.active { background: var(--accent); color: var(--bg); border-color: var(--accent); }
+
+/* Results panel */
+.results-panel { display: flex; flex-direction: column; gap: 20px; }
+
+/* Verdict card */
+.verdict-card { background: linear-gradient(135deg, rgba(111,168,255,0.06), rgba(180,200,255,0.02)); border: 1px solid rgba(111,168,255,0.25); border-radius: 24px; padding: 36px; text-align: center; backdrop-filter: blur(10px); transition: all 0.4s cubic-bezier(0.4,0,0.2,1); }
+.verdict-card.success { background: linear-gradient(135deg, rgba(74,222,128,0.08), rgba(74,222,128,0.02)); border-color: rgba(74,222,128,0.3); }
+.verdict-card.warning { background: linear-gradient(135deg, rgba(245,158,11,0.08), rgba(245,158,11,0.02)); border-color: rgba(245,158,11,0.3); }
+.verdict-card.danger  { background: linear-gradient(135deg, rgba(239,68,68,0.08), rgba(239,68,68,0.02)); border-color: rgba(239,68,68,0.3); }
+.verdict-icon { font-size: 48px; margin-bottom: 14px; }
+.verdict-label { font-size: 11px; font-family: var(--font-mono); color: var(--muted); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 12px; }
+.verdict-text { font-size: clamp(22px, 3vw, 32px); font-weight: 400; letter-spacing: -1px; line-height: 1.2; margin-bottom: 12px; }
+.verdict-text em { font-style: italic; background: linear-gradient(135deg, #fff, #6fa8ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; padding-right: 0.1em; display: inline-block; }
+.verdict-detail { font-size: 14px; color: var(--muted); max-width: 480px; margin: 0 auto; }
+
+/* Stats grid */
+.stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; }
+.stat-card { background: rgba(255,255,255,0.025); border: 1px solid var(--line); border-radius: 16px; padding: 22px; transition: all 0.3s; }
+.stat-card:hover { border-color: var(--line-strong); transform: translateY(-2px); }
+.stat-label { font-size: 11px; font-family: var(--font-mono); color: var(--muted); letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 8px; }
+.stat-value { font-size: 28px; font-weight: 700; line-height: 1; letter-spacing: -1px; background: linear-gradient(135deg, #fff, #6fa8ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 4px; }
+.stat-extra { font-size: 12px; color: var(--subtle); font-family: var(--font-mono); }
+.stat-extra.green { color: var(--green); }
+.stat-extra.red { color: var(--red); }
+
+/* Chart card */
+.chart-card { background: rgba(255,255,255,0.025); border: 1px solid var(--line); border-radius: 20px; padding: 28px; backdrop-filter: blur(10px); }
+.chart-title { font-size: 13px; font-family: var(--font-mono); color: var(--accent); letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 18px; display: flex; justify-content: space-between; align-items: center; }
+.chart-legend { font-size: 11px; color: var(--muted); display: flex; gap: 16px; }
+.legend-item { display: flex; align-items: center; gap: 6px; }
+.legend-dot { width: 8px; height: 8px; border-radius: 50%; }
+
+#chart-svg { width: 100%; height: 280px; display: block; }
+
+/* Breakdown table */
+.breakdown-card { background: rgba(255,255,255,0.025); border: 1px solid var(--line); border-radius: 20px; padding: 28px; backdrop-filter: blur(10px); overflow-x: auto; }
+.breakdown-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.breakdown-table th { text-align: left; padding: 10px 12px; font-family: var(--font-mono); font-size: 11px; color: var(--muted); letter-spacing: 1.5px; text-transform: uppercase; border-bottom: 1px solid var(--line); font-weight: 500; }
+.breakdown-table td { padding: 10px 12px; border-bottom: 1px solid var(--line); }
+.breakdown-table tr:hover td { background: rgba(255,255,255,0.02); }
+.breakdown-table .month-num { color: var(--muted); font-family: var(--font-mono); font-size: 12px; }
+.breakdown-table .capital { font-family: var(--font-mono); font-weight: 600; }
+.breakdown-table .gain { font-family: var(--font-mono); }
+.breakdown-table .gain.positive { color: var(--green); }
+.breakdown-table .gain.negative { color: var(--red); }
+.breakdown-table .reach { padding: 2px 8px; border-radius: 999px; font-size: 10px; font-family: var(--font-mono); letter-spacing: 0.5px; }
+.breakdown-table .reach.yes { background: rgba(74,222,128,0.12); color: var(--green); }
+.breakdown-table .reach.no  { background: rgba(255,255,255,0.04); color: var(--subtle); }
+
+footer { position: relative; z-index: 10; padding: 40px 24px; text-align: center; border-top: 1px solid var(--line); margin-top: 60px; }
+.footer-text { color: var(--subtle); font-size: 12px; font-family: var(--font-mono); letter-spacing: 1px; text-transform: uppercase; }
+
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: 0.01ms !important; } }
+</style>
+</head>
+<body>
+
+<div class="bg-layer glows"></div>
+<div class="bg-layer stars"></div>
+<div class="bg-layer beams"><div class="beam"></div><div class="beam"></div><div class="beam"></div><div class="beam"></div><div class="beam"></div></div>
+<div class="bg-layer"><div class="flare flare-1"></div><div class="flare flare-2"></div><div class="flare flare-3"></div></div>
+<div class="bg-layer grid-overlay"></div>
+
+<nav class="top">
+  <a href="landing.html" class="logo-wrap">
+    <div class="logo-icon"><img src="logo.png" alt="Nodex" class="logo-img"></div>
+    <span class="logo-text">NODEX</span>
+  </a>
+  <a href="landing.html" class="nav-back">← Retour</a>
+</nav>
+
+<div class="container">
+
+  <div class="page-header">
+    <div class="kicker">Calculateur · Projection trading</div>
+    <h1 class="page-h1">Combien tu vaudras dans <em>X mois.</em></h1>
+    <p class="page-sub">Saisis ton capital actuel, ton objectif, ton style de trading. Le calculateur projette ta croissance composée mois par mois et te dit si ton objectif est atteignable.</p>
+  </div>
+
+  <div class="calc-grid">
+
+    <!-- ═══════════════════════════════════════════════════
+         INPUTS PANEL
+    ═══════════════════════════════════════════════════ -->
+    <div class="inputs-panel">
+      <div class="inputs-title">Tes paramètres</div>
+
+      <!-- Presets -->
+      <div class="input-section">
+        <div class="section-title">Démarrage rapide</div>
+        <div class="presets">
+          <button class="preset-btn active" onclick="loadPreset('nahel')">Nahel · mariage</button>
+          <button class="preset-btn" onclick="loadPreset('starter')">Débutant 500€</button>
+          <button class="preset-btn" onclick="loadPreset('serieux')">Sérieux 5k€</button>
+          <button class="preset-btn" onclick="loadPreset('expert')">Expert 20k€</button>
+        </div>
+      </div>
+
+      <!-- Capital + objectif -->
+      <div class="input-section">
+        <div class="section-title">Situation</div>
+        <div class="input-group">
+          <label class="input-label">Capital trading actuel <span class="input-value" id="lbl-capital">5000 €</span></label>
+          <input type="range" id="capital" min="100" max="50000" step="100" value="5000" oninput="recalc()">
+        </div>
+        <div class="input-group">
+          <label class="input-label">Mois jusqu'à ton objectif <span class="input-value" id="lbl-months">8 mois</span></label>
+          <input type="range" id="months" min="1" max="36" step="1" value="8" oninput="recalc()">
+        </div>
+        <div class="input-group">
+          <label class="input-label">Apport mensuel (salaire réinvesti) <span class="input-value" id="lbl-deposit">700 €</span></label>
+          <input type="range" id="deposit" min="0" max="3000" step="50" value="700" oninput="recalc()">
+        </div>
+        <div class="input-group">
+          <label class="input-label">Objectif capital final <span class="input-value" id="lbl-target">20 000 €</span></label>
+          <input type="range" id="target" min="500" max="200000" step="500" value="20000" oninput="recalc()">
+        </div>
+      </div>
+
+      <!-- Trading params -->
+      <div class="input-section">
+        <div class="section-title">Style de trading</div>
+        <div class="input-group">
+          <label class="input-label">Win rate (WR %) <span class="input-value" id="lbl-wr">50 %</span></label>
+          <input type="range" id="wr" min="30" max="80" step="1" value="50" oninput="recalc()">
+        </div>
+        <div class="input-group">
+          <label class="input-label">Reward / Risk (RR) <span class="input-value" id="lbl-rr">1:2</span></label>
+          <input type="range" id="rr" min="1" max="4" step="0.1" value="2" oninput="recalc()">
+        </div>
+        <div class="input-group">
+          <label class="input-label">Trades par mois <span class="input-value" id="lbl-trades">8</span></label>
+          <input type="range" id="trades" min="2" max="30" step="1" value="8" oninput="recalc()">
+        </div>
+        <div class="input-group">
+          <label class="input-label">Risque par trade (%) <span class="input-value" id="lbl-risk">1 %</span></label>
+          <input type="range" id="risk" min="0.25" max="3" step="0.25" value="1" oninput="recalc()">
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════
+         RESULTS PANEL
+    ═══════════════════════════════════════════════════ -->
+    <div class="results-panel">
+
+      <!-- Verdict -->
+      <div class="verdict-card" id="verdict-card">
+        <div class="verdict-icon" id="verdict-icon">🎯</div>
+        <div class="verdict-label">Verdict</div>
+        <div class="verdict-text" id="verdict-text">Calcul en cours...</div>
+        <div class="verdict-detail" id="verdict-detail">—</div>
+      </div>
+
+      <!-- Stats -->
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-label">Capital final projeté</div>
+          <div class="stat-value" id="stat-final">—</div>
+          <div class="stat-extra" id="stat-final-pct">—</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Croissance / mois</div>
+          <div class="stat-value" id="stat-growth">—</div>
+          <div class="stat-extra" id="stat-growth-detail">attendue mathématiquement</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Revenu mensuel atteint</div>
+          <div class="stat-value" id="stat-income">—</div>
+          <div class="stat-extra">à la fin de la période</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Probabilité réussite</div>
+          <div class="stat-value" id="stat-proba">—</div>
+          <div class="stat-extra" id="stat-proba-detail">—</div>
+        </div>
+      </div>
+
+      <!-- Graphique -->
+      <div class="chart-card">
+        <div class="chart-title">
+          <span>Croissance capital mois par mois</span>
+          <div class="chart-legend">
+            <span class="legend-item"><span class="legend-dot" style="background: var(--accent);"></span>Projection</span>
+            <span class="legend-item"><span class="legend-dot" style="background: var(--green);"></span>Objectif</span>
+          </div>
+        </div>
+        <svg id="chart-svg" viewBox="0 0 800 280" preserveAspectRatio="none"></svg>
+      </div>
+
+      <!-- Breakdown -->
+      <div class="breakdown-card">
+        <div class="chart-title" style="margin-bottom: 14px;">Détail mois par mois</div>
+        <table class="breakdown-table">
+          <thead>
+            <tr>
+              <th>Mois</th>
+              <th>Capital début</th>
+              <th>Apport</th>
+              <th>Gains trading</th>
+              <th>Capital fin</th>
+              <th>Statut</th>
+            </tr>
+          </thead>
+          <tbody id="breakdown-tbody"></tbody>
+        </table>
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+
+<footer>
+  <div class="footer-text">© 2026 Nodex Trading · Calculateur · Projections indicatives, pas de garantie</div>
+</footer>
+
+<script>
+// ═══════════════════════════════════════════════════════════
+// PRESETS
+// ═══════════════════════════════════════════════════════════
+const PRESETS = {
+  nahel:   { capital: 5000, months: 8,  deposit: 700, target: 20000, wr: 50, rr: 2,   trades: 8,  risk: 1 },
+  starter: { capital: 500,  months: 12, deposit: 100, target: 2000,  wr: 45, rr: 2,   trades: 6,  risk: 0.5 },
+  serieux: { capital: 5000, months: 12, deposit: 500, target: 15000, wr: 50, rr: 2,   trades: 8,  risk: 1 },
+  expert:  { capital: 20000, months: 24, deposit: 0,  target: 100000, wr: 55, rr: 2.5, trades: 10, risk: 1 }
+};
+
+function loadPreset(name) {
+  const p = PRESETS[name];
+  if (!p) return;
+  Object.entries(p).forEach(([key, val]) => { document.getElementById(key).value = val; });
+  document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('active'));
+  event.target.classList.add('active');
+  recalc();
+}
+
+// ═══════════════════════════════════════════════════════════
+// CALCULS
+// ═══════════════════════════════════════════════════════════
+function getInputs() {
+  return {
+    capital: +document.getElementById('capital').value,
+    months:  +document.getElementById('months').value,
+    deposit: +document.getElementById('deposit').value,
+    target:  +document.getElementById('target').value,
+    wr:      +document.getElementById('wr').value,
+    rr:      +document.getElementById('rr').value,
+    trades:  +document.getElementById('trades').value,
+    risk:    +document.getElementById('risk').value
+  };
+}
+
+function expectedMonthlyGrowthPct(wr, rr, trades, risk) {
+  // Espérance par trade (en unités de risk) = WR * RR - (1-WR) * 1
+  const evPerTrade = (wr / 100) * rr - (1 - wr / 100);
+  // Gain moyen par trade en % du capital = ev * risk
+  const gainPerTradePct = evPerTrade * risk;
+  // Cumulé sur le mois (linéaire approximatif, croissance composée par trade)
+  const monthlyGrowth = (Math.pow(1 + gainPerTradePct / 100, trades) - 1) * 100;
+  return monthlyGrowth;
+}
+
+function projectCapital(inputs) {
+  const months = [];
+  const monthlyGrowthPct = expectedMonthlyGrowthPct(inputs.wr, inputs.rr, inputs.trades, inputs.risk);
+  let capital = inputs.capital;
+  for (let m = 1; m <= inputs.months; m++) {
+    const startCapital = capital;
+    const tradingGains = capital * (monthlyGrowthPct / 100);
+    capital = capital + tradingGains + inputs.deposit;
+    months.push({
+      month: m,
+      start: startCapital,
+      deposit: inputs.deposit,
+      gains: tradingGains,
+      end: capital,
+      reachedTarget: capital >= inputs.target
+    });
+  }
+  return { months, monthlyGrowthPct, finalCapital: capital };
+}
+
+function probabilityOfSuccess(inputs, projection) {
+  // Heuristique simple basée sur :
+  // - Atteinte mathématique objectif (oui/non)
+  // - WR (plus c'est bas, moins fiable)
+  // - Risk (plus haut = plus volatil donc moins prévisible)
+  // - Trades/mois (trop élevé = sur-trading risqué)
+  if (projection.finalCapital < inputs.target) {
+    const ratio = projection.finalCapital / inputs.target;
+    return Math.max(5, Math.round(ratio * 50));  // max 50% si l'objectif n'est pas atteint mathématiquement
+  }
+  // Atteint mathématiquement
+  let proba = 80;
+  if (inputs.wr < 45) proba -= 15;
+  if (inputs.wr >= 55) proba += 5;
+  if (inputs.risk > 1.5) proba -= 10;
+  if (inputs.trades > 15) proba -= 10;
+  if (inputs.rr < 1.5) proba -= 10;
+  if (inputs.rr >= 2.5) proba += 5;
+  return Math.max(20, Math.min(95, proba));
+}
+
+// ═══════════════════════════════════════════════════════════
+// AFFICHAGE
+// ═══════════════════════════════════════════════════════════
+function fmt(n) { return Math.round(n).toLocaleString('fr-FR'); }
+function fmtEur(n) { return fmt(n) + ' €'; }
+
+function updateLabels(inputs) {
+  document.getElementById('lbl-capital').textContent = fmtEur(inputs.capital);
+  document.getElementById('lbl-months').textContent = inputs.months + ' mois';
+  document.getElementById('lbl-deposit').textContent = fmtEur(inputs.deposit);
+  document.getElementById('lbl-target').textContent = fmtEur(inputs.target);
+  document.getElementById('lbl-wr').textContent = inputs.wr + ' %';
+  document.getElementById('lbl-rr').textContent = '1:' + inputs.rr.toFixed(1);
+  document.getElementById('lbl-trades').textContent = inputs.trades;
+  document.getElementById('lbl-risk').textContent = inputs.risk + ' %';
+}
+
+function updateStats(inputs, projection, proba) {
+  const monthlyIncomeFinal = projection.finalCapital * (projection.monthlyGrowthPct / 100);
+  const totalGain = projection.finalCapital - inputs.capital;
+  const totalGainPct = (totalGain / inputs.capital * 100).toFixed(0);
+
+  document.getElementById('stat-final').textContent = fmtEur(projection.finalCapital);
+  document.getElementById('stat-final-pct').textContent = '+' + totalGainPct + '% sur ' + inputs.months + ' mois';
+  document.getElementById('stat-final-pct').className = 'stat-extra ' + (totalGain > 0 ? 'green' : 'red');
+
+  document.getElementById('stat-growth').textContent = '+' + projection.monthlyGrowthPct.toFixed(1) + ' %';
+
+  document.getElementById('stat-income').textContent = fmtEur(monthlyIncomeFinal);
+
+  document.getElementById('stat-proba').textContent = proba + ' %';
+  document.getElementById('stat-proba-detail').textContent = proba >= 70 ? 'Très probable' : proba >= 50 ? 'Probable avec discipline' : proba >= 30 ? 'Difficile, ajuste tes paramètres' : 'Improbable en l\'état';
+}
+
+function updateVerdict(inputs, projection, proba) {
+  const card = document.getElementById('verdict-card');
+  const icon = document.getElementById('verdict-icon');
+  const text = document.getElementById('verdict-text');
+  const detail = document.getElementById('verdict-detail');
+
+  card.className = 'verdict-card';
+  const reachedTarget = projection.finalCapital >= inputs.target;
+
+  if (reachedTarget && proba >= 70) {
+    card.classList.add('success');
+    icon.textContent = '🚀';
+    text.innerHTML = 'Objectif <em>atteignable</em>';
+    detail.textContent = `Avec ces paramètres et une discipline solide, tu devrais atteindre ${fmtEur(inputs.target)} en ${inputs.months} mois. Reste consistant.`;
+  } else if (reachedTarget && proba >= 40) {
+    card.classList.add('warning');
+    icon.textContent = '⚡';
+    text.innerHTML = 'Objectif <em>tendu mais possible</em>';
+    detail.textContent = `Tu atteins l'objectif mathématiquement, mais tes paramètres sont risqués (WR/RR/risk). Mieux vaut sécuriser que vouloir aller trop vite.`;
+  } else if (!reachedTarget && projection.finalCapital >= inputs.target * 0.6) {
+    card.classList.add('warning');
+    icon.textContent = '⏱️';
+    text.innerHTML = 'Tu rates <em>de peu</em>';
+    detail.textContent = `Capital final ${fmtEur(projection.finalCapital)} pour un objectif ${fmtEur(inputs.target)}. Solutions : augmenter l'apport mensuel, allonger la période, améliorer le WR.`;
+  } else {
+    card.classList.add('danger');
+    icon.textContent = '⚠️';
+    text.innerHTML = 'Objectif <em>hors de portée</em>';
+    detail.textContent = `Avec ces paramètres, tu n'atteins que ${fmtEur(projection.finalCapital)}. Réajuste : plus de capital, plus de temps, ou meilleure stratégie. Pas de raccourci magique.`;
+  }
+}
+
+function drawChart(inputs, projection) {
+  const svg = document.getElementById('chart-svg');
+  const w = 800, h = 280;
+  const padX = 40, padY = 30;
+
+  const maxCapital = Math.max(projection.finalCapital, inputs.target) * 1.1;
+  const minCapital = 0;
+
+  const xStep = (w - 2 * padX) / inputs.months;
+  const yScale = (h - 2 * padY) / (maxCapital - minCapital);
+
+  // Reset
+  svg.innerHTML = '';
+
+  // Grid horizontale
+  for (let i = 0; i <= 4; i++) {
+    const y = padY + i * (h - 2 * padY) / 4;
+    const val = maxCapital - i * (maxCapital - minCapital) / 4;
+    svg.innerHTML += `<line x1="${padX}" y1="${y}" x2="${w - padX}" y2="${y}" stroke="rgba(255,255,255,0.05)" stroke-width="1"/>`;
+    svg.innerHTML += `<text x="${padX - 6}" y="${y + 4}" text-anchor="end" fill="rgba(255,255,255,0.4)" font-size="10" font-family="Geist Mono">${(val/1000).toFixed(0)}k€</text>`;
+  }
+
+  // Ligne objectif
+  const yTarget = padY + (maxCapital - inputs.target) * yScale;
+  svg.innerHTML += `<line x1="${padX}" y1="${yTarget}" x2="${w - padX}" y2="${yTarget}" stroke="rgba(74,222,128,0.5)" stroke-width="1" stroke-dasharray="4,4"/>`;
+  svg.innerHTML += `<text x="${w - padX + 4}" y="${yTarget + 4}" fill="rgba(74,222,128,0.8)" font-size="10" font-family="Geist Mono">Cible ${(inputs.target/1000).toFixed(0)}k</text>`;
+
+  // Courbe
+  let path = `M ${padX} ${padY + (maxCapital - inputs.capital) * yScale}`;
+  let area = path;
+  projection.months.forEach((m, i) => {
+    const x = padX + (i + 1) * xStep;
+    const y = padY + (maxCapital - m.end) * yScale;
+    path += ` L ${x} ${y}`;
+    area += ` L ${x} ${y}`;
+  });
+  area += ` L ${padX + inputs.months * xStep} ${h - padY} L ${padX} ${h - padY} Z`;
+
+  // Aire sous la courbe
+  svg.innerHTML += `<defs><linearGradient id="areaGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="rgba(111,168,255,0.3)"/><stop offset="100%" stop-color="rgba(111,168,255,0)"/></linearGradient></defs>`;
+  svg.innerHTML += `<path d="${area}" fill="url(#areaGrad)"/>`;
+  svg.innerHTML += `<path d="${path}" stroke="#6fa8ff" stroke-width="2" fill="none"/>`;
+
+  // Points
+  projection.months.forEach((m, i) => {
+    const x = padX + (i + 1) * xStep;
+    const y = padY + (maxCapital - m.end) * yScale;
+    const color = m.reachedTarget ? '#4ade80' : '#6fa8ff';
+    svg.innerHTML += `<circle cx="${x}" cy="${y}" r="3" fill="${color}"/>`;
+  });
+
+  // Labels mois
+  for (let i = 0; i <= inputs.months; i += Math.max(1, Math.floor(inputs.months / 8))) {
+    const x = padX + i * xStep;
+    svg.innerHTML += `<text x="${x}" y="${h - padY + 16}" text-anchor="middle" fill="rgba(255,255,255,0.4)" font-size="10" font-family="Geist Mono">M${i}</text>`;
+  }
+}
+
+function drawBreakdown(projection) {
+  const tbody = document.getElementById('breakdown-tbody');
+  tbody.innerHTML = projection.months.map(m => `
+    <tr>
+      <td class="month-num">M${m.month}</td>
+      <td class="capital">${fmtEur(m.start)}</td>
+      <td class="gain">+${fmtEur(m.deposit)}</td>
+      <td class="gain ${m.gains >= 0 ? 'positive' : 'negative'}">${m.gains >= 0 ? '+' : ''}${fmtEur(m.gains)}</td>
+      <td class="capital">${fmtEur(m.end)}</td>
+      <td><span class="reach ${m.reachedTarget ? 'yes' : 'no'}">${m.reachedTarget ? '✓ atteint' : '—'}</span></td>
+    </tr>
+  `).join('');
+}
+
+// ═══════════════════════════════════════════════════════════
+// MAIN
+// ═══════════════════════════════════════════════════════════
+function recalc() {
+  const inputs = getInputs();
+  updateLabels(inputs);
+  const projection = projectCapital(inputs);
+  const proba = probabilityOfSuccess(inputs, projection);
+  updateStats(inputs, projection, proba);
+  updateVerdict(inputs, projection, proba);
+  drawChart(inputs, projection);
+  drawBreakdown(projection);
+}
+
+// Mouse parallax flares
+document.addEventListener('mousemove', (e) => {
+  const x = (e.clientX / window.innerWidth - 0.5) * 30;
+  const y = (e.clientY / window.innerHeight - 0.5) * 30;
+  const f1 = document.querySelector('.flare-1'); const f2 = document.querySelector('.flare-2'); const f3 = document.querySelector('.flare-3');
+  if (f1) f1.style.transform = `translate(${x*0.3}px, ${y*0.3}px)`;
+  if (f2) f2.style.transform = `translate(${x*0.6}px, ${y*0.6}px)`;
+  if (f3) f3.style.transform = `translate(${x*0.9}px, ${y*0.9}px)`;
+});
+
+// Init avec preset Nahel
+recalc();
+</script>
+</body>
+</html>
