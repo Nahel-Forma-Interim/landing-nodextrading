@@ -364,6 +364,7 @@ function processSimulatedPayment(e) {
   btn.disabled = true;
 
   // Sauvegarde des infos pour la confirmation
+  const promoCode = document.getElementById('promoInput').value.trim().toUpperCase();
   const orderInfo = {
     tier: activeTier,
     price: activePrice,
@@ -375,9 +376,11 @@ function processSimulatedPayment(e) {
     lastname: document.getElementById('lastname').value,
     country: document.getElementById('country').value,
     orderId: 'NDX-' + Date.now().toString(36).toUpperCase(),
+    activationCode: activePromo ? promoCode : ('NDX-' + Date.now().toString(36).toUpperCase()),
     date: new Date().toISOString()
   };
   localStorage.setItem('nodex_last_order', JSON.stringify(orderInfo));
+  localStorage.setItem('nodex_session_email', orderInfo.email);
 
   // Simule un délai de paiement (plus court si gratuit)
   const delay = activePromo && activePromo.discount === 100 ? 800 : 1800;

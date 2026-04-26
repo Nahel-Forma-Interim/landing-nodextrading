@@ -1,0 +1,982 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Nodex V5.3 — Formation Privée</title>
+<script>
+// Vérification d'accès — réservé aux utilisateurs authentifiés
+(function() {
+  if (!localStorage.getItem('nodex_session_email')) {
+    window.location.replace('compte.html');
+  }
+})();
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700;800;900&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #000000;
+  --bg-2: #050510;
+  --fg: #ffffff;
+  --muted: rgba(255,255,255,0.55);
+  --line: rgba(255,255,255,0.1);
+  --line-strong: rgba(255,255,255,0.25);
+  --accent: #6fa8ff;
+  --gold: #f5d061;
+  --green: #4ade80;
+  --red: #f87171;
+  --yellow: #fbbf24;
+  --font-sans: 'Geist', sans-serif;
+  --font-mono: 'Geist Mono', monospace;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body {
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-sans);
+  height: 100%;
+  overflow: hidden;
+}
+
+/* SLIDES */
+.slide {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  padding: 60px 80px;
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  background: radial-gradient(ellipse 80% 60% at 50% 40%, rgba(111,168,255,0.04), transparent 70%);
+}
+.slide.active { display: flex; animation: slideIn 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
+@keyframes slideIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+/* TITLE */
+.slide.title-slide {
+  align-items: center;
+  text-align: center;
+  background: radial-gradient(ellipse 60% 50% at 50% 50%, rgba(245,208,97,0.08), transparent 70%), #000;
+}
+.slide.title-slide .logo {
+  width: 100px; height: 100px;
+  border-radius: 22.5%;
+  background: linear-gradient(135deg, rgba(245,208,97,0.25), rgba(245,208,97,0.04));
+  border: 1px solid rgba(245,208,97,0.3);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 48px; font-weight: 800; color: var(--gold);
+  margin-bottom: 40px;
+  box-shadow: 0 0 60px rgba(245,208,97,0.15);
+}
+.slide.title-slide h1 {
+  font-size: 80px; font-weight: 800;
+  letter-spacing: -3px; line-height: 1;
+  margin-bottom: 20px;
+}
+.slide.title-slide h1 em {
+  font-style: normal;
+  background: linear-gradient(135deg, #ffffff 0%, var(--gold) 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+.slide.title-slide p {
+  font-size: 22px; color: var(--muted);
+  letter-spacing: 0.5px; margin-bottom: 14px;
+}
+
+/* SECTION DIVIDER */
+.slide.section-divider {
+  align-items: center;
+  text-align: center;
+}
+.slide.section-divider .section-num {
+  font-family: var(--font-mono);
+  font-size: 18px; color: var(--gold);
+  letter-spacing: 4px; text-transform: uppercase;
+  margin-bottom: 20px;
+}
+.slide.section-divider h1 {
+  font-size: 72px; font-weight: 800;
+  letter-spacing: -2px; line-height: 1;
+  margin-bottom: 24px;
+}
+.slide.section-divider h1 em {
+  font-style: normal;
+  background: linear-gradient(135deg, #ffffff 0%, var(--accent) 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+.slide.section-divider .desc {
+  font-size: 20px; color: var(--muted);
+  max-width: 700px;
+}
+
+/* STANDARD */
+.slide-kicker {
+  font-family: var(--font-mono);
+  font-size: 13px; color: var(--accent);
+  letter-spacing: 3px; text-transform: uppercase;
+  margin-bottom: 16px;
+}
+.slide h2 {
+  font-size: 56px; font-weight: 700;
+  letter-spacing: -1.5px; line-height: 1.05;
+  margin-bottom: 24px;
+}
+.slide h2 em {
+  font-style: normal;
+  background: linear-gradient(135deg, #ffffff 0%, var(--accent) 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+.slide h3 { font-size: 28px; font-weight: 600; margin-bottom: 16px; }
+.slide p, .slide li {
+  font-size: 19px; color: var(--muted);
+  line-height: 1.55; max-width: 1000px;
+}
+.slide strong { color: white; }
+.slide ul { list-style: none; padding: 0; }
+.slide ul li {
+  padding: 12px 0;
+  border-bottom: 1px solid var(--line);
+  display: flex; align-items: start; gap: 14px;
+}
+.slide ul li:last-child { border: none; }
+.slide ul li::before {
+  content: '→';
+  color: var(--accent);
+  font-family: var(--font-mono);
+  flex-shrink: 0;
+}
+
+/* CARDS */
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+  margin-top: 30px;
+}
+.card {
+  padding: 26px;
+  border-radius: 18px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.01));
+  border: 1px solid var(--line);
+  transition: all 0.3s;
+}
+.card:hover { border-color: var(--line-strong); transform: translateY(-2px); }
+.card.gold { border-top: 3px solid var(--gold); }
+.card.blue { border-top: 3px solid var(--accent); }
+.card.green { border-top: 3px solid var(--green); }
+.card.red { border-top: 3px solid var(--red); }
+.card.yellow { border-top: 3px solid var(--yellow); }
+.card-num {
+  font-family: var(--font-mono);
+  font-size: 11px; color: var(--muted);
+  letter-spacing: 2px; text-transform: uppercase;
+  margin-bottom: 10px;
+}
+.card-title {
+  font-size: 22px; font-weight: 700;
+  margin-bottom: 10px;
+  color: white;
+}
+.card-desc { font-size: 14px; color: var(--muted); line-height: 1.55; }
+
+/* BIG NUMBERS */
+.big-numbers {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 24px;
+  margin-top: 30px;
+}
+.big-num {
+  text-align: center;
+  padding: 24px 20px;
+  border-radius: 14px;
+  background: rgba(255,255,255,0.02);
+  border: 1px solid var(--line);
+}
+.big-num .value {
+  font-size: 48px; font-weight: 800;
+  font-family: var(--font-mono);
+  letter-spacing: -1.5px; line-height: 1;
+  margin-bottom: 8px;
+  color: white;
+}
+.big-num .value.green { color: var(--green); }
+.big-num .value.red { color: var(--red); }
+.big-num .value.gold { color: var(--gold); }
+.big-num .label {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+}
+
+/* STEPS */
+.steps-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  margin-top: 24px;
+}
+.steps-grid.cols-1 { grid-template-columns: 1fr; }
+.step {
+  padding: 18px 20px;
+  border-radius: 12px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.03), transparent);
+  border-left: 3px solid var(--accent);
+  display: flex; gap: 16px; align-items: start;
+}
+.step.gold { border-left-color: var(--gold); }
+.step.green { border-left-color: var(--green); }
+.step .num {
+  font-family: var(--font-mono);
+  font-size: 28px;
+  font-weight: 800;
+  color: rgba(111,168,255,0.5);
+  line-height: 1;
+}
+.step.gold .num { color: rgba(245,208,97,0.5); }
+.step.green .num { color: rgba(74,222,128,0.5); }
+.step .body h4 { font-size: 15px; font-weight: 600; margin-bottom: 4px; color: white; }
+.step .body p { font-size: 13px; color: var(--muted); margin: 0; }
+
+/* CALLOUT */
+.callout {
+  padding: 20px 24px;
+  border-radius: 14px;
+  margin-top: 24px;
+  font-size: 17px;
+  border: 1px solid;
+}
+.callout.warning { background: rgba(251,191,36,0.06); border-color: rgba(251,191,36,0.3); color: white; }
+.callout.danger { background: rgba(248,113,113,0.06); border-color: rgba(248,113,113,0.3); color: white; }
+.callout.success { background: rgba(74,222,128,0.06); border-color: rgba(74,222,128,0.3); color: white; }
+.callout.info { background: rgba(111,168,255,0.06); border-color: rgba(111,168,255,0.3); color: white; }
+.callout strong { color: white; }
+.callout-title {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+  font-weight: 700;
+}
+.callout.warning .callout-title { color: var(--yellow); }
+.callout.danger .callout-title { color: var(--red); }
+.callout.success .callout-title { color: var(--green); }
+.callout.info .callout-title { color: var(--accent); }
+
+/* SCREEN SWITCH PLACEHOLDER */
+.screen-switch {
+  background: linear-gradient(135deg, rgba(111,168,255,0.05), rgba(74,222,128,0.05));
+  border: 2px dashed rgba(111,168,255,0.3);
+  border-radius: 16px;
+  padding: 60px;
+  text-align: center;
+  margin-top: 30px;
+}
+.screen-switch .icon { font-size: 64px; margin-bottom: 20px; }
+.screen-switch h3 { font-size: 26px; font-weight: 700; margin-bottom: 12px; }
+
+/* ORDER BOOK ILLUSTRATION */
+.order-book-demo {
+  display: grid;
+  grid-template-columns: 1fr 200px 1fr;
+  gap: 16px;
+  margin-top: 30px;
+  font-family: var(--font-mono);
+  font-size: 14px;
+}
+.ob-side {
+  background: rgba(255,255,255,0.02);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 20px;
+}
+.ob-side.bids { border-color: rgba(74,222,128,0.3); background: rgba(74,222,128,0.04); }
+.ob-side.asks { border-color: rgba(248,113,113,0.3); background: rgba(248,113,113,0.04); }
+.ob-side h4 {
+  font-size: 11px; color: var(--muted);
+  letter-spacing: 2px; text-transform: uppercase;
+  margin-bottom: 14px;
+  font-family: var(--font-mono);
+}
+.ob-side.bids h4 { color: var(--green); }
+.ob-side.asks h4 { color: var(--red); }
+.ob-row {
+  display: flex; justify-content: space-between;
+  padding: 6px 0;
+  border-bottom: 1px solid var(--line);
+  font-size: 13px;
+}
+.ob-row:last-child { border: none; }
+.ob-row .price { color: white; }
+.ob-row .qty { color: var(--muted); }
+.ob-center {
+  text-align: center;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+}
+.ob-center .arrow { font-size: 32px; color: var(--gold); }
+.ob-center .label {
+  font-size: 11px; color: var(--gold);
+  letter-spacing: 2px; text-transform: uppercase;
+  margin-top: 8px;
+  font-family: var(--font-mono);
+}
+
+/* TABLE */
+.data-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  margin-top: 24px;
+  font-size: 16px;
+}
+.data-table th, .data-table td {
+  padding: 14px 18px;
+  text-align: left;
+  border-bottom: 1px solid var(--line);
+}
+.data-table th {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--accent);
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  background: rgba(111,168,255,0.04);
+}
+.data-table tr:hover td { background: rgba(255,255,255,0.02); }
+
+/* COMMAND BLOCK */
+.cmd-block {
+  background: #0a0a18;
+  border: 1px solid var(--line-strong);
+  border-radius: 10px;
+  padding: 16px 20px;
+  margin-top: 14px;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--green);
+}
+
+/* NAV */
+.nav {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 12px 20px;
+  background: rgba(0,0,0,0.7);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--line);
+  border-radius: 100px;
+  z-index: 50;
+}
+.nav button {
+  background: transparent;
+  border: 1px solid var(--line-strong);
+  color: var(--fg);
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.2s;
+}
+.nav button:hover { background: var(--accent); border-color: var(--accent); color: var(--bg); }
+.nav .counter {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--muted);
+  min-width: 80px;
+  text-align: center;
+}
+.nav .counter strong { color: white; }
+
+/* NOTES PANEL */
+.notes-panel {
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  max-height: 35vh;
+  overflow-y: auto;
+  background: rgba(0,0,0,0.95);
+  border-top: 1px solid var(--gold);
+  padding: 18px 32px 80px;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--gold);
+  display: none;
+  z-index: 40;
+}
+.notes-panel.visible { display: block; }
+.notes-panel .notes-label {
+  font-size: 11px; text-transform: uppercase; letter-spacing: 2px;
+  margin-bottom: 8px; opacity: 0.6;
+}
+.notes-panel .notes-content {
+  color: white;
+  font-family: var(--font-sans);
+  font-size: 14px;
+  white-space: pre-wrap;
+}
+.toggle-notes {
+  position: fixed;
+  top: 24px; right: 24px;
+  padding: 8px 14px;
+  background: rgba(245,208,97,0.1);
+  border: 1px solid rgba(245,208,97,0.3);
+  border-radius: 8px;
+  color: var(--gold);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 1px;
+  cursor: pointer;
+  z-index: 60;
+}
+.toggle-notes:hover { background: rgba(245,208,97,0.2); }
+
+.slide-num-indicator {
+  position: fixed;
+  top: 24px; left: 24px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--muted);
+  letter-spacing: 2px;
+  z-index: 60;
+}
+
+@media print {
+  .nav, .toggle-notes, .notes-panel, .slide-num-indicator { display: none !important; }
+  .slide { display: flex !important; page-break-after: always; }
+}
+</style>
+</head>
+<body>
+
+<div class="slide-num-indicator" id="slide-num">01 / 30</div>
+<button class="toggle-notes" onclick="toggleNotes()">📝 Notes script (N)</button>
+
+<!-- ════════════════════════════════════════
+     NODEX V5.3 — FORMATION ÉQUIPE (Vidéo + PPT background)
+     30 slides · 60 min · Voix off Nahel
+     ════════════════════════════════════════ -->
+
+<!-- 01 — TITRE -->
+<div class="slide title-slide active" data-notes="[3 min] Salut. Bienvenue dans la formation Nodex V5.3. Ici je m'adresse à mon équipe : Habib, Kaïs, Lucas, Fatah. C'est la méthode qui m'a fait +5% en avril 2026 sur 2000$. Je vais vous l'expliquer en 1 heure : pourquoi elle marche, comment l'appliquer en démo backtest live, comment installer Claude pour qu'il vous accompagne au quotidien. Si vous suivez à la lettre, vous serez rentables. Mais : ça demande discipline + journalisation + patience. Allez on commence.">
+  <div class="logo">N</div>
+  <h1>Nodex <em>V5.3</em></h1>
+  <p>Formation Équipe · Vidéo 1h</p>
+  <p style="font-family: var(--font-mono); font-size: 14px; color: var(--gold); letter-spacing: 2px; margin-top: 30px;">FORMATION INTERNE · NAHEL ZAMOURI · 2026</p>
+</div>
+
+<!-- 02 — PRÉ-REQUIS : NODEX SKILL POUR LES BASES -->
+<div class="slide" data-notes="[2 min] Avant de commencer cette vidéo, IMPORTANT : pour comprendre les BASES (marché haussier, marché baissier, c'est quoi un sweep, c'est quoi un FVG, c'est quoi le Smart Money), c'est PAS dans cette vidéo. C'est le SKILL NODEX qui s'en occupe. Vous allez l'installer (je vous montre comment plus tard), il vous fait un onboarding personnalisé en 10 questions, puis vous donne un programme de 1 à 3 semaines selon votre niveau. Cette vidéo, elle, se concentre sur le POURQUOI ça marche et le COMMENT je l'applique en pratique.">
+  <div class="slide-kicker">Pré-requis</div>
+  <h2>Les bases SMC ? <em>C'est Nodex.</em></h2>
+  <p>Cette vidéo <strong>ne couvre PAS</strong> les fondamentaux SMC. Pour ça, c'est <strong>le skill Nodex</strong> qui s'en occupe.</p>
+  <div class="cards-grid">
+    <div class="card gold">
+      <div class="card-num">Skill Nodex IA</div>
+      <div class="card-title">📚 Les bases</div>
+      <div class="card-desc">Marché haussier/baissier · Smart Money · Liquidité (SSL/BSL) · Sweep · 6 POI (BPR/BB/OB/FVG/IFVG/BISI). <strong>Onboarding personnalisé en 10 questions.</strong></div>
+    </div>
+    <div class="card blue">
+      <div class="card-num">Cette vidéo</div>
+      <div class="card-title">🎬 Pourquoi + Comment</div>
+      <div class="card-desc"><strong>Pourquoi</strong> la stratégie marche (analogie carnet d'ordres) · <strong>Démo backtest LIVE</strong> · <strong>Installation Claude + TradingView</strong> · <strong>Activation skill</strong>.</div>
+    </div>
+  </div>
+  <div class="callout info">
+    <div class="callout-title">📌 Ordre recommandé</div>
+    1) Installer le skill Nodex → 2) Faire l'onboarding (1-3 semaines selon niveau) → 3) Regarder cette vidéo → 4) Premier paper trade
+  </div>
+</div>
+
+<!-- 03 — SOMMAIRE -->
+<div class="slide" data-notes="[1 min] Programme. 3 sections principales. 1) Pourquoi ça marche, avec l'analogie du carnet d'ordres Binance. 2) Démo backtest live, je passe sur TradingView avec un setup aléatoire. 3) Installation pratique : Claude, TradingView dans Claude, skill Nodex, code MARLDE. À la fin vous aurez TOUT pour commencer.">
+  <div class="slide-kicker">Sommaire · 60 min</div>
+  <h2>3 sections, 1 <em>heure.</em></h2>
+  <div class="cards-grid">
+    <div class="card blue">
+      <div class="card-num">Section 1 · 15 min</div>
+      <div class="card-title">🧠 Pourquoi ça marche</div>
+      <div class="card-desc">Analogie carnet d'ordres Binance · Tu es une institution avec 1M€ · Pourquoi la stratégie est mécanique, pas magique</div>
+    </div>
+    <div class="card green">
+      <div class="card-num">Section 2 · 25 min</div>
+      <div class="card-title">📈 Démo backtest LIVE</div>
+      <div class="card-desc">Je passe sur TradingView · Backtest aléatoire en direct · Application V5.3 step by step · Commentaire en temps réel</div>
+    </div>
+    <div class="card gold">
+      <div class="card-num">Section 3 · 20 min</div>
+      <div class="card-title">⚙️ Installation pratique</div>
+      <div class="card-desc">Claude Code · TradingView dans Claude (MCP) · Skill Nodex · Code MARLDE · Workflow quotidien</div>
+    </div>
+  </div>
+</div>
+
+<!-- 04 — DIVIDER SECTION 1 -->
+<div class="slide section-divider" data-notes="[3 sec] Section 1. Pourquoi ça marche. Si vous comprenez ça, vous arrêtez de douter à chaque trade.">
+  <div class="section-num">Section 01 · 15 minutes</div>
+  <h1>Pourquoi <em>ça marche.</em></h1>
+  <div class="desc">Analogie carnet d'ordres Binance · Tu es une institution avec 1 M€</div>
+</div>
+
+<!-- 05 — TU ES UNE INSTITUTION -->
+<div class="slide" data-notes="[3 min] Imagine 1 minute. Tu as 1 MILLION d'euros. Tu veux acheter du TAO. Tu te connectes à Binance, tu cliques 'BUY MARKET 1 000 000 €'. Que se passe-t-il ? Le prix EXPLOSE vers le haut. Tu paies CHER, t'as un slippage de fou, et 5 minutes après le prix retombe parce que personne ne suit. Tu viens de te faire avoir. Toi-même. CE problème, les institutions ne peuvent pas se le permettre.">
+  <div class="slide-kicker">01 · L'expérience de pensée</div>
+  <h2>Imagine que tu es une <em>institution.</em></h2>
+  <p>Tu as <strong style="color:var(--gold);">1 000 000 €</strong> à déployer sur TAO. Tu cliques "Buy Market". <strong>Que se passe-t-il ?</strong></p>
+  <div class="cards-grid">
+    <div class="card red">
+      <div class="card-num">Conséquence 1</div>
+      <div class="card-title">📈 Prix explose vers le haut</div>
+      <div class="card-desc">Tu absorbes <strong>tous les ordres de vente</strong> au-dessus du prix actuel. Le prix monte de +5 %, +10 %, +15 % en quelques secondes.</div>
+    </div>
+    <div class="card red">
+      <div class="card-num">Conséquence 2</div>
+      <div class="card-title">💸 Slippage massif</div>
+      <div class="card-desc">Tu paies un <strong>prix moyen bien plus haut</strong> que le prix initial. Tes 1 M€ achètent 30 % moins de TAO que prévu.</div>
+    </div>
+    <div class="card red">
+      <div class="card-num">Conséquence 3</div>
+      <div class="card-title">📉 Prix retombe</div>
+      <div class="card-desc">5 min après, le prix <strong>retombe</strong>. Personne ne suit ton achat. Tu es <strong>en perte immédiate</strong>.</div>
+    </div>
+  </div>
+  <div class="callout danger">
+    <div class="callout-title">🦈 Le problème institutionnel</div>
+    Acheter <strong>brutalement</strong> sur le carnet d'ordres = se faire avoir <strong>par soi-même</strong>. Les institutions ne peuvent JAMAIS faire ça. Elles ont besoin d'<strong>une autre méthode</strong>.
+  </div>
+</div>
+
+<!-- 06 — LE CARNET D'ORDRES BINANCE -->
+<div class="slide" data-notes="[3 min] Voici à quoi ressemble un carnet d'ordres Binance. À gauche, les BIDS = ordres d'achat. À droite, les ASKS = ordres de vente. Quand tu cliques 'Buy Market', tu manges les asks de bas en haut. Quand tu vois LE GROS BIDS A 0,30 c'est là que les baleines sont en attente. C'est ÇA notre zone de POI. C'est là que les institutions VEULENT acheter, mais elles attendent que le prix vienne à elles, pas l'inverse.">
+  <div class="slide-kicker">02 · Comment ça fonctionne vraiment</div>
+  <h2>Le carnet d'ordres <em>en vrai.</em></h2>
+  <div class="order-book-demo">
+    <div class="ob-side asks">
+      <h4>Asks (vendeurs)</h4>
+      <div class="ob-row"><span class="price">0,3450</span><span class="qty">12 500</span></div>
+      <div class="ob-row"><span class="price">0,3420</span><span class="qty">8 200</span></div>
+      <div class="ob-row"><span class="price">0,3380</span><span class="qty">15 800</span></div>
+      <div class="ob-row"><span class="price">0,3340</span><span class="qty">22 100</span></div>
+      <div class="ob-row"><span class="price">0,3310</span><span class="qty">9 500</span></div>
+    </div>
+    <div class="ob-center">
+      <div class="arrow">↕</div>
+      <div class="label">Spread<br>= 0,3290</div>
+    </div>
+    <div class="ob-side bids">
+      <h4>Bids (acheteurs)</h4>
+      <div class="ob-row"><span class="price">0,3290</span><span class="qty">11 200</span></div>
+      <div class="ob-row"><span class="price">0,3250</span><span class="qty">18 500</span></div>
+      <div class="ob-row"><span class="price">0,3200</span><span class="qty">25 000</span></div>
+      <div class="ob-row" style="background:rgba(74,222,128,0.15); margin: 4px -8px; padding: 8px;"><span class="price"><strong style="color:var(--green);">0,3000</strong></span><span class="qty"><strong style="color:var(--green);">450 000 ⭐</strong></span></div>
+      <div class="ob-row"><span class="price">0,2950</span><span class="qty">12 800</span></div>
+    </div>
+  </div>
+  <div class="callout info">
+    <div class="callout-title">⭐ Le gros bid à 0,3000</div>
+    <strong>450 000 TAO en attente d'achat</strong>. C'est <strong>une baleine</strong> qui dit "je veux acheter, mais SEULEMENT à ce prix". Elle attend que le marché vienne à elle.
+  </div>
+</div>
+
+<!-- 07 — LA SOLUTION DES INSTITUTIONS -->
+<div class="slide" data-notes="[3 min] Les institutions ne peuvent pas se permettre de manger le carnet. Donc qu'est-ce qu'elles font ? Elles ATTENDENT. Elles placent leurs ordres LIMIT (en bas) et attendent que le prix descende vers elles. Mais pour que le prix DESCENDE, il faut que quelqu'un VENDE en panique. Qui vend en panique ? Les RETAIL avec des stops sous les lows. Donc l'institution VEUT que le prix passe SOUS les lows visibles, ramasser les ventes des retail, ET ENSUITE elle achète à bas prix.">
+  <div class="slide-kicker">03 · La vraie mécanique institutionnelle</div>
+  <h2>Faire <em>descendre</em> avant d'acheter.</h2>
+  <p>Les baleines ne peuvent pas acheter en haut. Donc elles font venir le prix <strong>vers le bas</strong>, ramassent les retail en panique, puis achètent.</p>
+  <div class="steps-grid cols-1">
+    <div class="step gold"><div class="num">①</div><div class="body"><h4>Identifier les zones de stops retail</h4><p>Les SSL = sous les lows visibles. C'est là que les retail ont placé leurs stop loss.</p></div></div>
+    <div class="step gold"><div class="num">②</div><div class="body"><h4>Faire descendre le prix vers ces zones</h4><p>Avec quelques ordres de vente bien placés OU en attendant que le marché y aille naturellement.</p></div></div>
+    <div class="step gold"><div class="num">③</div><div class="body"><h4>Déclencher les stops retail = vente massive</h4><p>Tous les SL retail se déclenchent en même temps. <strong>Volume de vente énorme</strong> apparaît.</p></div></div>
+    <div class="step gold"><div class="num">④</div><div class="body"><h4>Absorber TOUTE cette vente avec leurs ordres limit</h4><p>L'institution achète <strong>à bas prix</strong>, sans slippage, sans bouger le marché. Mission accomplie.</p></div></div>
+  </div>
+</div>
+
+<!-- 08 — LE SWEEP = SIGNATURE INSTITUTIONNELLE -->
+<div class="slide" data-notes="[2 min] Quand on voit ça sur le chart : une grosse mèche qui descend SOUS un low évident, puis une CLOSE au-dessus = c'est exactement ça. C'est l'institution qui vient de faire son achat. Si après il y a un FVG bullish + 2 bougies de confirmation, on RENTRE LONG dans la même direction. On rejoint les baleines. C'est ça toute la mécanique. Pas de magie, juste de la mécanique.">
+  <div class="slide-kicker">04 · Le sweep = signature visible</div>
+  <h2>Sur ton chart, ça ressemble à <em>ÇA.</em></h2>
+  <p>Le <strong>sweep</strong> est la <strong>signature visible</strong> que les institutions viennent d'acheter. C'est ton signal d'entrée.</p>
+  <div class="big-numbers">
+    <div class="big-num"><div class="value gold">1.</div><div class="label">Mèche sous le low</div></div>
+    <div class="big-num"><div class="value gold">2.</div><div class="label">Close au-dessus</div></div>
+    <div class="big-num"><div class="value gold">3.</div><div class="label">Volume ≥ 3× moy</div></div>
+    <div class="big-num"><div class="value green">→</div><div class="label">Tu LONGES dans le même sens</div></div>
+  </div>
+  <div class="callout success">
+    <div class="callout-title">💎 La conclusion</div>
+    Tu ne <strong>prédis pas</strong> le marché. Tu <strong>repères les baleines en action</strong> (sweep dans la zone POI sous 0.5 Fibo) et tu <strong>te positionnes dans leur sens</strong>. C'est mécanique.
+  </div>
+</div>
+
+<!-- 09 — POURQUOI SOUS 0.5 + ZONE OTE -->
+<div class="slide" data-notes="[2 min] Pourquoi sous 0.5 du Fibo ? Parce que c'est la zone DISCOUNT. C'est là que les institutions VEULENT acheter. Au-dessus = PREMIUM = trop cher. La zone OTE 0.62-0.79 = les niveaux préférés des baleines. Donc on cherche : un POI dans la zone discount + idéalement dans l'OTE + un sweep qui vient toucher ce POI = setup A+. Si pas dans le discount = SKIP.">
+  <div class="slide-kicker">05 · Pourquoi le Fibo et l'OTE</div>
+  <h2>Discount = zone <em>institutionnelle.</em></h2>
+  <p>Le Fibonacci divise le marché en 2 zones. La règle institutionnelle : <strong>acheter en discount, vendre en premium</strong>.</p>
+  <div class="cards-grid">
+    <div class="card red">
+      <div class="card-num">Au-dessus de 0.5</div>
+      <div class="card-title">💸 PREMIUM</div>
+      <div class="card-desc">Zone où les retail achètent par FOMO. Les institutions <strong>VENDENT ici</strong> ou attendent.</div>
+      <div style="margin-top:10px; padding:8px; background:rgba(248,113,113,0.08); border-radius:6px; font-size:13px;">→ <strong>SKIP en V5.3</strong></div>
+    </div>
+    <div class="card green">
+      <div class="card-num">Sous 0.5</div>
+      <div class="card-title">💎 DISCOUNT</div>
+      <div class="card-desc">Zone où les institutions <strong>ACHÈTENT</strong>. Idéal : OTE 0.62-0.79.</div>
+      <div style="margin-top:10px; padding:8px; background:rgba(74,222,128,0.08); border-radius:6px; font-size:13px;">→ <strong>ENTRY ZONE V5.3</strong></div>
+    </div>
+  </div>
+  <div class="callout info">
+    <div class="callout-title">🎯 La règle V5.3</div>
+    Sweep <strong>SOUS 0.5 Fibo</strong> + idéalement <strong>dans OTE 0.62-0.79</strong> + sur un <strong>POI</strong> + suivi de <strong>2 bougies</strong> = setup valide.
+  </div>
+</div>
+
+<!-- 10 — RÉCAP SECTION 1 -->
+<div class="slide" data-notes="[2 min] Récap section 1. Pourquoi ça marche : 1) les institutions ne peuvent pas acheter brutalement, 2) elles attendent que le prix descende SOUS les lows pour ramasser les retail en panique, 3) le sweep est la SIGNATURE visible de cette accumulation, 4) on RENTRE dans le même sens qu'elles, 5) uniquement en zone discount sur un POI. Cette mécanique est UNIVERSELLE. Elle se reproduit tous les jours sur tous les actifs liquides.">
+  <div class="slide-kicker">06 · Ce qu'il faut retenir</div>
+  <h2>Récap <em>Section 1.</em></h2>
+  <ul>
+    <li><strong>Les institutions ont 1 M€+ à déployer</strong> — elles ne peuvent pas cliquer "Buy Market"</li>
+    <li><strong>Elles attendent que le prix descende</strong> vers leurs ordres limit en discount</li>
+    <li><strong>Pour que ça descende, il faut faire vendre les retail</strong> en panique (déclencher les stops)</li>
+    <li><strong>Le SWEEP est la signature visible</strong> de cette opération</li>
+    <li><strong>Tu rentres LONG dans le même sens</strong> qu'elles, à la mitigation du POI + 2 bougies</li>
+    <li><strong>Uniquement en zone discount</strong> (sous 0.5 Fibo M15) — sinon SKIP</li>
+  </ul>
+  <div class="callout success">
+    <div class="callout-title">💎 Mantra</div>
+    "Tu ne prédis pas le marché. Tu rejoins les baleines quand elles agissent."
+  </div>
+</div>
+
+<!-- 11 — DIVIDER SECTION 2 -->
+<div class="slide section-divider" data-notes="[3 sec] Section 2. La démo. Je passe sur TradingView et je vous fais un backtest LIVE, en direct, sur un asset au hasard. Vous voyez tout : top-down, identification, entrée, gestion, sortie.">
+  <div class="section-num">Section 02 · 25 minutes</div>
+  <h1>Démo backtest <em>LIVE.</em></h1>
+  <div class="desc">Je passe sur TradingView · backtest aléatoire · commentaire en direct</div>
+</div>
+
+<!-- 12 — MÉTHODOLOGIE DÉMO -->
+<div class="slide" data-notes="[2 min] Méthodologie. Je vais lancer un replay sur TradingView, à une date aléatoire (j'ai pas regardé l'avenir avant). Asset : ARB ou PENDLE selon la volatilité du jour. Je vais commenter en direct : 1) ma prep top-down, 2) où je marque la liquidité, 3) j'attends le sweep, 4) j'identifie le POI, 5) j'attends les 2 bougies, 6) je place le trade, 7) je gère le trailing, 8) sortie. Vous voyez TOUT dans l'ordre réel.">
+  <div class="slide-kicker">07 · Comment je vais faire</div>
+  <h2>Backtest aléatoire <em>en direct.</em></h2>
+  <div class="steps-grid cols-1">
+    <div class="step blue"><div class="num">1</div><div class="body"><h4>Replay TradingView à date aléatoire</h4><p>Je n'ai PAS regardé l'avenir. Date au hasard sur ARB ou PENDLE.</p></div></div>
+    <div class="step blue"><div class="num">2</div><div class="body"><h4>Commentaire en direct des 8 étapes V5.3</h4><p>Top-down → Fibo → liquidité → sweep → POI → 2 bougies → entrée → trailing</p></div></div>
+    <div class="step blue"><div class="num">3</div><div class="body"><h4>Vous voyez tout — y compris mes hésitations</h4><p>Pas de magie, pas de cherry-picking. Si je SKIP, vous voyez pourquoi.</p></div></div>
+  </div>
+  <div class="callout warning">
+    <div class="callout-title">⚠ Important</div>
+    En backtest tu vois moins d'infos qu'en réel (pas de news live, pas de carnet d'ordres). <strong>En réel ça marche encore mieux</strong> car tu as plus de contexte.
+  </div>
+</div>
+
+<!-- 13 — SWITCH TRADINGVIEW : TOP-DOWN -->
+<div class="slide" data-notes="[5 min] [SWITCH ÉCRAN VERS TRADINGVIEW] Là je passe sur TradingView. Je suis sur ARB en M15. Je commence par le top-down. Je vais sur D1, je vérifie HH+HL ✓. Je passe en H4, structure aligned ✓. Je vais sur BTC en H4, bullish ✓. Je note les POI majeurs D1 et H4 que je vois. Pas de news rouge dans 30 min. Filtre macro OK.">
+  <div class="slide-kicker">08 · Étape 1-2 · Top-down + Fibo H1</div>
+  <h2>Préparation <em>HTF.</em></h2>
+  <div class="screen-switch">
+    <div class="icon">📺</div>
+    <h3>SWITCH VERS TRADINGVIEW</h3>
+    <p style="margin-top:14px;">Je passe sur D1 · H4 · BTC H4 · puis Fibo H1<br>Je vérifie le bias et je marque les POI majeurs</p>
+  </div>
+  <ul style="margin-top:24px;">
+    <li>D1 bullish (HH+HL) ✓</li>
+    <li>H4 aligné ✓</li>
+    <li>BTC H4 bullish ✓</li>
+    <li>POI D1 + H4 marqués</li>
+    <li>Pas de news rouge</li>
+    <li>Fibo H1 tracé · vérification discount/premium</li>
+  </ul>
+</div>
+
+<!-- 14 — SWITCH TRADINGVIEW : LIQUIDITÉ + SWEEP -->
+<div class="slide" data-notes="[5 min] [TOUJOURS SUR TRADINGVIEW] Je passe en M15. Je marque l'Asia Low, le PDL, et les 2-3 lows récents. Je trace le Fibo M15 sur le swing actif. Maintenant j'attends. Je regarde le prix venir. Là, je vois une bougie qui balaye l'Asia Low avec une grosse mèche. Mèche fait 2,5x le corps ✓. Close au-dessus ✓. Volume 3,2x la moyenne ✓. SWEEP VALIDÉ.">
+  <div class="slide-kicker">09 · Étape 3-4 · Liquidité + Sweep</div>
+  <h2>Marquer + <em>attendre.</em></h2>
+  <div class="screen-switch">
+    <div class="icon">📺</div>
+    <h3>TRADINGVIEW M15 EN COURS</h3>
+    <p style="margin-top:14px;">Asia Low marqué · PDL marqué · Fibo M15 tracé<br>J'attends le sweep — patience</p>
+  </div>
+  <div class="callout success" style="margin-top:24px;">
+    <div class="callout-title">✓ Sweep détecté</div>
+    Mèche = 2,5× corps · close au-dessus de l'Asia Low · volume 3,2× moyenne 20 = <strong>SWEEP VALIDÉ + Bonus A+</strong>
+  </div>
+</div>
+
+<!-- 15 — SWITCH TRADINGVIEW : POI + 2 BOUGIES -->
+<div class="slide" data-notes="[5 min] [TRADINGVIEW] Maintenant je cherche le POI. Le sweep s'est fait juste sur un FVG bullish que j'avais marqué dans la zone OTE 0.65 du Fibo M15. Confluence parfaite. J'attends la mitigation. La 1ère bougie touche le FVG. J'attends la 2ème. La bougie 2 clôture au-dessus du high de la bougie 1 — et c'est même une englobante, BONUS. ENTRY = close de cette bougie 2.">
+  <div class="slide-kicker">10 · Étape 5-7 · POI + 2 bougies</div>
+  <h2>Identification + <em>confirmation.</em></h2>
+  <div class="screen-switch">
+    <div class="icon">📺</div>
+    <h3>TRADINGVIEW · POI + 2 BOUGIES</h3>
+    <p style="margin-top:14px;">FVG identifié dans la zone OTE 0.65 · sweep touche le POI ✓<br>Mitigation → bougie 1 → bougie 2 (englobante) → ENTRY</p>
+  </div>
+  <div class="big-numbers" style="margin-top:24px;">
+    <div class="big-num"><div class="value gold">FVG</div><div class="label">POI utilisé</div></div>
+    <div class="big-num"><div class="value blue">0.65</div><div class="label">Niveau Fibo OTE</div></div>
+    <div class="big-num"><div class="value green">2/2</div><div class="label">Bougies confirmation</div></div>
+    <div class="big-num"><div class="value gold">A+</div><div class="label">Grade obtenu (22/22)</div></div>
+  </div>
+</div>
+
+<!-- 16 — SWITCH TRADINGVIEW : PLACEMENT + TRAILING -->
+<div class="slide" data-notes="[5 min] [TRADINGVIEW] Placement du trade. Entry à la close de bougie 2. SL sous la mèche du sweep + 0,2% buffer. Risk 1,2% du capital car c'est un A+. Position calculée selon la formule. RR planifié 3:1. Trailing : à +1,5% mon SL bouge à BE. À +2,5% mon SL va à +1,5%. À +3% sortie totale. Voilà comment je gère sans toucher au trade émotionnellement.">
+  <div class="slide-kicker">11 · Étape 8 · Placement + gestion</div>
+  <h2>Trade placé + <em>trailing actif.</em></h2>
+  <div class="screen-switch">
+    <div class="icon">📺</div>
+    <h3>TRADINGVIEW · TRADE EN COURS</h3>
+    <p style="margin-top:14px;">Entry · SL placé · Risk 1,2 % calculé · Alertes TV à +1,5 % et +2,5 %<br>Je n'y touche plus.</p>
+  </div>
+  <table class="data-table">
+    <thead><tr><th>Palier</th><th>Prix atteint</th><th>Action</th></tr></thead>
+    <tbody>
+      <tr><td>1 · ENTRY</td><td>0 %</td><td>SL initial à -1 %</td></tr>
+      <tr><td>2 · BE</td><td>+1,5 %</td><td>SL bouge à breakeven (0 %)</td></tr>
+      <tr><td>3 · Mid</td><td>+2,5 %</td><td>SL bouge à +1,5 %</td></tr>
+      <tr><td>4 · SORTIE</td><td>+3 %</td><td><strong style="color:var(--gold);">Sortie totale</strong></td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- 17 — SWITCH TRADINGVIEW : RÉSULTAT -->
+<div class="slide" data-notes="[3 min] [TRADINGVIEW] On laisse jouer le replay. Premier palier touché : +1,5%, SL au BE. On ne peut plus perdre. Deuxième palier touché : +2,5%, SL bouge à +1,5%. On verrouille minimum +1,5%. Et finalement +3% : sortie totale. Trade gagnant à +3%, scénario A. Si capital 2000$ et risk 1,2%, gain = environ +60$. C'est ça le pattern qu'on cherche à reproduire.">
+  <div class="slide-kicker">12 · Résultat de la démo</div>
+  <h2>Trade <em>gagnant.</em></h2>
+  <div class="screen-switch">
+    <div class="icon">🏆</div>
+    <h3>SCÉNARIO A · +3 %</h3>
+    <p style="margin-top:14px;">Tous les paliers atteints · sortie totale à +3 %<br>Sur 2000 $ avec risk 1,2 % : <strong style="color:var(--green);">+60 $ de gain</strong></p>
+  </div>
+  <div class="callout success" style="margin-top:24px;">
+    <div class="callout-title">📊 Statistiquement</div>
+    Sur 100 setups V5.3 type, espérance ~60 % WR · ~80 % des wins finissent à +3 % · PnL moyen +1,5 % par trade. <strong>20 trades par mois × +1,5 % = +30 % capital mensuel</strong> (en théorie statistique).
+  </div>
+</div>
+
+<!-- 18 — LEÇONS DE LA DÉMO -->
+<div class="slide" data-notes="[2 min] 3 leçons de cette démo. 1) La PRÉPARATION fait 80% du travail (top-down + Fibo + POI marqués AVANT que la session ouvre). 2) La PATIENCE = je n'ai PAS forcé. J'ai attendu que toutes les conditions soient OK. Si elles ne l'étaient pas, je SKIPPAIS. 3) La DISCIPLINE post-entry = je n'ai PAS bougé mon SL. J'ai laissé le trailing faire son travail.">
+  <div class="slide-kicker">13 · 3 leçons clés</div>
+  <h2>Ce qu'il faut <em>retenir.</em></h2>
+  <div class="cards-grid">
+    <div class="card green"><div class="card-num">Leçon 1</div><div class="card-title">⏰ Préparation > exécution</div><div class="card-desc"><strong>80 % du travail = top-down + marquage liquidité + POI AVANT</strong> que la session ouvre. Sans prep = improvisation = perte.</div></div>
+    <div class="card blue"><div class="card-num">Leçon 2</div><div class="card-title">🧘 Patience militaire</div><div class="card-desc">Si UN seul critère manque = SKIP. <strong>Pas de "presque", pas de "ça va passer"</strong>. La rentabilité vient du flux constant de A et B+, pas des A+ forcés.</div></div>
+    <div class="card gold"><div class="card-num">Leçon 3</div><div class="card-title">🛡️ Discipline post-entry</div><div class="card-desc">Une fois le trade placé, <strong>tu ne touches plus</strong>. Le trailing fait son travail. Bouger le SL contre soi = transformer -1 % en -3 %.</div></div>
+  </div>
+</div>
+
+<!-- 19 — DIVIDER SECTION 3 -->
+<div class="slide section-divider" data-notes="[3 sec] Section 3. Installation pratique. Comment vous mettez tout ça en place chez vous.">
+  <div class="section-num">Section 03 · 20 minutes</div>
+  <h1>Installation <em>pratique.</em></h1>
+  <div class="desc">Claude · TradingView dans Claude · Skill Nodex · Code MARLDE</div>
+</div>
+
+<!-- 20 — INSTALLER CLAUDE CODE -->
+<div class="slide" data-notes="[3 min] Étape 1 : installer Claude Code. C'est gratuit. Vous allez sur claude.ai/code. Vous téléchargez la version Windows ou Mac selon votre OS. Vous installez. Vous vous connectez avec votre compte Anthropic (créez-en un si vous n'en avez pas). Voilà, Claude Code est installé.">
+  <div class="slide-kicker">14 · Étape 1 sur 5</div>
+  <h2>Installer <em>Claude Code.</em></h2>
+  <div class="steps-grid cols-1">
+    <div class="step blue"><div class="num">①</div><div class="body"><h4>Aller sur claude.ai/code</h4><p>Site officiel Anthropic. Téléchargement gratuit Windows / Mac / Linux.</p></div></div>
+    <div class="step blue"><div class="num">②</div><div class="body"><h4>Télécharger + installer</h4><p>Suivre l'installeur classique de votre OS. Ouvrir Claude Code.</p></div></div>
+    <div class="step blue"><div class="num">③</div><div class="body"><h4>Se connecter avec compte Anthropic</h4><p>Créer un compte si vous n'en avez pas. Pour notre usage perso, version gratuite OK.</p></div></div>
+  </div>
+  <div class="callout info">
+    <div class="callout-title">💡 Qu'est-ce que Claude Code ?</div>
+    Une version de Claude qui peut <strong>lire et modifier des fichiers sur votre ordi</strong>. Parfait pour avoir un coach trading qui analyse vos charts, votre journal, votre progression.
+  </div>
+</div>
+
+<!-- 21 — AJOUTER TRADINGVIEW DANS CLAUDE -->
+<div class="slide" data-notes="[4 min] Étape 2 : connecter TradingView à Claude. C'est ce qu'on appelle un MCP (Model Context Protocol). Ça permet à Claude de LIRE votre chart TradingView en direct, de tracer des zones, de faire des analyses. C'est puissant. Vous installez le MCP TradingView via cette commande dans Claude Code (montrer commande). Puis vous lancez TradingView en mode debug. Une fois connecté, Claude peut analyser votre chart en temps réel.">
+  <div class="slide-kicker">15 · Étape 2 sur 5</div>
+  <h2>Ajouter <em>TradingView</em> à Claude.</h2>
+  <p>MCP (Model Context Protocol) = pont entre Claude et TradingView. Permet à Claude de <strong>lire ton chart en direct</strong>, tracer des zones, faire des analyses.</p>
+  <div class="cmd-block">$ claude mcp add tradingview node ~/tradingview-mcp/src/server.js</div>
+  <div class="cmd-block">$ # Puis lancer TradingView Desktop en mode debug<br>$ # (script fourni dans le pack)</div>
+  <div class="callout success" style="margin-top:24px;">
+    <div class="callout-title">⚡ Ce que ça permet</div>
+    "Claude, regarde mon chart ARB M15, identifie les POI dans la zone discount" → Claude analyse, trace, et te dit où sont les setups.
+  </div>
+</div>
+
+<!-- 22 — TÉLÉCHARGER LE SKILL -->
+<div class="slide" data-notes="[3 min] Étape 3 : télécharger le skill Nodex. Vous allez sur nodextrading.com. Vous choisissez le tier Elite. Au moment du checkout, vous saisissez votre code MARLDE-VOTRE-NOM (que je vous donne perso) dans le champ 'Code promo'. Réduction 100% appliquée. Vous validez. Vous recevez par email un lien de téléchargement du ZIP du skill + votre code d'activation.">
+  <div class="slide-kicker">16 · Étape 3 sur 5</div>
+  <h2>Récupérer le <em>skill Nodex.</em></h2>
+  <div class="steps-grid cols-1">
+    <div class="step gold"><div class="num">①</div><div class="body"><h4>Aller sur nodextrading.com</h4><p>Cliquer sur tier <strong>Elite</strong> (la version complète).</p></div></div>
+    <div class="step gold"><div class="num">②</div><div class="body"><h4>Au checkout, saisir le code MARLDE-VOTRENOM</h4><p>Champ "Code promo" en bas du formulaire. Je vous donne le code <strong>en perso</strong>.</p></div></div>
+    <div class="step gold"><div class="num">③</div><div class="body"><h4>Réduction -100 % appliquée</h4><p>Total = 0 €. Vous validez la commande.</p></div></div>
+    <div class="step gold"><div class="num">④</div><div class="body"><h4>Recevoir email avec téléchargement</h4><p>Lien ZIP du skill + code d'activation Claude.</p></div></div>
+  </div>
+</div>
+
+<!-- 23 — INSTALLER LE SKILL -->
+<div class="slide" data-notes="[3 min] Étape 4 : installer le skill. Vous dézippez le fichier dans le dossier .claude/skills/ de votre projet. Sur Windows c'est généralement C:/Users/VOTRENOM/.claude/skills/nodex-v5.3/. Sur Mac c'est dans /Users/VOTRENOM/. Une fois installé, vous redémarrez Claude Code et le skill apparaît dans la liste des skills disponibles.">
+  <div class="slide-kicker">17 · Étape 4 sur 5</div>
+  <h2>Installer le skill <em>nodex-v5.3.</em></h2>
+  <div class="cmd-block">$ # Windows<br>$ unzip nodex-v5.3.zip -d "C:/Users/VOTRENOM/.claude/skills/"</div>
+  <div class="cmd-block">$ # Mac/Linux<br>$ unzip nodex-v5.3.zip -d ~/.claude/skills/</div>
+  <div class="callout info" style="margin-top:24px;">
+    <div class="callout-title">📂 Structure attendue</div>
+    .claude/skills/<strong>nodex-v5.3/</strong> avec dedans : SKILL.md · PERSONA.md · references/ · procedures/ · state/ · etc. (32 fichiers)
+  </div>
+  <div class="callout success">
+    <div class="callout-title">✓ Vérification</div>
+    Redémarre Claude Code. Le skill <strong>nodex-v5.3</strong> doit apparaître dans la liste des skills disponibles.
+  </div>
+</div>
+
+<!-- 24 — ACTIVATION SKILL + CODE MARLDE -->
+<div class="slide" data-notes="[3 min] Étape 5 : activation. Vous ouvrez Claude Code dans votre dossier de trading. Vous tapez : 'Nodex je veux apprendre'. Le skill se déclenche. Il vous demande votre code d'activation. Vous tapez le code MARLDE-VOTRENOM. Activation OK. Nodex prend le relais : il vous fait un onboarding personnalisé en 10 questions, analyse votre niveau, et vous donne un programme adapté de 1, 2 ou 3 semaines.">
+  <div class="slide-kicker">18 · Étape 5 sur 5</div>
+  <h2>Activer ton <em>compte Nodex.</em></h2>
+  <div class="steps-grid cols-1">
+    <div class="step green"><div class="num">①</div><div class="body"><h4>Ouvrir Claude Code dans ton dossier trading</h4><p>Le skill nodex-v5.3 est listé.</p></div></div>
+    <div class="step green"><div class="num">②</div><div class="body"><h4>Taper "Nodex je veux apprendre"</h4><p>Le skill se déclenche automatiquement.</p></div></div>
+    <div class="step green"><div class="num">③</div><div class="body"><h4>Saisir ton code d'activation MARLDE-VOTRENOM</h4><p>Activation enregistrée localement (state/license.json).</p></div></div>
+    <div class="step green"><div class="num">④</div><div class="body"><h4>Onboarding 10 questions</h4><p>Nodex évalue ton niveau, te donne un programme 1/2/3 semaines.</p></div></div>
+  </div>
+</div>
+
+<!-- 25 — WORKFLOW QUOTIDIEN -->
+<div class="slide" data-notes="[3 min] Workflow quotidien. Le matin : 'Nodex, fais-moi un brief macro pour aujourd'hui'. Avant 14h30 : 'Nodex, regarde ARB et PENDLE en M15, marque-moi les POI dans la zone discount'. Pendant la session : 'Nodex j'ai un setup A à 14h45, voici l'entry, valide-moi la checklist 22 points'. Après le trade : 'Nodex, débriefe ce trade, qu'est-ce que j'ai bien fait, mal fait'. Nodex devient ton coach perso 24/7.">
+  <div class="slide-kicker">19 · Au quotidien</div>
+  <h2>Comment utiliser Nodex au <em>jour le jour.</em></h2>
+  <div class="cards-grid">
+    <div class="card blue">
+      <div class="card-num">Matin</div>
+      <div class="card-title">☀️ Brief macro</div>
+      <div class="card-desc">"Nodex, brief macro du jour"<br>→ contexte BTC, news, watchlist scoring</div>
+    </div>
+    <div class="card gold">
+      <div class="card-num">Avant session</div>
+      <div class="card-title">📋 Prep</div>
+      <div class="card-desc">"Nodex, regarde ARB et PENDLE M15, marque les POI"<br>→ analyse top-down + zones marquées</div>
+    </div>
+    <div class="card green">
+      <div class="card-num">Pendant trade</div>
+      <div class="card-title">✓ Validation</div>
+      <div class="card-desc">"Nodex, valide la checklist 22 sur ce setup"<br>→ grade A+/A/B+/B/C calculé</div>
+    </div>
+    <div class="card yellow">
+      <div class="card-num">Après trade</div>
+      <div class="card-title">📝 Débrief</div>
+      <div class="card-desc">"Nodex, débriefe ce trade"<br>→ analyse + journal 4 couches automatique</div>
+    </div>
+  </div>
+</div>
+
+<!-- 26 — DIVIDER CONCLUSION -->
+<div class="slide section-divider" data-notes="[3 sec] Conclusion. 3 prochaines étapes pour vous, et les garde-fous absolus.">
+  <div class="section-num">Conclusion · 5 minutes</div>
+  <h1>À <em>vous.</em></h1>
+  <div class="desc">3 prochaines étapes · Garde-fous absolus</div>
+</div>
+
+<!-- 27 — 3 PROCHAINES ÉTAPES -->
+<div class="slide" data-notes="[2 min] Vos 3 prochaines étapes. 1) Cette semaine : installer Claude + skill Nodex avec votre code, faire l'onboarding. 2) Semaine prochaine : commencer 30 trades en PAPER trading sur ARB et PENDLE en suivant la checklist 22. 3) Dans 1 mois : si WR ≥ 55% sur 30 trades, on passe en live progressif sur petit capital. C'est pas plus compliqué.">
+  <div class="slide-kicker">20 · Vos 3 prochaines étapes</div>
+  <h2>Plan d'action <em>concret.</em></h2>
+  <div class="steps-grid cols-1">
+    <div class="step blue"><div class="num">S1</div><div class="body"><h4>Cette semaine — Installation</h4><p>Claude Code + TradingView MCP + skill Nodex (code MARLDE). Faire l'onboarding 10 questions. Programme 1-3 semaines selon votre niveau.</p></div></div>
+    <div class="step gold"><div class="num">S2-5</div><div class="body"><h4>Semaines suivantes — 30 trades paper</h4><p>30 trades V5.3 en paper trading sur ARB + PENDLE. Checklist 22 cochée à chaque trade. Journal 4 couches obligatoire.</p></div></div>
+    <div class="step green"><div class="num">M+1</div><div class="body"><h4>Dans 1 mois — Décision live</h4><p>Si WR ≥ 55 % sur 30 trades + discipline OK → passage live progressif sur 500 € au début. Sizing 0,25 % → 0,5 % → 1 %.</p></div></div>
+  </div>
+</div>
+
+<!-- 28 — GARDE-FOUS ABSOLUS -->
+<div class="slide" data-notes="[2 min] Les 5 garde-fous NON négociables. 1) Jamais sans skill activé. 2) Jamais sans journal 4 couches. 3) Jamais sans checklist 22 cochée. 4) Jamais plus de 1,2% risk. 5) Jamais 2 SL consécutifs sans pause 24h. Si vous violez UN seul de ces 5, vous m'en parlez en perso. C'est non négociable. C'est ça qui sépare ceux qui deviennent rentables de ceux qui crashent leur compte.">
+  <div class="slide-kicker">21 · Garde-fous NON négociables</div>
+  <h2>5 règles à ne <em>JAMAIS</em> violer.</h2>
+  <ul>
+    <li><strong>Jamais de trade sans skill Nodex activé</strong> — il calcule ton grade automatiquement</li>
+    <li><strong>Jamais sans journal 4 couches</strong> (Trade Log + Trading Journal + Psy Weekly + Demon Finder)</li>
+    <li><strong>Jamais sans checklist 22 cochée</strong> — si une hard rule manque = SKIP</li>
+    <li><strong>Jamais plus de 1,2 % risk</strong> par trade — peu importe la "conviction"</li>
+    <li><strong>Jamais 2 SL consécutifs sans pause 24h</strong> — la psy doit récupérer</li>
+  </ul>
+  <div class="callout danger">
+    <div class="callout-title">🚨 Si tu violes une règle</div>
+    Tu m'en parles <strong>en perso</strong>. On regarde ensemble pourquoi. <strong>On ne cache pas les violations.</strong>
+  </div>
+</div>
+
+<!-- 29 — RAPPEL ÉCONOMIE -->
+<div class="slide" data-notes="[1 min] Rappel statistique. Si WR 60% et RR moyen 2,5:1 (réaliste sur V5.3), espérance par trade = 0,8R. Soit avec risk 1% = 0,8% par trade. 20 trades par mois = +16% mensuel théorique. Sur 1 an = capital ×5,5 (compound). C'est PAS de la science-fiction. C'est ce que ma stratégie montre statistiquement. Le seul ennemi = la psy. Si vous tenez la discipline, vous y arrivez.">
+  <div class="slide-kicker">22 · L'économie de la patience</div>
+  <h2>Ce que ça donne <em>statistiquement.</em></h2>
+  <div class="big-numbers">
+    <div class="big-num"><div class="value gold">60 %</div><div class="label">WR cible</div></div>
+    <div class="big-num"><div class="value gold">2,5:1</div><div class="label">RR moyen</div></div>
+    <div class="big-num"><div class="value green">+0,8 R</div><div class="label">Espérance / trade</div></div>
+    <div class="big-num"><div class="value green">+16 %</div><div class="label">Capital / mois</div></div>
+    <div class="big-num"><div class="value gold">×5,5</div><div class="label">Capital sur 1 an (compound)</div></div>
+  </div>
+  <div class="callout success">
+    <div class="callout-title">💎 Le seul ennemi</div>
+    La méthode <strong>marche statistiquement</strong>. Le seul facteur qui te fera échouer = <strong>ta psychologie</strong>. Discipline + journal + skill = succès durable.
+  </div>
+</div>
+
+<!-- 30 — FIN -->
+<div class="slide title-slide" data-notes="[1 min] Voilà. Vous avez tout. Cette vidéo + le skill Nodex + votre code MARLDE = vous avez littéralement le même setup que moi. Le reste, c'est vous. Si vous avez des questions techniques, vous m'envoyez un message. Si vous avez des doutes psy, on en parle. Mission : devenir tous rentables ensemble d'ici fin 2026. Allez, à vous.">
+  <div class="logo">N</div>
+  <h1>À <em>vous.</em></h1>
+  <p>Vous avez tout · Skill Nodex + code MARLDE + cette formation</p>
+  <p style="font-family: var(--font-mono); font-size: 14px; color: var(--gold); letter-spacing: 2px; margin-top: 30px;">QUESTIONS · CONTACT NAHEL EN PERSO</p>
+</div>
+
+<!-- ═══ NAV ═══ -->
+<div class="nav">
+  <button onclick="prevSlide()">←</button>
+  <div class="counter"><strong id="cur">01</strong> / <span id="tot">30</span></div>
+  <button onclick="nextSlide()">→</button>
+</div>
+
+<div class="notes-panel" id="notes">
+  <div class="notes-label">📝 Notes script — voix off Nahel</div>
+  <div class="notes-content" id="notes-content"></div>
+</div>
+
+<script>
+const slides = document.querySelectorAll('.slide');
+let current = 0;
+const total = slides.length;
+document.getElementById('tot').textContent = String(total).padStart(2, '0');
+
+function showSlide(i) {
+  slides.forEach((s, idx) => s.classList.toggle('active', idx === i));
+  document.getElementById('cur').textContent = String(i + 1).padStart(2, '0');
+  document.getElementById('slide-num').textContent = String(i + 1).padStart(2, '0') + ' / ' + String(total).padStart(2, '0');
+  const notes = slides[i].dataset.notes || '(pas de notes)';
+  document.getElementById('notes-content').textContent = notes;
+}
+function nextSlide() { if (current < total - 1) { current++; showSlide(current); } }
+function prevSlide() { if (current > 0) { current--; showSlide(current); } }
+function toggleNotes() { document.getElementById('notes').classList.toggle('visible'); }
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowRight' || e.key === ' ') nextSlide();
+  if (e.key === 'ArrowLeft') prevSlide();
+  if (e.key === 'n' || e.key === 'N') toggleNotes();
+  if (e.key === 'f' || e.key === 'F') document.documentElement.requestFullscreen?.();
+});
+showSlide(0);
+</script>
+</body>
+</html>

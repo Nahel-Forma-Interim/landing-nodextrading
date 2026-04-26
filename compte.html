@@ -172,20 +172,19 @@ footer { position: relative; z-index: 10; padding: 40px 24px; text-align: center
   <div class="login-card">
     <div class="login-kicker">Espace membre</div>
     <h1 class="login-title">Accède à <em>tes ressources.</em></h1>
-    <p class="login-sub">Entre l'email que tu as utilisé pour ta commande. Pas de mot de passe — un lien d'accès direct (mode simulation pour l'instant).</p>
+    <p class="login-sub">Entre ton email + ton code d'activation reçu après commande.</p>
 
     <form onsubmit="login(event)">
       <div class="input-group">
         <label class="input-label">Email de commande</label>
         <input type="email" class="input-field" id="loginEmail" required placeholder="ton.email@exemple.com" autocomplete="email">
       </div>
+      <div class="input-group">
+        <label class="input-label">Code d'activation</label>
+        <input type="text" class="input-field" id="loginCode" required placeholder="Code reçu par email" autocomplete="off" style="font-family:var(--font-mono); letter-spacing:1px; text-transform:uppercase;">
+      </div>
       <button type="submit" class="btn-login">Accéder à mon compte →</button>
     </form>
-
-    <div class="login-info">
-      <div class="login-info-title">Mode simulation</div>
-      <div class="login-info-text">Cet espace lit ta commande locale (depuis le checkout simulation). Quand Stripe sera branché, on enverra par email un lien magique unique (pas de mot de passe à retenir).</div>
-    </div>
 
     <div class="login-footer">
       Pas encore de commande ? <a href="index.html">Découvrir les tiers</a>
@@ -280,22 +279,33 @@ footer { position: relative; z-index: 10; padding: 40px 24px; text-align: center
 const tierLabels = { essentiel: 'Essentiel', pro: 'Pro', elite: 'Elite' };
 
 const allResources = {
-  skill: { name: 'Skill IA Nodex V5.2', desc: 'Le formateur IA personnel pour Claude Code. ZIP + script d\'installation Windows.', icon: 'A', tier: 'essentiel', actions: [{label:'Télécharger ZIP', href:'#download-skill', primary:true}, {label:'Guide install', href:'INSTALL.html'}] },
+  skill: { name: 'Skill IA Nodex V5.3', desc: 'Le formateur IA personnel pour Claude Code. ZIP + guide d\'installation. Multi-POI + Fibo + checklist 22 points.', icon: 'A', tier: 'essentiel', actions: [{label:'Télécharger ZIP', href:'downloads/nodex-v5.3.zip', primary:true, download:true}] },
+  formation: { name: 'Formation vidéo V5.3', desc: 'Présentation 1h : pourquoi la stratégie marche (analogie carnet d\'ordres) + démo backtest live + installation Claude. Réservée aux acheteurs.', icon: 'V', tier: 'essentiel', actions: [{label:'Ouvrir la formation →', href:'formation-nodex-v53.html', primary:true}] },
   pine: { name: '7 indicateurs Pine Script v6', desc: 'Sweep · FVG · HTF Bias · Volume Spike · Liquidity Zones · Confirmation · Master (BUY A/A+). Copier-coller dans TradingView.', icon: 'B', tier: 'essentiel', actions: [{label:'Télécharger pack', href:'pine/'}] },
-  fiche: { name: 'Fiche interactive cockpit', desc: 'Checklist 18 points, calculateur 1 %, journal live, 10 règles psycho. Tout reste local.', icon: 'C', tier: 'essentiel', actions: [{label:'Ouvrir la fiche', href:'fiche-nodex-v5.2.html', primary:true}] },
-  guide: { name: 'Guide TradingView', desc: 'Configuration multi-timeframes, hotkeys, alertes, watchlist. Setup en 12 minutes.', icon: 'D', tier: 'essentiel', actions: [{label:'Ouvrir', href:'#guide-tv'}] },
+  fiche: { name: 'Fiche interactive cockpit', desc: 'Checklist 22 points V5.3, calculateur 1 %, journal live, 10 règles psycho. Tout reste local.', icon: 'C', tier: 'essentiel', actions: [{label:'Ouvrir la fiche', href:'fiche-nodex-v5.2.html', primary:true}] },
   onboarding: { name: 'Onboarding Nodex', desc: 'Parcours guidé 7 étapes pour démarrer correctement. Sauvegarde ta progression.', icon: 'O', tier: 'essentiel', actions: [{label:'Lancer onboarding →', href:'onboarding.html', primary:true}] },
-  telegram: { name: 'Telegram positions Nahel', desc: 'Channel privé en lecture : zones surveillées, entrées potentielles, résultats. 5-15 msg/jour.', icon: 'TG', tier: 'pro', actions: [{label:'Lien d\'invitation', href:'#telegram-invite'}] },
-  watchlist: { name: 'Watchlist crypto privée', desc: 'Liste des 8-12 alts validés par Nahel chaque dimanche. Format TradingView importable.', icon: 'WL', tier: 'pro', actions: [{label:'Télécharger .json', href:'#watchlist-tv'}] },
-  brief: { name: 'Brief weekly Nahel', desc: 'Note hebdomadaire : ce qui a fonctionné, les erreurs détectées, les ajustements méthode.', icon: 'WK', tier: 'pro', actions: [{label:'Voir les briefs', href:'#briefs'}] },
+  telegram: { name: 'Telegram positions Nahel', desc: 'Channel privé en lecture : zones surveillées, entrées potentielles, résultats. 5-15 msg/jour.', icon: 'TG', tier: 'pro', status: 'coming', actions: [{label:'Liste prioritaire', href:'#telegram-invite'}] },
+  watchlist: { name: 'Watchlist crypto privée', desc: 'Liste des alts validés par Nahel chaque dimanche. ARB + PENDLE focus actuel. Format TradingView importable.', icon: 'WL', tier: 'pro', status: 'coming', actions: [{label:'Lien d\'accès', href:'#watchlist-tv'}] },
+  brief: { name: 'Brief weekly Nahel', desc: 'Note hebdomadaire : ce qui a fonctionné, les erreurs détectées, les ajustements méthode.', icon: 'WK', tier: 'pro', status: 'coming', actions: [{label:'Voir les briefs', href:'#briefs'}] },
   bot: { name: 'Bot Auto Scanner Telegram', desc: 'Scan ta watchlist 24/7 et t\'envoie un signal complet quand un setup Sweep+FVG est détecté.', icon: 'BOT', tier: 'elite', status: 'coming', actions: [{label:'Liste prioritaire', href:'#bot-waitlist'}] }
 };
 
 const tierAccess = {
-  essentiel: ['skill','pine','fiche','guide','onboarding'],
-  pro: ['skill','pine','fiche','guide','onboarding','telegram','watchlist','brief'],
-  elite: ['skill','pine','fiche','guide','onboarding','telegram','watchlist','brief','bot']
+  essentiel: ['skill','formation','pine','fiche','onboarding'],
+  pro: ['skill','formation','pine','fiche','onboarding','telegram','watchlist','brief'],
+  elite: ['skill','formation','pine','fiche','onboarding','telegram','watchlist','brief','bot']
 };
+
+// Hash SHA-256 du code MARLDE (jamais en clair)
+const PROMO_HASHES = {
+  'bd7c5ae17e134d532d2d18c389543ca3789b4b8db5c9ac8aec99145fdf384c0c': 'elite' // Code partenaire
+};
+
+async function sha256(text) {
+  const buffer = new TextEncoder().encode(text);
+  const hashBuffer = await crypto.subtle.digest('SHA-256', buffer);
+  return Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, '0')).join('');
+}
 
 function showToast(msg, type) {
   const t = document.getElementById('toast');
@@ -305,40 +315,45 @@ function showToast(msg, type) {
   setTimeout(() => t.classList.remove('show'), 2800);
 }
 
-function login(e) {
+async function login(e) {
   e.preventDefault();
   const email = document.getElementById('loginEmail').value.trim().toLowerCase();
+  const code = document.getElementById('loginCode').value.trim().toUpperCase();
+  if (!email) { showToast('Entre un email valide', 'error'); return; }
+  if (!code) { showToast('Entre ton code d\'activation', 'error'); return; }
+
+  // 1. Vérification code partenaire/promo (hash SHA-256, irréversible)
+  const codeHash = await sha256(code);
+  const promoTier = PROMO_HASHES[codeHash];
+  if (promoTier) {
+    const order = {
+      email, firstname: email.split('@')[0], lastname: '', country: 'France',
+      tier: promoTier, price: '0',
+      orderId: 'NDX-PROMO-' + Date.now().toString(36).toUpperCase(),
+      activationCode: code,
+      date: new Date().toISOString(),
+      promoApplied: true
+    };
+    localStorage.setItem('nodex_last_order', JSON.stringify(order));
+    localStorage.setItem('nodex_session_email', email);
+    showDashboard();
+    showToast('Connexion réussie · accès ' + promoTier.toUpperCase());
+    return;
+  }
+
+  // 2. Vérification commande locale existante (matching email + code)
   const lastOrder = JSON.parse(localStorage.getItem('nodex_last_order') || '{}');
   const orderEmail = (lastOrder.email || '').toLowerCase();
-
-  if (!email) { showToast('Entre un email valide', 'error'); return; }
-
-  if (orderEmail && orderEmail === email) {
-    // Match exact avec une commande existante
+  const orderCode = (lastOrder.activationCode || '').toUpperCase();
+  if (orderEmail === email && (orderCode === code || !orderCode)) {
     localStorage.setItem('nodex_session_email', email);
     showDashboard();
     showToast('Connexion réussie');
-  } else if (orderEmail) {
-    // Email existant mais ne correspond pas
-    showToast('Aucune commande trouvée pour cet email', 'error');
-  } else {
-    // Aucune commande locale — mode démo
-    const demoOrder = {
-      email: email,
-      firstname: email.split('@')[0],
-      lastname: '',
-      country: 'France',
-      tier: 'essentiel',
-      price: '497',
-      orderId: 'NDX-DEMO-' + Date.now().toString(36).toUpperCase(),
-      activationCode: 'NDX-DEMO-XXXX-XXXX',
-      date: new Date().toISOString()
-    };
-    localStorage.setItem('nodex_last_order', JSON.stringify(demoOrder));
-    localStorage.setItem('nodex_session_email', email);
-    showDashboard();
-    showToast('Mode démo · commande Essentiel simulée');
+    return;
   }
+
+  // 3. Échec
+  showToast('Email ou code invalide', 'error');
 }
 
 function logout() {
@@ -398,7 +413,7 @@ function showDashboard() {
         <div class="resource-name">${res.name}</div>
         <div class="resource-desc">${res.desc}</div>
         <div class="resource-actions">
-          ${res.actions.map(a => `<a href="${isAccessible ? a.href : '#'}" class="resource-btn ${a.primary ? 'primary' : ''} ${!isAccessible ? 'disabled' : ''}" ${!isAccessible ? 'onclick="event.preventDefault();showToast(\'Tier supérieur requis\',\'error\');"' : ''}>${a.label}</a>`).join('')}
+          ${res.actions.map(a => `<a href="${isAccessible ? a.href : '#'}" ${a.download ? 'download' : ''} class="resource-btn ${a.primary ? 'primary' : ''} ${!isAccessible ? 'disabled' : ''}" ${!isAccessible ? 'onclick="event.preventDefault();showToast(\'Tier supérieur requis\',\'error\');"' : ''}>${a.label}</a>`).join('')}
         </div>
       </div>
     `;
