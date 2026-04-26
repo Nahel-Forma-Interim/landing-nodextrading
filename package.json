@@ -2,9 +2,10 @@
   "name": "nodex-trading-landing",
   "version": "1.0.0",
   "private": true,
+  "type": "module",
   "description": "Site officiel Nodex Trading + API auth/promo/download via Vercel Functions",
   "engines": {
-    "node": ">=18"
+    "node": "22.x"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.45.0"
