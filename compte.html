@@ -13,7 +13,6 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700;800;900&family=Geist+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <style>
 :root { --bg:#000; --fg:#fff; --muted:rgba(255,255,255,0.55); --subtle:rgba(255,255,255,0.3); --line:rgba(255,255,255,0.08); --line-strong:rgba(255,255,255,0.18); --accent:#6fa8ff; --green:#4ade80; --orange:#f59e0b; --gold:#f5d061; --red:#ef4444; --font-sans:'Geist',sans-serif; --font-mono:'Geist Mono',monospace; }
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -173,20 +172,19 @@ footer { position: relative; z-index: 10; padding: 40px 24px; text-align: center
   <div class="login-card">
     <div class="login-kicker">Espace membre</div>
     <h1 class="login-title">Accède à <em>tes ressources.</em></h1>
-    <p class="login-sub">Entre ton email — tu recevras un lien magique pour te connecter (pas de mot de passe à retenir).</p>
+    <p class="login-sub">Entre ton email + ton code d'activation reçu après commande.</p>
 
-    <form onsubmit="sendMagicLink(event)">
+    <form onsubmit="login(event)">
       <div class="input-group">
         <label class="input-label">Email</label>
         <input type="email" class="input-field" id="loginEmail" required placeholder="ton.email@exemple.com" autocomplete="email">
       </div>
-      <button type="submit" class="btn-login" id="loginBtn">Recevoir mon lien d'accès →</button>
+      <div class="input-group">
+        <label class="input-label">Code d'activation</label>
+        <input type="text" class="input-field" id="loginCode" required placeholder="Code reçu après achat" autocomplete="off" style="font-family:var(--font-mono); letter-spacing:1px; text-transform:uppercase;">
+      </div>
+      <button type="submit" class="btn-login" id="loginBtn">Accéder à mon compte →</button>
     </form>
-
-    <div class="login-info" id="loginInfo" style="display:none;">
-      <div class="login-info-title" style="color:var(--green);">✓ Email envoyé</div>
-      <div class="login-info-text">Vérifie ta boîte mail (et les spams). Clique sur le lien pour te connecter automatiquement.</div>
-    </div>
 
     <div class="login-footer">
       Pas encore de commande ? <a href="index.html">Découvrir les tiers</a>
@@ -292,45 +290,13 @@ footer { position: relative; z-index: 10; padding: 40px 24px; text-align: center
 
 <div class="toast" id="toast"></div>
 
-<!-- DEBUG PANEL (visible à l'écran pour diagnostic) -->
-<div id="debugPanel" style="display:block; position:fixed; bottom:0; left:0; right:0; max-height:50vh; overflow-y:auto; background:rgba(0,0,0,0.95); color:#fff; font-family:'Geist Mono',monospace; font-size:11px; padding:14px 20px; border-top:3px solid #6fa8ff; z-index:9999;">
-  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-    <strong style="color:#6fa8ff;">🔍 DEBUG PANEL — actif (BUILD 987fd5b+)</strong>
-    <button onclick="document.getElementById('debugPanel').style.display='none'" style="background:transparent; color:#fff; border:1px solid #444; border-radius:4px; padding:3px 8px; cursor:pointer; font-size:10px;">Fermer</button>
-  </div>
-  <div id="debugPanelLogs" style="max-height:calc(50vh - 50px); overflow-y:auto;"></div>
-</div>
-
-<!-- Capture toute erreur JS silencieuse -->
-<script>
-window.addEventListener('error', function(e) {
-  var dbg = document.getElementById('debugPanelLogs');
-  if (dbg) {
-    dbg.innerHTML += '<div style="color:#f87171; padding:4px 0;">❌ JS ERROR: ' + e.message + ' @ ' + (e.filename || '?') + ':' + (e.lineno || '?') + '</div>';
-    document.getElementById('debugPanel').style.display = 'block';
-  }
-});
-window.addEventListener('unhandledrejection', function(e) {
-  var dbg = document.getElementById('debugPanelLogs');
-  if (dbg) {
-    dbg.innerHTML += '<div style="color:#f87171; padding:4px 0;">❌ PROMISE REJECTION: ' + (e.reason && e.reason.message ? e.reason.message : e.reason) + '</div>';
-    document.getElementById('debugPanel').style.display = 'block';
-  }
-});
-// Marqueur pour confirmer que le JS s'exécute
-(function() {
-  var dbg = document.getElementById('debugPanelLogs');
-  if (dbg) {
-    dbg.innerHTML += '<div style="color:#4ade80; padding:4px 0;">✓ Script chargé · build 987fd5b · ' + new Date().toLocaleTimeString() + '</div>';
-  }
-})();
-</script>
+<!-- Debug panel retiré · mode production -->
 
 <script>
 const tierLabels = { essentiel: 'Essentiel', pro: 'Pro', elite: 'Elite' };
 
 const allResources = {
-  skill:     { name: 'Skill IA Nodex V5.3', desc: 'Le formateur IA personnel pour Claude Code. ZIP + guide d\'installation. Multi-POI + Fibo + checklist 22 points.', icon: 'A', tier: 'essentiel', actions: [{label:'Télécharger ZIP', action:'download-skill', primary:true}] },
+  skill:     { name: 'Skill IA Nodex V5.3', desc: 'Le formateur IA personnel pour Claude Code. ZIP + guide d\'installation. Multi-POI + Fibo + checklist 22 points.', icon: 'A', tier: 'essentiel', actions: [{label:'Télécharger ZIP', href:'downloads/nodex-v5.3.zip', primary:true, download:true}] },
   formation: { name: 'Formation vidéo V5.3', desc: 'Présentation 1h : pourquoi la stratégie marche (analogie carnet d\'ordres) + démo backtest live + installation Claude. Réservée aux acheteurs.', icon: 'V', tier: 'essentiel', actions: [{label:'Ouvrir la formation →', href:'/formation-nodex-v53.html', primary:true}] },
   journal:   { name: 'Journal de trading', desc: 'Ton journal Neldia connecté à ton compte. Trades, statistiques, suivi de progression.', icon: 'J', tier: 'essentiel', actions: [{label:'Ouvrir le journal →', href:'https://neldia-trading.vercel.app', target:'_blank', primary:true}] },
   pine:      { name: '7 indicateurs Pine Script v6', desc: 'Sweep · FVG · HTF Bias · Volume Spike · Liquidity Zones · Confirmation · Master (BUY A/A+). Copier-coller dans TradingView.', icon: 'B', tier: 'essentiel', actions: [{label:'Télécharger pack', href:'pine/'}] },
@@ -348,8 +314,18 @@ const tierAccess = {
   elite:     ['skill','formation','journal','pine','fiche','onboarding','telegram','watchlist','brief','bot']
 };
 
-let sbClient = null;
 let currentAccount = null;
+
+// Hash SHA-256 du code MARLDE (jamais en clair dans le source)
+const PROMO_HASHES = {
+  'bd7c5ae17e134d532d2d18c389543ca3789b4b8db5c9ac8aec99145fdf384c0c': 'elite' // Code partenaire
+};
+
+async function sha256(text) {
+  const buffer = new TextEncoder().encode(text);
+  const hashBuffer = await crypto.subtle.digest('SHA-256', buffer);
+  return Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, '0')).join('');
+}
 
 function showToast(msg, type) {
   const t = document.getElementById('toast');
@@ -359,126 +335,66 @@ function showToast(msg, type) {
   setTimeout(() => t.classList.remove('show'), 3200);
 }
 
-// Init Supabase client (charge la config depuis l'API)
-function debugLog(msg, type) {
-  const dbg = document.getElementById('debugPanel');
-  const logs = document.getElementById('debugPanelLogs');
-  if (!dbg || !logs) return;
-  const time = new Date().toLocaleTimeString();
-  const color = type === 'error' ? '#f87171' : type === 'ok' ? '#4ade80' : '#6fa8ff';
-  logs.innerHTML += `<div style="color:${color}; padding:4px 0;">[${time}] ${msg}</div>`;
-  dbg.style.display = 'block';
-  logs.scrollTop = logs.scrollHeight;
-}
-async function initSupabase() {
-  try {
-    debugLog('1. Vérification du SDK Supabase chargé…');
-    if (!window.supabase || !window.supabase.createClient) {
-      debugLog('❌ SDK Supabase NON chargé (CDN bloqué ?)', 'error');
-      showToast('SDK Supabase non chargé', 'error');
-      return false;
-    }
-    debugLog('✓ SDK Supabase OK', 'ok');
-    debugLog('2. Récupération config /api/config…');
-    const res = await fetch('/api/config');
-    debugLog('  status: ' + res.status);
-    const cfg = await res.json();
-    debugLog('  url: ' + (cfg.supabaseUrl || 'MANQUANT'));
-    debugLog('  anon key: ' + (cfg.supabaseAnonKey ? cfg.supabaseAnonKey.slice(0, 25) + '…' : 'MANQUANT'));
-    if (!cfg.supabaseUrl || !cfg.supabaseAnonKey) {
-      debugLog('❌ Variables env Vercel manquantes', 'error');
-      showToast('Configuration Supabase manquante côté serveur', 'error');
-      return false;
-    }
-    sbClient = window.supabase.createClient(cfg.supabaseUrl, cfg.supabaseAnonKey);
-    debugLog('✓ Client Supabase créé', 'ok');
-    return true;
-  } catch (e) {
-    debugLog('❌ Erreur initSupabase: ' + e.message, 'error');
-    console.error('initSupabase', e);
-    showToast('Impossible de se connecter au serveur', 'error');
-    return false;
-  }
-}
-
-// Envoie un magic link
-async function sendMagicLink(e) {
+// LOGIN par email + code (localStorage)
+async function login(e) {
   e.preventDefault();
-  debugLog('--- CLIC SUR BOUTON ENVOI MAGIC LINK ---');
   const email = document.getElementById('loginEmail').value.trim().toLowerCase();
-  debugLog('email saisi: ' + email);
-  if (!email) {
-    debugLog('❌ email vide', 'error');
-    showToast('Entre un email valide', 'error');
+  const code = document.getElementById('loginCode').value.trim().toUpperCase();
+  if (!email) { showToast('Entre un email valide', 'error'); return; }
+  if (!code) { showToast('Entre ton code d\'activation', 'error'); return; }
+
+  // 1. Vérifier code partenaire/promo via hash SHA-256
+  const codeHash = await sha256(code);
+  const promoTier = PROMO_HASHES[codeHash];
+  if (promoTier) {
+    const account = {
+      email,
+      tier: promoTier,
+      activationCode: code,
+      promoCodeUsed: true,
+      memberSince: new Date().toISOString(),
+      orderId: 'NDX-PROMO-' + Date.now().toString(36).toUpperCase()
+    };
+    localStorage.setItem('nodex_account', JSON.stringify(account));
+    localStorage.setItem('nodex_session_email', email);
+    showDashboard(account);
+    showToast('Connexion réussie · accès ' + promoTier.toUpperCase());
     return;
   }
-  const btn = document.getElementById('loginBtn');
-  btn.disabled = true;
-  btn.textContent = 'Envoi en cours…';
-  try {
-    debugLog('→ POST /api/auth/send-magic-link…');
-    const res = await fetch('/api/auth/send-magic-link', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email })
-    });
-    debugLog('  status: ' + res.status);
-    const data = await res.json();
-    debugLog('  response: ' + JSON.stringify(data));
-    if (!res.ok) {
-      debugLog('❌ erreur API: ' + (data.error || 'unknown'), 'error');
-      showToast(data.error || 'Erreur envoi', 'error');
-      btn.disabled = false;
-      btn.textContent = 'Recevoir mon lien d\'accès →';
-      return;
-    }
-    debugLog('✓ Email envoyé avec succès', 'ok');
-    document.getElementById('loginInfo').style.display = 'block';
-    btn.style.display = 'none';
-    showToast('Email envoyé · vérifie ta boîte');
-  } catch (e) {
-    debugLog('❌ Erreur réseau: ' + e.message, 'error');
-    showToast('Erreur réseau', 'error');
-    btn.disabled = false;
-    btn.textContent = 'Recevoir mon lien d\'accès →';
+
+  // 2. Vérifier compte existant en localStorage (matching email + code)
+  const existing = JSON.parse(localStorage.getItem('nodex_account') || 'null');
+  if (existing && existing.email === email && existing.activationCode === code) {
+    localStorage.setItem('nodex_session_email', email);
+    showDashboard(existing);
+    showToast('Connexion réussie');
+    return;
   }
+
+  // 3. Échec
+  showToast('Email ou code invalide', 'error');
 }
 
 // Logout
-async function logout() {
-  if (sbClient) await sbClient.auth.signOut();
+function logout() {
+  localStorage.removeItem('nodex_session_email');
   document.getElementById('loginView').style.display = 'flex';
   document.getElementById('dashboardView').classList.remove('show');
   document.getElementById('userPill').classList.remove('show');
   document.getElementById('logoutBtn').classList.remove('show');
   document.getElementById('loginEmail').value = '';
-  document.getElementById('loginInfo').style.display = 'none';
-  document.getElementById('loginBtn').style.display = '';
-  document.getElementById('loginBtn').disabled = false;
-  document.getElementById('loginBtn').textContent = 'Recevoir mon lien d\'accès →';
+  document.getElementById('loginCode').value = '';
   currentAccount = null;
   showToast('Déconnecté');
 }
 
-// Load account info via API
-async function loadAccount() {
-  if (!sbClient) return null;
-  const { data: { session } } = await sbClient.auth.getSession();
+// Load account
+function loadAccount() {
+  const session = localStorage.getItem('nodex_session_email');
   if (!session) return null;
-  try {
-    const res = await fetch('/api/account/me', {
-      headers: { 'Authorization': 'Bearer ' + session.access_token }
-    });
-    const data = await res.json();
-    if (!res.ok) {
-      showToast(data.error || 'Compte non trouvé', 'error');
-      return null;
-    }
-    return { ...data.account, accessToken: session.access_token, userEmail: session.user.email };
-  } catch (e) {
-    console.error('loadAccount', e);
-    return null;
-  }
+  const account = JSON.parse(localStorage.getItem('nodex_account') || 'null');
+  if (!account || account.email !== session) return null;
+  return account;
 }
 
 // Show dashboard
@@ -524,11 +440,9 @@ function showDashboard(account) {
     const isAccessible = accessible.includes(key);
     const isComing = res.status === 'coming';
     const actionsHtml = res.actions.map(a => {
-      if (a.action === 'download-skill') {
-        return `<a href="#" class="resource-btn ${a.primary ? 'primary' : ''} ${!isAccessible ? 'disabled' : ''}" onclick="event.preventDefault();${isAccessible ? 'downloadSkill()' : 'showToast(\'Tier supérieur requis\',\'error\')'}">${a.label}</a>`;
-      }
       const tgt = a.target ? `target="${a.target}"` : '';
-      return `<a href="${isAccessible ? a.href : '#'}" ${tgt} class="resource-btn ${a.primary ? 'primary' : ''} ${!isAccessible ? 'disabled' : ''}" ${!isAccessible ? 'onclick="event.preventDefault();showToast(\'Tier supérieur requis\',\'error\');"' : ''}>${a.label}</a>`;
+      const dl = a.download ? 'download' : '';
+      return `<a href="${isAccessible ? a.href : '#'}" ${tgt} ${dl} class="resource-btn ${a.primary ? 'primary' : ''} ${!isAccessible ? 'disabled' : ''}" ${!isAccessible ? 'onclick="event.preventDefault();showToast(\'Tier supérieur requis\',\'error\');"' : ''}>${a.label}</a>`;
     }).join('');
     return `
       <div class="resource-card ${!isAccessible ? 'locked' : ''}">
@@ -561,135 +475,32 @@ function showDashboard(account) {
   }
 }
 
-// Download skill via API (URL signée temporaire)
-async function downloadSkill() {
-  if (!currentAccount) return;
-  showToast('Génération du lien…');
-  try {
-    const res = await fetch('/api/download/skill', {
-      headers: { 'Authorization': 'Bearer ' + currentAccount.accessToken }
-    });
-    const data = await res.json();
-    if (!res.ok) {
-      showToast(data.error || 'Erreur', 'error');
-      return;
-    }
-    // Force le téléchargement
-    const a = document.createElement('a');
-    a.href = data.url;
-    a.download = data.filename;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    showToast('Téléchargement démarré');
-  } catch (e) {
-    showToast('Erreur réseau', 'error');
-  }
-}
-
-// Redeem promo code
+// Redeem promo code (depuis le dashboard, applique un code à un compte existant)
 async function redeemPromoCode() {
   if (!currentAccount) return;
   const code = document.getElementById('promoCodeInput').value.trim().toUpperCase();
   if (!code) { showToast('Entre un code', 'error'); return; }
-  const btn = document.getElementById('promoBtn');
-  btn.disabled = true;
-  btn.textContent = 'Vérification…';
-  try {
-    const res = await fetch('/api/auth/redeem-code', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + currentAccount.accessToken
-      },
-      body: JSON.stringify({ code })
-    });
-    const data = await res.json();
-    if (!res.ok) {
-      showToast(data.error || 'Code invalide', 'error');
-      btn.disabled = false;
-      btn.textContent = 'Activer le code';
-      return;
-    }
-    showToast(data.message || 'Code activé');
-    // Reload account
-    const acc = await loadAccount();
-    if (acc) showDashboard(acc);
-  } catch (e) {
-    showToast('Erreur réseau', 'error');
-    btn.disabled = false;
-    btn.textContent = 'Activer le code';
+
+  const codeHash = await sha256(code);
+  const promoTier = PROMO_HASHES[codeHash];
+  if (!promoTier) {
+    showToast('Code invalide', 'error');
+    return;
   }
+
+  // Update account
+  currentAccount.tier = promoTier;
+  currentAccount.activationCode = code;
+  currentAccount.promoCodeUsed = true;
+  localStorage.setItem('nodex_account', JSON.stringify(currentAccount));
+  showDashboard(currentAccount);
+  showToast('Code valide · accès ' + promoTier.toUpperCase() + ' débloqué');
 }
 
-// Boot
-(async function boot() {
-  debugLog('Boot · URL: ' + window.location.href);
-  debugLog('Hash: ' + (window.location.hash || '(vide)'));
-  debugLog('Search: ' + (window.location.search || '(vide)'));
-
-  const ok = await initSupabase();
-  if (!ok) return;
-
-  // Détection manuelle du token dans l'URL (au cas où le SDK n'auto-detect pas)
-  const hash = window.location.hash || '';
-  const query = window.location.search || '';
-  if (hash.includes('access_token=') || query.includes('code=')) {
-    debugLog('🔑 Token détecté dans URL · établissement session…');
-    try {
-      // PKCE flow (code dans query)
-      if (query.includes('code=')) {
-        const params = new URLSearchParams(query);
-        const code = params.get('code');
-        const { data, error } = await sbClient.auth.exchangeCodeForSession(code);
-        if (error) {
-          debugLog('❌ exchangeCodeForSession: ' + error.message, 'error');
-        } else {
-          debugLog('✓ Session établie via PKCE', 'ok');
-          // Nettoie l'URL
-          window.history.replaceState({}, document.title, window.location.pathname);
-        }
-      }
-      // Implicit flow (token dans hash)
-      else if (hash.includes('access_token=')) {
-        const params = new URLSearchParams(hash.slice(1));
-        const access_token = params.get('access_token');
-        const refresh_token = params.get('refresh_token');
-        if (access_token && refresh_token) {
-          const { data, error } = await sbClient.auth.setSession({ access_token, refresh_token });
-          if (error) {
-            debugLog('❌ setSession: ' + error.message, 'error');
-          } else {
-            debugLog('✓ Session établie via implicit', 'ok');
-            window.history.replaceState({}, document.title, window.location.pathname);
-          }
-        }
-      }
-    } catch (e) {
-      debugLog('❌ Erreur détection token: ' + e.message, 'error');
-    }
-  }
-
-  // Si on revient d'un magic link, Supabase parse l'URL automatiquement (ou via setSession ci-dessus)
-  const acc = await loadAccount();
-  if (acc) {
-    debugLog('✓ Compte chargé · tier: ' + acc.tier, 'ok');
-    showDashboard(acc);
-  } else {
-    debugLog('Pas de session active · affichage login');
-  }
-
-  // Listen aux changements d'auth (login après magic link)
-  sbClient.auth.onAuthStateChange(async (event, session) => {
-    debugLog('🔔 Auth state: ' + event);
-    if (event === 'SIGNED_IN' && session) {
-      const a = await loadAccount();
-      if (a) showDashboard(a);
-    }
-    if (event === 'SIGNED_OUT') {
-      logout();
-    }
-  });
+// Auto-login si déjà connecté
+(function boot() {
+  const acc = loadAccount();
+  if (acc) showDashboard(acc);
 })();
 
 // Mouse parallax
