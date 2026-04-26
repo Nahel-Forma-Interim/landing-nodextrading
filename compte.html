@@ -348,7 +348,7 @@ const tierAccess = {
   elite:     ['skill','formation','journal','pine','fiche','onboarding','telegram','watchlist','brief','bot']
 };
 
-let supabase = null;
+let sbClient = null;
 let currentAccount = null;
 
 function showToast(msg, type) {
@@ -390,7 +390,7 @@ async function initSupabase() {
       showToast('Configuration Supabase manquante côté serveur', 'error');
       return false;
     }
-    supabase = window.supabase.createClient(cfg.supabaseUrl, cfg.supabaseAnonKey);
+    sbClient = window.supabase.createClient(cfg.supabaseUrl, cfg.supabaseAnonKey);
     debugLog('✓ Client Supabase créé', 'ok');
     return true;
   } catch (e) {
@@ -446,7 +446,7 @@ async function sendMagicLink(e) {
 
 // Logout
 async function logout() {
-  if (supabase) await supabase.auth.signOut();
+  if (sbClient) await sbClient.auth.signOut();
   document.getElementById('loginView').style.display = 'flex';
   document.getElementById('dashboardView').classList.remove('show');
   document.getElementById('userPill').classList.remove('show');
@@ -462,8 +462,8 @@ async function logout() {
 
 // Load account info via API
 async function loadAccount() {
-  if (!supabase) return null;
-  const { data: { session } } = await supabase.auth.getSession();
+  if (!sbClient) return null;
+  const { data: { session } } = await sbClient.auth.getSession();
   if (!session) return null;
   try {
     const res = await fetch('/api/account/me', {
@@ -630,7 +630,7 @@ async function redeemPromoCode() {
   const acc = await loadAccount();
   if (acc) showDashboard(acc);
   // Listen aux changements d'auth (login après magic link)
-  supabase.auth.onAuthStateChange(async (event, session) => {
+  sbClient.auth.onAuthStateChange(async (event, session) => {
     if (event === 'SIGNED_IN' && session) {
       const a = await loadAccount();
       if (a) showDashboard(a);
