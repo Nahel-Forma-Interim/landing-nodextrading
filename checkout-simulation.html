@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#000000">
-<title>Checkout simulation — Nodex Trading</title>
+<title>Checkout — Nodex Trading</title>
 <link rel="icon" type="image/x-icon" href="favicon.ico">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
 <link rel="icon" type="image/png" sizes="16x16" href="favicon-16.png">
@@ -67,6 +67,26 @@ nav.top { position: fixed; top: 50px; left: 0; right: 0; z-index: 100; padding: 
 .terms-text { font-size: 11px; color: var(--subtle); text-align: center; margin-top: 14px; line-height: 1.5; }
 .terms-text a { color: var(--muted); text-decoration: underline; }
 
+/* ═══ PROMO CODE BLOCK (intégré subtilement) ═══ */
+.promo-toggle { font-size: 12px; color: var(--muted); cursor: pointer; margin: 14px 0 8px; display: inline-flex; align-items: center; gap: 6px; transition: color 0.2s; user-select: none; }
+.promo-toggle:hover { color: var(--accent); }
+.promo-toggle::before { content: '+'; font-family: var(--font-mono); font-weight: 700; transition: transform 0.2s; }
+.promo-toggle.open::before { content: '−'; }
+.promo-block { display: none; padding: 14px; background: rgba(255,255,255,0.02); border: 1px solid var(--line); border-radius: 10px; margin-bottom: 18px; animation: slideDown 0.25s ease-out; }
+.promo-block.visible { display: block; }
+@keyframes slideDown { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: translateY(0); } }
+.promo-input-row { display: flex; gap: 8px; }
+.promo-input { flex: 1; padding: 10px 12px; background: rgba(255,255,255,0.04); border: 1px solid var(--line); border-radius: 8px; color: var(--fg); font-family: var(--font-mono); font-size: 13px; letter-spacing: 1px; text-transform: uppercase; }
+.promo-input:focus { outline: none; border-color: var(--accent); }
+.promo-btn { padding: 10px 16px; background: rgba(111,168,255,0.15); border: 1px solid rgba(111,168,255,0.3); border-radius: 8px; color: var(--accent); font-family: var(--font-mono); font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.2s; letter-spacing: 0.5px; }
+.promo-btn:hover { background: rgba(111,168,255,0.25); }
+.promo-feedback { margin-top: 10px; font-size: 12px; font-family: var(--font-mono); padding: 8px 12px; border-radius: 6px; display: none; }
+.promo-feedback.success { display: block; background: rgba(74,222,128,0.1); color: var(--green); border: 1px solid rgba(74,222,128,0.3); }
+.promo-feedback.error { display: block; background: rgba(248,113,113,0.1); color: #f87171; border: 1px solid rgba(248,113,113,0.3); }
+.summary-promo-line { display: flex; justify-content: space-between; padding: 10px 0; font-size: 14px; color: var(--green); border-bottom: 1px solid var(--line); }
+.summary-promo-line.hidden { display: none; }
+.price-strikethrough { text-decoration: line-through; opacity: 0.4; font-size: 18px; margin-right: 8px; }
+
 .summary { background: linear-gradient(135deg, rgba(111,168,255,0.08), rgba(180,200,255,0.03)); border: 1px solid rgba(111,168,255,0.2); border-radius: 24px; padding: 36px; backdrop-filter: blur(10px); position: sticky; top: 140px; height: fit-content; }
 .summary-title { font-size: 11px; font-family: var(--font-mono); color: var(--accent); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 20px; }
 .summary-tier { font-size: 32px; font-weight: 400; letter-spacing: -1px; margin-bottom: 24px; }
@@ -95,7 +115,7 @@ nav.top { position: fixed; top: 50px; left: 0; right: 0; z-index: 100; padding: 
 </head>
 <body>
 
-<div class="simulation-banner">⚠ Mode simulation · Aucun paiement réel · Données fictives</div>
+<!-- Simulation banner removed -->
 
 <div class="bg-layer glows"></div>
 <div class="bg-layer stars"></div>
@@ -142,25 +162,29 @@ nav.top { position: fixed; top: 50px; left: 0; right: 0; z-index: 100; padding: 
 
       <div class="form-section">
         <div class="form-section-title">Paiement</div>
-        <div class="payment-method">
-          <div class="payment-method-title">Mode simulation</div>
-          <div class="payment-method-text">Aucune carte n'est demandée. En cliquant sur "Confirmer la commande", tu seras redirigé vers la page de confirmation comme si le paiement avait réussi. C'est un test du parcours complet — Stripe sera branché plus tard.</div>
-        </div>
-
         <div class="input-group">
-          <label class="input-label">Numéro de carte (désactivé en simulation)</label>
-          <input type="text" class="input-field" placeholder="•••• •••• •••• ••••" disabled style="opacity: 0.4;">
+          <label class="input-label">Numéro de carte</label>
+          <input type="text" class="input-field" placeholder="•••• •••• •••• ••••" autocomplete="cc-number">
         </div>
         <div class="input-grid">
           <div class="input-group">
             <label class="input-label">Expiration</label>
-            <input type="text" class="input-field" placeholder="MM/AA" disabled style="opacity: 0.4;">
+            <input type="text" class="input-field" placeholder="MM/AA" autocomplete="cc-exp">
           </div>
           <div class="input-group">
             <label class="input-label">CVC</label>
-            <input type="text" class="input-field" placeholder="•••" disabled style="opacity: 0.4;">
+            <input type="text" class="input-field" placeholder="•••" autocomplete="cc-csc">
           </div>
         </div>
+      </div>
+
+      <div class="promo-toggle" onclick="togglePromo()" id="promoToggle">Code promo / partenaire</div>
+      <div class="promo-block" id="promoBlock">
+        <div class="promo-input-row">
+          <input type="text" class="promo-input" id="promoInput" placeholder="Saisir le code" autocomplete="off">
+          <button type="button" class="promo-btn" onclick="applyPromo()">Appliquer</button>
+        </div>
+        <div class="promo-feedback" id="promoFeedback"></div>
       </div>
 
       <button type="submit" class="btn-pay" id="payBtn">
@@ -180,10 +204,14 @@ nav.top { position: fixed; top: 50px; left: 0; right: 0; z-index: 100; padding: 
     <div class="summary-line"><span class="summary-line-label">Type</span><span class="summary-line-value">Paiement unique</span></div>
     <div class="summary-line"><span class="summary-line-label">Accès</span><span class="summary-line-value">Immédiat (email)</span></div>
     <div class="summary-line"><span class="summary-line-label">Garantie</span><span class="summary-line-value">14 jours</span></div>
+    <div class="summary-promo-line hidden" id="promoLine">
+      <span>✓ Code partenaire appliqué</span>
+      <span id="promoDiscount">−100 %</span>
+    </div>
 
     <div class="summary-total">
       <span class="summary-total-label">Total</span>
-      <span class="summary-total-amount" id="totalAmount">497€</span>
+      <span class="summary-total-amount" id="totalAmount"><span id="originalPrice" style="display:none;" class="price-strikethrough"></span><span id="finalPrice">497€</span></span>
     </div>
 
     <div class="summary-includes">
@@ -225,15 +253,111 @@ const tierData = {
   ]}
 };
 
+let activeTier = tier;
+let activePrice = parseFloat(price);
+let activePromo = null;
+
 const data = tierData[tier] || tierData.essentiel;
 document.getElementById('tierName').innerHTML = `Nodex <em>${data.name}</em>`;
 document.getElementById('tierLabel').textContent = data.label;
-document.getElementById('totalAmount').textContent = price + '€';
+document.getElementById('finalPrice').textContent = price + '€';
 document.getElementById('includesList').innerHTML = data.items.map(i =>
   `<div class="summary-includes-item"><span class="summary-includes-item-check">✓</span><span>${i}</span></div>`
 ).join('');
 
+// ═══════════════════════════════════════════════
+// PROMO CODE — Vérification SHA-256 (code en clair JAMAIS exposé)
+// Le code n'est connu que par le propriétaire. Le hash SHA-256 ci-dessous
+// est irréversible : impossible de retrouver le code depuis le hash.
+// ═══════════════════════════════════════════════
+const KNOWN_PROMO_HASHES = {
+  // Hash SHA-256 → tier débloqué + réduction
+  'bd7c5ae17e134d532d2d18c389543ca3789b4b8db5c9ac8aec99145fdf384c0c': { tier: 'elite', discount: 100, label: 'Code partenaire' }
+};
+
+async function sha256(message) {
+  const buffer = new TextEncoder().encode(message);
+  const hashBuffer = await crypto.subtle.digest('SHA-256', buffer);
+  return Array.from(new Uint8Array(hashBuffer))
+    .map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
+function togglePromo() {
+  const block = document.getElementById('promoBlock');
+  const toggle = document.getElementById('promoToggle');
+  block.classList.toggle('visible');
+  toggle.classList.toggle('open');
+  if (block.classList.contains('visible')) {
+    setTimeout(() => document.getElementById('promoInput').focus(), 100);
+  }
+}
+
+async function applyPromo() {
+  const code = document.getElementById('promoInput').value.trim().toUpperCase();
+  const feedback = document.getElementById('promoFeedback');
+  if (!code) {
+    feedback.className = 'promo-feedback error';
+    feedback.textContent = '⚠ Saisis un code.';
+    return;
+  }
+
+  const hash = await sha256(code);
+  const match = KNOWN_PROMO_HASHES[hash];
+
+  if (match) {
+    activePromo = match;
+    activeTier = match.tier;
+    activePrice = parseFloat(price) * (1 - match.discount / 100);
+
+    // Met à jour le tier visuel si différent
+    if (activeTier !== tier) {
+      const newData = tierData[activeTier];
+      document.getElementById('tierName').innerHTML = `Nodex <em>${newData.name}</em>`;
+      document.getElementById('tierLabel').textContent = newData.label + ' · code promo';
+      document.getElementById('includesList').innerHTML = newData.items.map(i =>
+        `<div class="summary-includes-item"><span class="summary-includes-item-check">✓</span><span>${i}</span></div>`
+      ).join('');
+    }
+
+    // Affiche le prix barré + nouveau prix
+    if (match.discount === 100) {
+      document.getElementById('originalPrice').textContent = price + '€';
+      document.getElementById('originalPrice').style.display = 'inline';
+      document.getElementById('finalPrice').textContent = '0€';
+      document.getElementById('finalPrice').style.color = 'var(--green)';
+    } else {
+      document.getElementById('originalPrice').textContent = price + '€';
+      document.getElementById('originalPrice').style.display = 'inline';
+      document.getElementById('finalPrice').textContent = activePrice + '€';
+    }
+
+    document.getElementById('promoLine').classList.remove('hidden');
+    document.getElementById('promoDiscount').textContent = '−' + match.discount + ' %';
+
+    feedback.className = 'promo-feedback success';
+    feedback.textContent = `✓ Code valide · accès ${match.tier.toUpperCase()} débloqué`;
+
+    document.getElementById('promoInput').disabled = true;
+    document.querySelector('.promo-btn').style.display = 'none';
+
+    // Si c'est gratuit, on peut update le bouton pour le rendre plus engageant
+    if (match.discount === 100) {
+      document.querySelector('.pay-text').textContent = 'Activer mon accès gratuit →';
+    }
+  } else {
+    feedback.className = 'promo-feedback error';
+    feedback.textContent = '✗ Code invalide.';
+    setTimeout(() => { feedback.className = 'promo-feedback'; feedback.textContent = ''; }, 3500);
+  }
+}
+
+document.getElementById('promoInput').addEventListener('keypress', e => {
+  if (e.key === 'Enter') { e.preventDefault(); applyPromo(); }
+});
+
 function processSimulatedPayment(e) {
+  // Note interne : pour passer en vrai paiement Stripe, brancher l'API ici.
+  // Tant que pas branché, on redirige vers la page de confirmation.
   e.preventDefault();
   const btn = document.getElementById('payBtn');
   btn.classList.add('loading');
@@ -241,8 +365,11 @@ function processSimulatedPayment(e) {
 
   // Sauvegarde des infos pour la confirmation
   const orderInfo = {
-    tier: tier,
-    price: price,
+    tier: activeTier,
+    price: activePrice,
+    originalPrice: parseFloat(price),
+    promoApplied: activePromo ? true : false,
+    promoDiscount: activePromo ? activePromo.discount : 0,
     email: document.getElementById('email').value,
     firstname: document.getElementById('firstname').value,
     lastname: document.getElementById('lastname').value,
@@ -252,10 +379,11 @@ function processSimulatedPayment(e) {
   };
   localStorage.setItem('nodex_last_order', JSON.stringify(orderInfo));
 
-  // Simule un délai de paiement
+  // Simule un délai de paiement (plus court si gratuit)
+  const delay = activePromo && activePromo.discount === 100 ? 800 : 1800;
   setTimeout(() => {
-    window.location.href = `confirmation-simulation.html?tier=${tier}&price=${price}&order=${orderInfo.orderId}`;
-  }, 1800);
+    window.location.href = `confirmation-simulation.html?tier=${activeTier}&price=${activePrice}&order=${orderInfo.orderId}`;
+  }, delay);
 }
 </script>
 </body>
