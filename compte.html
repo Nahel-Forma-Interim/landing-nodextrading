@@ -13,6 +13,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700;800;900&family=Geist+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <style>
 :root { --bg:#000; --fg:#fff; --muted:rgba(255,255,255,0.55); --subtle:rgba(255,255,255,0.3); --line:rgba(255,255,255,0.08); --line-strong:rgba(255,255,255,0.18); --accent:#6fa8ff; --green:#4ade80; --orange:#f59e0b; --gold:#f5d061; --red:#ef4444; --font-sans:'Geist',sans-serif; --font-mono:'Geist Mono',monospace; }
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -172,19 +173,20 @@ footer { position: relative; z-index: 10; padding: 40px 24px; text-align: center
   <div class="login-card">
     <div class="login-kicker">Espace membre</div>
     <h1 class="login-title">Accède à <em>tes ressources.</em></h1>
-    <p class="login-sub">Entre ton email + ton code d'activation reçu après commande.</p>
+    <p class="login-sub">Entre ton email — tu recevras un lien magique pour te connecter (pas de mot de passe à retenir).</p>
 
-    <form onsubmit="login(event)">
+    <form onsubmit="sendMagicLink(event)">
       <div class="input-group">
-        <label class="input-label">Email de commande</label>
+        <label class="input-label">Email</label>
         <input type="email" class="input-field" id="loginEmail" required placeholder="ton.email@exemple.com" autocomplete="email">
       </div>
-      <div class="input-group">
-        <label class="input-label">Code d'activation</label>
-        <input type="text" class="input-field" id="loginCode" required placeholder="Code reçu par email" autocomplete="off" style="font-family:var(--font-mono); letter-spacing:1px; text-transform:uppercase;">
-      </div>
-      <button type="submit" class="btn-login">Accéder à mon compte →</button>
+      <button type="submit" class="btn-login" id="loginBtn">Recevoir mon lien d'accès →</button>
     </form>
+
+    <div class="login-info" id="loginInfo" style="display:none;">
+      <div class="login-info-title" style="color:var(--green);">✓ Email envoyé</div>
+      <div class="login-info-text">Vérifie ta boîte mail (et les spams). Clique sur le lien pour te connecter automatiquement.</div>
+    </div>
 
     <div class="login-footer">
       Pas encore de commande ? <a href="index.html">Découvrir les tiers</a>
@@ -267,6 +269,21 @@ footer { position: relative; z-index: 10; padding: 40px 24px; text-align: center
     </div>
   </div>
 
+  <!-- Promo code redeem (si pas encore utilisé) -->
+  <div class="section" id="promoSection">
+    <div class="section-head">
+      <div>
+        <div class="section-kicker">03 · Code partenaire</div>
+        <h2 class="section-title-h2">As-tu un code de réduction ?</h2>
+      </div>
+    </div>
+    <div class="order-card" style="display:flex; gap:12px; flex-wrap:wrap; align-items:center;">
+      <input type="text" class="input-field" id="promoCodeInput" placeholder="Saisir le code (ex: PROMO-XXX)" style="flex:1; min-width:240px; font-family:var(--font-mono); letter-spacing:1px; text-transform:uppercase;">
+      <button class="btn-login" id="promoBtn" onclick="redeemPromoCode()" style="padding:13px 24px; width:auto;">Activer le code</button>
+    </div>
+    <p style="font-size:12px; color:var(--muted); margin-top:8px;">Le code peut upgrade ton tier. Un seul code par compte.</p>
+  </div>
+
 </div>
 
 <footer>
@@ -279,125 +296,156 @@ footer { position: relative; z-index: 10; padding: 40px 24px; text-align: center
 const tierLabels = { essentiel: 'Essentiel', pro: 'Pro', elite: 'Elite' };
 
 const allResources = {
-  skill: { name: 'Skill IA Nodex V5.3', desc: 'Le formateur IA personnel pour Claude Code. ZIP + guide d\'installation. Multi-POI + Fibo + checklist 22 points.', icon: 'A', tier: 'essentiel', actions: [{label:'Télécharger ZIP', href:'downloads/nodex-v5.3.zip', primary:true, download:true}] },
-  formation: { name: 'Formation vidéo V5.3', desc: 'Présentation 1h : pourquoi la stratégie marche (analogie carnet d\'ordres) + démo backtest live + installation Claude. Réservée aux acheteurs.', icon: 'V', tier: 'essentiel', actions: [{label:'Ouvrir la formation →', href:'formation-nodex-v53.html', primary:true}] },
-  pine: { name: '7 indicateurs Pine Script v6', desc: 'Sweep · FVG · HTF Bias · Volume Spike · Liquidity Zones · Confirmation · Master (BUY A/A+). Copier-coller dans TradingView.', icon: 'B', tier: 'essentiel', actions: [{label:'Télécharger pack', href:'pine/'}] },
-  fiche: { name: 'Fiche interactive cockpit', desc: 'Checklist 22 points V5.3, calculateur 1 %, journal live, 10 règles psycho. Tout reste local.', icon: 'C', tier: 'essentiel', actions: [{label:'Ouvrir la fiche', href:'fiche-nodex-v5.2.html', primary:true}] },
-  onboarding: { name: 'Onboarding Nodex', desc: 'Parcours guidé 7 étapes pour démarrer correctement. Sauvegarde ta progression.', icon: 'O', tier: 'essentiel', actions: [{label:'Lancer onboarding →', href:'onboarding.html', primary:true}] },
-  telegram: { name: 'Telegram positions Nahel', desc: 'Channel privé en lecture : zones surveillées, entrées potentielles, résultats. 5-15 msg/jour.', icon: 'TG', tier: 'pro', status: 'coming', actions: [{label:'Liste prioritaire', href:'#telegram-invite'}] },
+  skill:     { name: 'Skill IA Nodex V5.3', desc: 'Le formateur IA personnel pour Claude Code. ZIP + guide d\'installation. Multi-POI + Fibo + checklist 22 points.', icon: 'A', tier: 'essentiel', actions: [{label:'Télécharger ZIP', action:'download-skill', primary:true}] },
+  formation: { name: 'Formation vidéo V5.3', desc: 'Présentation 1h : pourquoi la stratégie marche (analogie carnet d\'ordres) + démo backtest live + installation Claude. Réservée aux acheteurs.', icon: 'V', tier: 'essentiel', actions: [{label:'Ouvrir la formation →', href:'/formation-nodex-v53.html', primary:true}] },
+  journal:   { name: 'Journal de trading', desc: 'Ton journal Neldia connecté à ton compte. Trades, statistiques, suivi de progression.', icon: 'J', tier: 'essentiel', actions: [{label:'Ouvrir le journal →', href:'https://neldia-trading.vercel.app', target:'_blank', primary:true}] },
+  pine:      { name: '7 indicateurs Pine Script v6', desc: 'Sweep · FVG · HTF Bias · Volume Spike · Liquidity Zones · Confirmation · Master (BUY A/A+). Copier-coller dans TradingView.', icon: 'B', tier: 'essentiel', actions: [{label:'Télécharger pack', href:'pine/'}] },
+  fiche:     { name: 'Fiche interactive cockpit', desc: 'Checklist 22 points V5.3, calculateur 1 %, journal live, 10 règles psycho. Tout reste local.', icon: 'C', tier: 'essentiel', actions: [{label:'Ouvrir la fiche', href:'fiche-nodex-v5.2.html', primary:true}] },
+  onboarding:{ name: 'Onboarding Nodex', desc: 'Parcours guidé 7 étapes pour démarrer correctement. Sauvegarde ta progression.', icon: 'O', tier: 'essentiel', actions: [{label:'Lancer onboarding →', href:'onboarding.html', primary:true}] },
+  telegram:  { name: 'Telegram positions Nahel', desc: 'Channel privé en lecture : zones surveillées, entrées potentielles, résultats. 5-15 msg/jour.', icon: 'TG', tier: 'pro', status: 'coming', actions: [{label:'Liste prioritaire', href:'#telegram-invite'}] },
   watchlist: { name: 'Watchlist crypto privée', desc: 'Liste des alts validés par Nahel chaque dimanche. ARB + PENDLE focus actuel. Format TradingView importable.', icon: 'WL', tier: 'pro', status: 'coming', actions: [{label:'Lien d\'accès', href:'#watchlist-tv'}] },
-  brief: { name: 'Brief weekly Nahel', desc: 'Note hebdomadaire : ce qui a fonctionné, les erreurs détectées, les ajustements méthode.', icon: 'WK', tier: 'pro', status: 'coming', actions: [{label:'Voir les briefs', href:'#briefs'}] },
-  bot: { name: 'Bot Auto Scanner Telegram', desc: 'Scan ta watchlist 24/7 et t\'envoie un signal complet quand un setup Sweep+FVG est détecté.', icon: 'BOT', tier: 'elite', status: 'coming', actions: [{label:'Liste prioritaire', href:'#bot-waitlist'}] }
+  brief:     { name: 'Brief weekly Nahel', desc: 'Note hebdomadaire : ce qui a fonctionné, les erreurs détectées, les ajustements méthode.', icon: 'WK', tier: 'pro', status: 'coming', actions: [{label:'Voir les briefs', href:'#briefs'}] },
+  bot:       { name: 'Bot Auto Scanner Telegram', desc: 'Scan ta watchlist 24/7 et t\'envoie un signal complet quand un setup Sweep+FVG est détecté.', icon: 'BOT', tier: 'elite', status: 'coming', actions: [{label:'Liste prioritaire', href:'#bot-waitlist'}] }
 };
 
 const tierAccess = {
-  essentiel: ['skill','formation','pine','fiche','onboarding'],
-  pro: ['skill','formation','pine','fiche','onboarding','telegram','watchlist','brief'],
-  elite: ['skill','formation','pine','fiche','onboarding','telegram','watchlist','brief','bot']
+  essentiel: ['skill','formation','journal','pine','fiche','onboarding'],
+  pro:       ['skill','formation','journal','pine','fiche','onboarding','telegram','watchlist','brief'],
+  elite:     ['skill','formation','journal','pine','fiche','onboarding','telegram','watchlist','brief','bot']
 };
 
-// Hash SHA-256 du code MARLDE (jamais en clair)
-const PROMO_HASHES = {
-  'bd7c5ae17e134d532d2d18c389543ca3789b4b8db5c9ac8aec99145fdf384c0c': 'elite' // Code partenaire
-};
-
-async function sha256(text) {
-  const buffer = new TextEncoder().encode(text);
-  const hashBuffer = await crypto.subtle.digest('SHA-256', buffer);
-  return Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, '0')).join('');
-}
+let supabase = null;
+let currentAccount = null;
 
 function showToast(msg, type) {
   const t = document.getElementById('toast');
   t.textContent = msg;
   t.className = 'toast' + (type === 'error' ? ' error' : '');
   t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 2800);
+  setTimeout(() => t.classList.remove('show'), 3200);
 }
 
-async function login(e) {
+// Init Supabase client (charge la config depuis l'API)
+async function initSupabase() {
+  try {
+    const res = await fetch('/api/config');
+    const cfg = await res.json();
+    if (!cfg.supabaseUrl || !cfg.supabaseAnonKey) {
+      showToast('Configuration Supabase manquante côté serveur', 'error');
+      return false;
+    }
+    supabase = window.supabase.createClient(cfg.supabaseUrl, cfg.supabaseAnonKey);
+    return true;
+  } catch (e) {
+    console.error('initSupabase', e);
+    showToast('Impossible de se connecter au serveur', 'error');
+    return false;
+  }
+}
+
+// Envoie un magic link
+async function sendMagicLink(e) {
   e.preventDefault();
   const email = document.getElementById('loginEmail').value.trim().toLowerCase();
-  const code = document.getElementById('loginCode').value.trim().toUpperCase();
   if (!email) { showToast('Entre un email valide', 'error'); return; }
-  if (!code) { showToast('Entre ton code d\'activation', 'error'); return; }
-
-  // 1. Vérification code partenaire/promo (hash SHA-256, irréversible)
-  const codeHash = await sha256(code);
-  const promoTier = PROMO_HASHES[codeHash];
-  if (promoTier) {
-    const order = {
-      email, firstname: email.split('@')[0], lastname: '', country: 'France',
-      tier: promoTier, price: '0',
-      orderId: 'NDX-PROMO-' + Date.now().toString(36).toUpperCase(),
-      activationCode: code,
-      date: new Date().toISOString(),
-      promoApplied: true
-    };
-    localStorage.setItem('nodex_last_order', JSON.stringify(order));
-    localStorage.setItem('nodex_session_email', email);
-    showDashboard();
-    showToast('Connexion réussie · accès ' + promoTier.toUpperCase());
-    return;
+  const btn = document.getElementById('loginBtn');
+  btn.disabled = true;
+  btn.textContent = 'Envoi en cours…';
+  try {
+    const res = await fetch('/api/auth/send-magic-link', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email })
+    });
+    const data = await res.json();
+    if (!res.ok) {
+      showToast(data.error || 'Erreur envoi', 'error');
+      btn.disabled = false;
+      btn.textContent = 'Recevoir mon lien d\'accès →';
+      return;
+    }
+    document.getElementById('loginInfo').style.display = 'block';
+    btn.style.display = 'none';
+    showToast('Email envoyé · vérifie ta boîte');
+  } catch (e) {
+    showToast('Erreur réseau', 'error');
+    btn.disabled = false;
+    btn.textContent = 'Recevoir mon lien d\'accès →';
   }
-
-  // 2. Vérification commande locale existante (matching email + code)
-  const lastOrder = JSON.parse(localStorage.getItem('nodex_last_order') || '{}');
-  const orderEmail = (lastOrder.email || '').toLowerCase();
-  const orderCode = (lastOrder.activationCode || '').toUpperCase();
-  if (orderEmail === email && (orderCode === code || !orderCode)) {
-    localStorage.setItem('nodex_session_email', email);
-    showDashboard();
-    showToast('Connexion réussie');
-    return;
-  }
-
-  // 3. Échec
-  showToast('Email ou code invalide', 'error');
 }
 
-function logout() {
-  localStorage.removeItem('nodex_session_email');
+// Logout
+async function logout() {
+  if (supabase) await supabase.auth.signOut();
   document.getElementById('loginView').style.display = 'flex';
   document.getElementById('dashboardView').classList.remove('show');
   document.getElementById('userPill').classList.remove('show');
   document.getElementById('logoutBtn').classList.remove('show');
   document.getElementById('loginEmail').value = '';
+  document.getElementById('loginInfo').style.display = 'none';
+  document.getElementById('loginBtn').style.display = '';
+  document.getElementById('loginBtn').disabled = false;
+  document.getElementById('loginBtn').textContent = 'Recevoir mon lien d\'accès →';
+  currentAccount = null;
   showToast('Déconnecté');
 }
 
-function showDashboard() {
-  const order = JSON.parse(localStorage.getItem('nodex_last_order') || '{}');
-  const tier = order.tier || 'essentiel';
+// Load account info via API
+async function loadAccount() {
+  if (!supabase) return null;
+  const { data: { session } } = await supabase.auth.getSession();
+  if (!session) return null;
+  try {
+    const res = await fetch('/api/account/me', {
+      headers: { 'Authorization': 'Bearer ' + session.access_token }
+    });
+    const data = await res.json();
+    if (!res.ok) {
+      showToast(data.error || 'Compte non trouvé', 'error');
+      return null;
+    }
+    return { ...data.account, accessToken: session.access_token, userEmail: session.user.email };
+  } catch (e) {
+    console.error('loadAccount', e);
+    return null;
+  }
+}
+
+// Show dashboard
+function showDashboard(account) {
+  currentAccount = account;
+  const tier = account.tier || 'essentiel';
 
   document.getElementById('loginView').style.display = 'none';
   document.getElementById('dashboardView').classList.add('show');
   document.getElementById('userPill').classList.add('show');
   document.getElementById('logoutBtn').classList.add('show');
-  document.getElementById('userPill').textContent = order.email || 'Connecté';
+  document.getElementById('userPill').textContent = account.email || account.userEmail;
 
-  // Dashboard
-  const firstname = order.firstname || (order.email ? order.email.split('@')[0] : 'là');
+  const firstname = (account.email || '').split('@')[0];
   document.getElementById('dashName').textContent = firstname;
 
   const tierPill = document.getElementById('dashTierPill');
   tierPill.textContent = 'Tier · ' + (tierLabels[tier] || 'Essentiel');
   tierPill.className = 'tier-current' + (tier === 'elite' ? ' gold' : tier === 'pro' ? ' green' : '');
 
-  // Stats
   document.getElementById('statTier').textContent = tierLabels[tier] || 'Essentiel';
-  document.getElementById('statCode').textContent = order.activationCode || 'NDX-XXXX-XXXX-XXXX';
-  document.getElementById('statOrder').textContent = order.orderId || '—';
-  document.getElementById('statDate').textContent = order.date ? new Date(order.date).toLocaleDateString('fr-FR') : '—';
+  document.getElementById('statCode').textContent = account.promoCodeUsed ? '✓ Code activé' : '—';
+  document.getElementById('statOrder').textContent = '—';
+  document.getElementById('statDate').textContent = account.memberSince ? new Date(account.memberSince).toLocaleDateString('fr-FR') : '—';
 
-  // Order info
-  document.getElementById('orderEmail').textContent = order.email || '—';
-  document.getElementById('orderName').textContent = ((order.firstname || '') + ' ' + (order.lastname || '')).trim() || '—';
-  document.getElementById('orderCountry').textContent = order.country || '—';
-  document.getElementById('orderId').textContent = order.orderId || '—';
-  document.getElementById('orderCode').textContent = order.activationCode || '—';
-  document.getElementById('orderAmount').textContent = (order.price || '—') + (order.price ? '€' : '');
-  document.getElementById('orderDate').textContent = order.date ? new Date(order.date).toLocaleDateString('fr-FR', {day:'2-digit', month:'long', year:'numeric', hour:'2-digit', minute:'2-digit'}) : '—';
+  document.getElementById('orderEmail').textContent = account.email || '—';
+  document.getElementById('orderName').textContent = '—';
+  document.getElementById('orderCountry').textContent = '—';
+  document.getElementById('orderId').textContent = '—';
+  document.getElementById('orderCode').textContent = account.promoCodeUsed ? '✓ Code activé' : '—';
+  document.getElementById('orderAmount').textContent = '—';
+  document.getElementById('orderDate').textContent = account.memberSince ? new Date(account.memberSince).toLocaleDateString('fr-FR', {day:'2-digit', month:'long', year:'numeric'}) : '—';
+
+  // Hide promo section si déjà utilisé
+  const promoSection = document.getElementById('promoSection');
+  if (account.promoCodeUsed) promoSection.style.display = 'none';
+  else promoSection.style.display = '';
 
   // Resources
   const accessible = tierAccess[tier] || tierAccess.essentiel;
@@ -405,6 +453,13 @@ function showDashboard() {
   grid.innerHTML = Object.entries(allResources).map(([key, res]) => {
     const isAccessible = accessible.includes(key);
     const isComing = res.status === 'coming';
+    const actionsHtml = res.actions.map(a => {
+      if (a.action === 'download-skill') {
+        return `<a href="#" class="resource-btn ${a.primary ? 'primary' : ''} ${!isAccessible ? 'disabled' : ''}" onclick="event.preventDefault();${isAccessible ? 'downloadSkill()' : 'showToast(\'Tier supérieur requis\',\'error\')'}">${a.label}</a>`;
+      }
+      const tgt = a.target ? `target="${a.target}"` : '';
+      return `<a href="${isAccessible ? a.href : '#'}" ${tgt} class="resource-btn ${a.primary ? 'primary' : ''} ${!isAccessible ? 'disabled' : ''}" ${!isAccessible ? 'onclick="event.preventDefault();showToast(\'Tier supérieur requis\',\'error\');"' : ''}>${a.label}</a>`;
+    }).join('');
     return `
       <div class="resource-card ${!isAccessible ? 'locked' : ''}">
         <div class="resource-icon">${res.icon}</div>
@@ -412,9 +467,7 @@ function showDashboard() {
         ${!isAccessible ? '<div class="resource-status locked">Réservé tier ' + tierLabels[res.tier] + '</div>' : ''}
         <div class="resource-name">${res.name}</div>
         <div class="resource-desc">${res.desc}</div>
-        <div class="resource-actions">
-          ${res.actions.map(a => `<a href="${isAccessible ? a.href : '#'}" ${a.download ? 'download' : ''} class="resource-btn ${a.primary ? 'primary' : ''} ${!isAccessible ? 'disabled' : ''}" ${!isAccessible ? 'onclick="event.preventDefault();showToast(\'Tier supérieur requis\',\'error\');"' : ''}>${a.label}</a>`).join('')}
-        </div>
+        <div class="resource-actions">${actionsHtml}</div>
       </div>
     `;
   }).join('');
@@ -426,23 +479,97 @@ function showDashboard() {
     document.getElementById('upgradeTitle').textContent = 'Passe à Pro · 500€ de différence';
     document.getElementById('upgradeDesc').textContent = 'Accède au Telegram avec les positions de Nahel + watchlist privée hebdo + brief weekly.';
     document.getElementById('upgradeCta').href = 'tier-pro.html';
-    document.getElementById('upgradeCta').textContent = 'Voir Pro →';
     document.getElementById('upgradeBanner').className = 'upgrade-banner';
   } else if (tier === 'pro') {
     upgradeSection.style.display = 'block';
     document.getElementById('upgradeTitle').textContent = 'Passe à Elite · 1500€ de différence';
-    document.getElementById('upgradeDesc').textContent = 'Le bot Auto Scanner qui détecte les setups 24/7 + watchlist personnalisable + crédit cloud première année.';
+    document.getElementById('upgradeDesc').textContent = 'Le bot Auto Scanner qui détecte les setups 24/7 + watchlist personnalisable.';
     document.getElementById('upgradeCta').href = 'tier-elite.html';
-    document.getElementById('upgradeCta').textContent = 'Voir Elite →';
     document.getElementById('upgradeBanner').className = 'upgrade-banner gold';
   } else {
     upgradeSection.style.display = 'none';
   }
 }
 
-// Auto-login si déjà connecté
-const session = localStorage.getItem('nodex_session_email');
-if (session) showDashboard();
+// Download skill via API (URL signée temporaire)
+async function downloadSkill() {
+  if (!currentAccount) return;
+  showToast('Génération du lien…');
+  try {
+    const res = await fetch('/api/download/skill', {
+      headers: { 'Authorization': 'Bearer ' + currentAccount.accessToken }
+    });
+    const data = await res.json();
+    if (!res.ok) {
+      showToast(data.error || 'Erreur', 'error');
+      return;
+    }
+    // Force le téléchargement
+    const a = document.createElement('a');
+    a.href = data.url;
+    a.download = data.filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    showToast('Téléchargement démarré');
+  } catch (e) {
+    showToast('Erreur réseau', 'error');
+  }
+}
+
+// Redeem promo code
+async function redeemPromoCode() {
+  if (!currentAccount) return;
+  const code = document.getElementById('promoCodeInput').value.trim().toUpperCase();
+  if (!code) { showToast('Entre un code', 'error'); return; }
+  const btn = document.getElementById('promoBtn');
+  btn.disabled = true;
+  btn.textContent = 'Vérification…';
+  try {
+    const res = await fetch('/api/auth/redeem-code', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + currentAccount.accessToken
+      },
+      body: JSON.stringify({ code })
+    });
+    const data = await res.json();
+    if (!res.ok) {
+      showToast(data.error || 'Code invalide', 'error');
+      btn.disabled = false;
+      btn.textContent = 'Activer le code';
+      return;
+    }
+    showToast(data.message || 'Code activé');
+    // Reload account
+    const acc = await loadAccount();
+    if (acc) showDashboard(acc);
+  } catch (e) {
+    showToast('Erreur réseau', 'error');
+    btn.disabled = false;
+    btn.textContent = 'Activer le code';
+  }
+}
+
+// Boot
+(async function boot() {
+  const ok = await initSupabase();
+  if (!ok) return;
+  // Si on revient d'un magic link, Supabase parse l'URL automatiquement
+  const acc = await loadAccount();
+  if (acc) showDashboard(acc);
+  // Listen aux changements d'auth (login après magic link)
+  supabase.auth.onAuthStateChange(async (event, session) => {
+    if (event === 'SIGNED_IN' && session) {
+      const a = await loadAccount();
+      if (a) showDashboard(a);
+    }
+    if (event === 'SIGNED_OUT') {
+      logout();
+    }
+  });
+})();
 
 // Mouse parallax
 document.addEventListener('mousemove', (e) => {
