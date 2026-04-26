@@ -624,13 +624,64 @@ async function redeemPromoCode() {
 
 // Boot
 (async function boot() {
+  debugLog('Boot · URL: ' + window.location.href);
+  debugLog('Hash: ' + (window.location.hash || '(vide)'));
+  debugLog('Search: ' + (window.location.search || '(vide)'));
+
   const ok = await initSupabase();
   if (!ok) return;
-  // Si on revient d'un magic link, Supabase parse l'URL automatiquement
+
+  // Détection manuelle du token dans l'URL (au cas où le SDK n'auto-detect pas)
+  const hash = window.location.hash || '';
+  const query = window.location.search || '';
+  if (hash.includes('access_token=') || query.includes('code=')) {
+    debugLog('🔑 Token détecté dans URL · établissement session…');
+    try {
+      // PKCE flow (code dans query)
+      if (query.includes('code=')) {
+        const params = new URLSearchParams(query);
+        const code = params.get('code');
+        const { data, error } = await sbClient.auth.exchangeCodeForSession(code);
+        if (error) {
+          debugLog('❌ exchangeCodeForSession: ' + error.message, 'error');
+        } else {
+          debugLog('✓ Session établie via PKCE', 'ok');
+          // Nettoie l'URL
+          window.history.replaceState({}, document.title, window.location.pathname);
+        }
+      }
+      // Implicit flow (token dans hash)
+      else if (hash.includes('access_token=')) {
+        const params = new URLSearchParams(hash.slice(1));
+        const access_token = params.get('access_token');
+        const refresh_token = params.get('refresh_token');
+        if (access_token && refresh_token) {
+          const { data, error } = await sbClient.auth.setSession({ access_token, refresh_token });
+          if (error) {
+            debugLog('❌ setSession: ' + error.message, 'error');
+          } else {
+            debugLog('✓ Session établie via implicit', 'ok');
+            window.history.replaceState({}, document.title, window.location.pathname);
+          }
+        }
+      }
+    } catch (e) {
+      debugLog('❌ Erreur détection token: ' + e.message, 'error');
+    }
+  }
+
+  // Si on revient d'un magic link, Supabase parse l'URL automatiquement (ou via setSession ci-dessus)
   const acc = await loadAccount();
-  if (acc) showDashboard(acc);
+  if (acc) {
+    debugLog('✓ Compte chargé · tier: ' + acc.tier, 'ok');
+    showDashboard(acc);
+  } else {
+    debugLog('Pas de session active · affichage login');
+  }
+
   // Listen aux changements d'auth (login après magic link)
   sbClient.auth.onAuthStateChange(async (event, session) => {
+    debugLog('🔔 Auth state: ' + event);
     if (event === 'SIGNED_IN' && session) {
       const a = await loadAccount();
       if (a) showDashboard(a);
