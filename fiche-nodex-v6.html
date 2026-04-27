@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#000000">
 <title>Fiche interactive Nodex V6.1 — Cockpit de trading</title>
-<meta name="description" content="Fiche interactive Nodex V6.1 : checklist 18 points, calculateur de position, journal de trade, règles psycho. Tout coché reste enregistré.">
+<meta name="description" content="Fiche interactive Nodex V6.1 : checklist 8 conditions, calculateur de position, journal de trade, règles psycho. Tout coché reste enregistré.">
 <link rel="icon" type="image/x-icon" href="favicon.ico">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
 <link rel="icon" type="image/png" sizes="16x16" href="favicon-16.png">
@@ -413,58 +413,46 @@ footer {
 <div class="container">
 
   <!-- ═══════════════════════════════════════════════════
-       1. CHECKLIST 18 POINTS PRE-TRADE
+       1. CHECKLIST 8 CONDITIONS V6.1 PRE-TRADE
   ═══════════════════════════════════════════════════ -->
   <section class="fiche-section" id="sec-checklist">
     <div class="section-head">
-      <div class="section-kicker">01 · Pré-trade</div>
-      <h2 class="section-title">Checklist <em>18 points.</em></h2>
-      <p class="section-desc">Si un seul point n'est pas validé, tu ne prends pas le trade. Pas d'exception. Pas de "presque".</p>
+      <div class="section-kicker">01 · Pré-trade V6.1</div>
+      <h2 class="section-title">Checklist <em>8 conditions.</em></h2>
+      <p class="section-desc">Si une seule condition n'est pas validée, tu ne prends pas le trade. Pas d'exception. Pas de "presque". 8/8 → A+ · 7/8 → A · 6/8 → paper · &lt;6 → SKIP.</p>
     </div>
     <div class="checklist-grid">
 
       <div class="check-block">
-        <div class="check-block-title">A · Contexte HTF</div>
-        <label class="check-item"><input type="checkbox" data-key="c1"><span class="check-box"><svg viewBox="0 0 12 12"><path d="M2 6 L5 9 L10 3" stroke="white" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="check-text">H4 en structure haussière (HH/HL)</span></label>
-        <label class="check-item"><input type="checkbox" data-key="c2"><span class="check-box"><svg viewBox="0 0 12 12"><path d="M2 6 L5 9 L10 3" stroke="white" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="check-text">H1 confirme la même direction</span></label>
-        <label class="check-item"><input type="checkbox" data-key="c3"><span class="check-box"><svg viewBox="0 0 12 12"><path d="M2 6 L5 9 L10 3" stroke="white" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="check-text">Pas de news majeur dans la prochaine heure</span></label>
+        <div class="check-block-title">A · Contexte (jour + session)</div>
+        <label class="check-item"><input type="checkbox" data-key="c1"><span class="check-box"><svg viewBox="0 0 12 12"><path d="M2 6 L5 9 L10 3" stroke="white" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="check-text"><strong>① Session valide</strong> — Londres (9h-12h Paris) OU NYAM (14h30-17h Paris)</span></label>
+        <label class="check-item"><input type="checkbox" data-key="c2"><span class="check-box"><svg viewBox="0 0 12 12"><path d="M2 6 L5 9 L10 3" stroke="white" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="check-text"><strong>② Jour autorisé</strong> — mardi/mercredi/jeudi (plein 1%) OU lundi/vendredi (demi-risk 0,5% max). Samedi/dimanche = JAMAIS.</span></label>
       </div>
 
       <div class="check-block">
-        <div class="check-block-title">B · Zone de liquidité</div>
-        <label class="check-item"><input type="checkbox" data-key="c4"><span class="check-box"><svg viewBox="0 0 12 12"><path d="M2 6 L5 9 L10 3" stroke="white" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="check-text">PDH ou PWH identifié comme cible Sweep</span></label>
-        <label class="check-item"><input type="checkbox" data-key="c5"><span class="check-box"><svg viewBox="0 0 12 12"><path d="M2 6 L5 9 L10 3" stroke="white" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="check-text">Le Sweep est CLAIR (mèche au-dessus, clôture dedans)</span></label>
-        <label class="check-item"><input type="checkbox" data-key="c6"><span class="check-box"><svg viewBox="0 0 12 12"><path d="M2 6 L5 9 L10 3" stroke="white" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="check-text">Volume sur le Sweep &gt; moyenne 20 bougies</span></label>
+        <div class="check-block-title">B · Bias macro</div>
+        <label class="check-item"><input type="checkbox" data-key="c3"><span class="check-box"><svg viewBox="0 0 12 12"><path d="M2 6 L5 9 L10 3" stroke="white" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="check-text"><strong>③ D1 + Weekly bullish + BTC OK</strong> — HH+HL D1 et W1 sur l'actif, BTC pas en dump franc, pas de news rouge ±30 min</span></label>
       </div>
 
       <div class="check-block">
-        <div class="check-block-title">C · FVG entry</div>
-        <label class="check-item"><input type="checkbox" data-key="c7"><span class="check-box"><svg viewBox="0 0 12 12"><path d="M2 6 L5 9 L10 3" stroke="white" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="check-text">FVG haussier formé après le Sweep</span></label>
-        <label class="check-item"><input type="checkbox" data-key="c8"><span class="check-box"><svg viewBox="0 0 12 12"><path d="M2 6 L5 9 L10 3" stroke="white" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="check-text">FVG pas encore mitigé (vierge)</span></label>
-        <label class="check-item"><input type="checkbox" data-key="c9"><span class="check-box"><svg viewBox="0 0 12 12"><path d="M2 6 L5 9 L10 3" stroke="white" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="check-text">FVG taille minimum 0,3 % (sinon spread tue le RR)</span></label>
+        <div class="check-block-title">C · Setup technique</div>
+        <label class="check-item"><input type="checkbox" data-key="c4"><span class="check-box"><svg viewBox="0 0 12 12"><path d="M2 6 L5 9 L10 3" stroke="white" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="check-text"><strong>④ POI dans le discount</strong> — FVG ou OB identifié SOUS le 0,5 Fibo M15 (zone discount, idéalement OTE 0,62-0,79)</span></label>
+        <label class="check-item"><input type="checkbox" data-key="c5"><span class="check-box"><svg viewBox="0 0 12 12"><path d="M2 6 L5 9 L10 3" stroke="white" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="check-text"><strong>⑤ Sweep DANS la zone POI</strong> — niveau significatif balayé (Asia Low / PDL) + mèche ≥ 2× corps + close au-dessus du niveau</span></label>
+        <label class="check-item"><input type="checkbox" data-key="c6"><span class="check-box"><svg viewBox="0 0 12 12"><path d="M2 6 L5 9 L10 3" stroke="white" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="check-text"><strong>⑥ Bougie de confirmation clôturée</strong> — la bougie qui suit le sweep clôture AU-DESSUS du high de la bougie de sweep</span></label>
       </div>
 
       <div class="check-block">
-        <div class="check-block-title">D · Confirmation</div>
-        <label class="check-item"><input type="checkbox" data-key="c10"><span class="check-box"><svg viewBox="0 0 12 12"><path d="M2 6 L5 9 L10 3" stroke="white" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="check-text">Bougie 2 mitige le FVG sans le casser</span></label>
-        <label class="check-item"><input type="checkbox" data-key="c11"><span class="check-box"><svg viewBox="0 0 12 12"><path d="M2 6 L5 9 L10 3" stroke="white" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="check-text">Bougie 2 clôture haussière (ou doji haussier)</span></label>
-        <label class="check-item"><input type="checkbox" data-key="c12"><span class="check-box"><svg viewBox="0 0 12 12"><path d="M2 6 L5 9 L10 3" stroke="white" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="check-text">Pas de wick majeur sous la bougie 2 (= rejet faible)</span></label>
+        <div class="check-block-title">D · Risk + Psycho</div>
+        <label class="check-item"><input type="checkbox" data-key="c7"><span class="check-box"><svg viewBox="0 0 12 12"><path d="M2 6 L5 9 L10 3" stroke="white" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="check-text"><strong>⑦ RR ≥ 2,5:1 + risk respecté + TP intelligent</strong> — SL sous mèche du sweep + buffer 0,2% · TP = MIN(trailing +3%, PDH/PDL opposé − 0,2%) · risk ≤ 1,2% (mar-jeu) ou 0,5% (lun/ven)</span></label>
+        <label class="check-item"><input type="checkbox" data-key="c8"><span class="check-box"><svg viewBox="0 0 12 12"><path d="M2 6 L5 9 L10 3" stroke="white" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="check-text"><strong>⑧ « Si je perds ce trade, je dors quand même bien ce soir »</strong> — question psy Mark Douglas. Si NON → taille trop grosse → réduire ou skip.</span></label>
       </div>
 
-      <div class="check-block">
-        <div class="check-block-title">E · Risk &amp; RR</div>
-        <label class="check-item"><input type="checkbox" data-key="c13"><span class="check-box"><svg viewBox="0 0 12 12"><path d="M2 6 L5 9 L10 3" stroke="white" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="check-text">SL placé sous la mèche du Sweep (pas dans le FVG)</span></label>
-        <label class="check-item"><input type="checkbox" data-key="c14"><span class="check-box"><svg viewBox="0 0 12 12"><path d="M2 6 L5 9 L10 3" stroke="white" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="check-text">Risque calculé = 1 % (1,5 % max si setup A+)</span></label>
-        <label class="check-item"><input type="checkbox" data-key="c15"><span class="check-box"><svg viewBox="0 0 12 12"><path d="M2 6 L5 9 L10 3" stroke="white" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="check-text">RR minimum 1:2 vers le prochain pool de liquidité</span></label>
-      </div>
+    </div>
 
-      <div class="check-block">
-        <div class="check-block-title">F · Mental</div>
-        <label class="check-item"><input type="checkbox" data-key="c16"><span class="check-box"><svg viewBox="0 0 12 12"><path d="M2 6 L5 9 L10 3" stroke="white" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="check-text">Je suis calme, pas en revanche d'un trade précédent</span></label>
-        <label class="check-item"><input type="checkbox" data-key="c17"><span class="check-box"><svg viewBox="0 0 12 12"><path d="M2 6 L5 9 L10 3" stroke="white" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="check-text">Je n'ai pas dépassé 2 trades dans la session</span></label>
-        <label class="check-item"><input type="checkbox" data-key="c18"><span class="check-box"><svg viewBox="0 0 12 12"><path d="M2 6 L5 9 L10 3" stroke="white" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="check-text">Si ce trade perd, je l'accepte sans toucher mon capital</span></label>
-      </div>
-
+    <!-- Mantras V6.1 -->
+    <div style="margin-top:32px; padding:20px; background:rgba(111,168,255,0.04); border:1px solid rgba(111,168,255,0.2); border-radius:14px; text-align:center;">
+      <p style="font-style:italic; color:rgba(255,255,255,0.85); margin:0 0 8px 0; font-size:15px;">« 8 conditions. 4 questions OUI mentales. Si 1 NON → SKIP. Pas de débat. »</p>
+      <p style="font-style:italic; color:rgba(255,255,255,0.6); margin:0; font-size:13px;">Une méthode simple appliquée à 100 % bat toujours une méthode complexe appliquée à 60 %. — Nodex V6.1</p>
     </div>
   </section>
 
@@ -630,7 +618,7 @@ footer {
       <p class="section-desc">Clique sur une règle dès que tu l'as appliquée aujourd'hui. Si tu coches les 10 chaque jour, tu deviens rentable.</p>
     </div>
     <div class="psycho-list">
-      <div class="psycho-item" data-key="p1"><span class="psycho-num">01</span><span class="psycho-text">Je n'entre que si les 18 points checklist sont validés.</span></div>
+      <div class="psycho-item" data-key="p1"><span class="psycho-num">01</span><span class="psycho-text">Je n'entre que si les 8 conditions V6.1 sont validées.</span></div>
       <div class="psycho-item" data-key="p2"><span class="psycho-num">02</span><span class="psycho-text">Je risque 1 % max par trade. Jamais 2 %.</span></div>
       <div class="psycho-item" data-key="p3"><span class="psycho-num">03</span><span class="psycho-text">Je n'augmente jamais ma taille après une perte.</span></div>
       <div class="psycho-item" data-key="p4"><span class="psycho-num">04</span><span class="psycho-text">Je stoppe ma session après 2 trades consécutifs perdants.</span></div>
@@ -689,7 +677,7 @@ document.querySelectorAll('.psycho-item').forEach(item => {
 });
 
 function updateProgress() {
-  const totalChecks = 18;
+  const totalChecks = 8;
   const totalPsycho = 10;
   const total = totalChecks + totalPsycho;
   let done = 0;
