@@ -772,11 +772,162 @@ footer {
 }
 
 /* ═══════════════════════════════════════════════════════
+   HAMBURGER MOBILE
+═══════════════════════════════════════════════════════ */
+.nav-burger {
+  display: none;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 12px;
+  padding: 10px 12px;
+  cursor: pointer;
+  flex-direction: column;
+  gap: 4px;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.nav-burger:hover { background: rgba(111,168,255,0.1); border-color: rgba(111,168,255,0.4); }
+.nav-burger span {
+  display: block;
+  width: 18px;
+  height: 2px;
+  background: var(--fg);
+  border-radius: 1px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.nav-burger.active span:nth-child(1) { transform: translateY(6px) rotate(45deg); }
+.nav-burger.active span:nth-child(2) { opacity: 0; }
+.nav-burger.active span:nth-child(3) { transform: translateY(-6px) rotate(-45deg); }
+
+/* Drawer mobile (slide-in from right) */
+.mobile-drawer-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.7);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  z-index: 199;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.mobile-drawer-backdrop.active { opacity: 1; pointer-events: auto; }
+
+.mobile-drawer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: min(320px, 85vw);
+  background: rgba(6, 6, 18, 0.97);
+  backdrop-filter: blur(24px) saturate(150%);
+  -webkit-backdrop-filter: blur(24px) saturate(150%);
+  border-left: 1px solid rgba(111,168,255,0.18);
+  z-index: 200;
+  transform: translateX(100%);
+  transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  flex-direction: column;
+  padding: 24px;
+  overflow-y: auto;
+}
+.mobile-drawer.active { transform: translateX(0); }
+
+.mobile-drawer-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 32px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+.mobile-drawer-header .logo-wrap { gap: 10px; }
+.mobile-drawer-close {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 10px;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--fg);
+  font-size: 20px;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.mobile-drawer-close:hover { background: rgba(248,113,113,0.15); border-color: rgba(248,113,113,0.4); }
+
+.mobile-drawer-links {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.mobile-drawer-links a {
+  display: flex;
+  align-items: center;
+  padding: 14px 16px;
+  border-radius: 12px;
+  color: rgba(255,255,255,0.75);
+  text-decoration: none;
+  font-size: 16px;
+  font-weight: 500;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  border-left: 2px solid transparent;
+}
+.mobile-drawer-links a:hover {
+  background: rgba(111,168,255,0.08);
+  color: #fff;
+  border-left-color: rgba(111,168,255,0.5);
+}
+.mobile-drawer-links a.cta-account {
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px solid rgba(255,255,255,0.06);
+  color: var(--accent);
+  font-weight: 600;
+}
+.mobile-drawer-links a.cta-account:hover {
+  background: rgba(111,168,255,0.12);
+  color: var(--accent);
+}
+
+.mobile-drawer-cta {
+  margin-top: auto;
+  padding-top: 24px;
+}
+.mobile-drawer-cta button {
+  width: 100%;
+  padding: 14px;
+  background: var(--accent);
+  border: none;
+  border-radius: 12px;
+  color: #000;
+  font-weight: 700;
+  font-size: 15px;
+  cursor: pointer;
+  font-family: var(--font-sans);
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 0 20px rgba(111,168,255,0.25);
+}
+.mobile-drawer-cta button:hover {
+  background: #8ab8ff;
+  box-shadow: 0 0 28px rgba(111,168,255,0.5);
+  transform: translateY(-1px);
+}
+
+/* ═══════════════════════════════════════════════════════
    RESPONSIVE
 ═══════════════════════════════════════════════════════ */
 @media (max-width: 768px) {
-  nav.top { padding: 16px 20px; }
+  nav.top { padding: 14px 16px; }
   .nav-links { display: none; }
+  .nav-cta { display: none; }
+  .nav-burger { display: flex; }
+  .logo-text { font-size: 16px; }
   .hero { padding: 100px 16px 60px; }
   .hero h1 { font-size: 42px; letter-spacing: -1.5px; }
   .hero-tagline { font-size: 10px; gap: 14px; flex-direction: column; }
@@ -826,7 +977,63 @@ footer {
     <a href="compte.html" style="color: var(--accent);">Mon compte</a>
   </div>
   <button class="nav-cta" onclick="document.getElementById('pricing').scrollIntoView()">Commencer →</button>
+  <!-- Hamburger mobile -->
+  <button class="nav-burger" id="navBurger" aria-label="Menu" onclick="toggleMobileMenu()">
+    <span></span><span></span><span></span>
+  </button>
 </nav>
+
+<!-- Mobile drawer -->
+<div class="mobile-drawer-backdrop" id="mobileBackdrop" onclick="closeMobileMenu()"></div>
+<aside class="mobile-drawer" id="mobileDrawer">
+  <div class="mobile-drawer-header">
+    <a href="#" class="logo-wrap" style="text-decoration:none; color:inherit;" onclick="closeMobileMenu()">
+      <div class="logo-icon"><img src="logo.png" alt="Nodex" class="logo-img"></div>
+      <div class="logo-text">NODEX</div>
+    </a>
+    <button class="mobile-drawer-close" aria-label="Fermer" onclick="closeMobileMenu()">×</button>
+  </div>
+  <div class="mobile-drawer-links">
+    <a href="#strategy" onclick="closeMobileMenu()">Stratégie</a>
+    <a href="#method" onclick="closeMobileMenu()">Méthode</a>
+    <a href="#revenus" onclick="closeMobileMenu()">Revenus</a>
+    <a href="#stats" onclick="closeMobileMenu()">Résultats</a>
+    <a href="#pricing" onclick="closeMobileMenu()">Tarifs</a>
+    <a href="#faq" onclick="closeMobileMenu()">FAQ</a>
+    <a href="compte.html" class="cta-account" onclick="closeMobileMenu()">Mon compte →</a>
+    <a href="cockpit-v6.html" onclick="closeMobileMenu()">Cockpit V6.1 (gratuit)</a>
+    <a href="fiche-nodex-v6.html" onclick="closeMobileMenu()">Fiche checklist 8 conditions</a>
+  </div>
+  <div class="mobile-drawer-cta">
+    <button onclick="closeMobileMenu(); document.getElementById('pricing').scrollIntoView({behavior:'smooth'})">Commencer →</button>
+  </div>
+</aside>
+
+<script>
+function toggleMobileMenu() {
+  const burger = document.getElementById('navBurger');
+  const drawer = document.getElementById('mobileDrawer');
+  const backdrop = document.getElementById('mobileBackdrop');
+  const isOpen = drawer.classList.contains('active');
+  if (isOpen) closeMobileMenu();
+  else {
+    burger.classList.add('active');
+    drawer.classList.add('active');
+    backdrop.classList.add('active');
+    document.body.style.overflow = 'hidden';
+  }
+}
+function closeMobileMenu() {
+  document.getElementById('navBurger').classList.remove('active');
+  document.getElementById('mobileDrawer').classList.remove('active');
+  document.getElementById('mobileBackdrop').classList.remove('active');
+  document.body.style.overflow = '';
+}
+// Fermer au resize > 768px
+window.addEventListener('resize', () => { if (window.innerWidth > 768) closeMobileMenu(); });
+// Fermer avec ESC
+window.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeMobileMenu(); });
+</script>
 
 <!-- HERO -->
 <section class="hero">
